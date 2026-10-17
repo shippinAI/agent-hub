@@ -1,0 +1,71 @@
+{
+  "settings": [
+    {"key": "lease_ttl_seconds", "value": 900, "description": "Default lease length when a claim does not ask for one"},
+    {"key": "lease_min_ttl_seconds", "value": 30, "description": "Shortest lease a claim may request"},
+    {"key": "lease_max_ttl_seconds", "value": 3600, "description": "Longest lease a claim may request"},
+    {"key": "heartbeat_hint_seconds", "value": 300, "description": "Heartbeat interval told to agents (about TTL/3)"},
+    {"key": "max_lease_expiries", "value": 3, "description": "After this many expired leases the task goes to the workflow's attention state (0 = never)"},
+    {"key": "wip_limit_default", "value": 2, "description": "Max live leases per principal unless the principal sets its own (0 = unlimited)"},
+    {"key": "idempotency_ttl_hours", "value": 24, "description": "How long request_id / Idempotency-Key results are kept"},
+    {"key": "reaper_interval_seconds", "value": 5, "description": "How often expired leases are swept"},
+    {"key": "default_priority", "value": 2, "description": "Priority for new tasks (lower = sooner)"},
+    {"key": "priority_labels", "value": ["P0 urgent", "P1 high", "P2 normal", "P3 low", "P4 someday"], "description": "Display names by priority number"},
+    {"key": "note_kinds", "value": ["note", "handoff", "blocker", "decision", "summary"], "description": "Allowed note kinds"},
+    {"key": "principal_kinds", "value": ["human", "claude-code", "codex", "cursor", "grok", "cli", "service"], "description": "Allowed principal kinds"}
+  ],
+  "roles": [
+    {"id": "admin", "description": "Edits agents, roles, policies, workflows and settings; may force-release"},
+    {"id": "reviewer", "description": "May claim the review lane"},
+    {"id": "worker", "description": "Claims and works ready tasks"},
+    {"id": "observer", "description": "Read-only"}
+  ],
+  "principals": [
+    {"id": "jesse", "display_name": "Jesse", "kind": "human", "is_human": true, "roles": ["admin", "reviewer"], "enabled": true},
+    {"id": "claude-code", "display_name": "Claude Code", "kind": "claude-code", "roles": ["worker"], "enabled": true},
+    {"id": "codex", "display_name": "Codex CLI", "kind": "codex", "roles": ["worker", "reviewer"], "enabled": true},
+    {"id": "cursor", "display_name": "Cursor", "kind": "cursor", "roles": ["worker"], "enabled": true},
+    {"id": "clyffy", "display_name": "Clyffy (Grok Bot)", "kind": "grok", "roles": ["worker", "reviewer"], "enabled": true}
+  ],
+  "workflows": [
+    {"id": "default", "name": "Default (ready, work, review, done)", "initial_state": "ready", "attention_state": "needs_attention",
+     "states": [
+       {"key": "backlog", "label": "Backlog", "kind": "queue"},
+       {"key": "ready", "label": "Ready", "kind": "queue"},
+       {"key": "in_progress", "label": "In progress", "kind": "active"},
+       {"key": "review", "label": "Review", "kind": "review"},
+       {"key": "reviewing", "label": "Reviewing", "kind": "active"},
+       {"key": "blocked", "label": "Blocked", "kind": "blocked"},
+       {"key": "needs_attention", "label": "Needs attention", "kind": "attention"},
+       {"key": "done", "label": "Done", "kind": "done"},
+       {"key": "cancelled", "label": "Cancelled", "kind": "done"}
+     ],
+     "lanes": [
+       {"queue": "ready", "active": "in_progress", "complete_to": "review", "release_to": "ready"},
+       {"queue": "review", "active": "reviewing", "complete_to": "done", "release_to": "review", "distinct_from_previous": true}
+     ],
+     "transitions": [
+       {"from": "backlog", "to": "ready"}, {"from": "ready", "to": "backlog"},
+       {"from": "*", "to": "blocked"}, {"from": "blocked", "to": "ready"},
+       {"from": "needs_attention", "to": "ready"}, {"from": "review", "to": "done"},
+       {"from": "review", "to": "ready"}, {"from": "*", "to": "cancelled"}, {"from": "done", "to": "ready"}
+     ]}
+  ],
+  "projects": [{"id": "general", "name": "General", "workflow_id": "default"}],
+  "policies": [
+    {"name": "agents claim ready work", "subject": "agent", "action": "task.claim:ready", "effect": "allow", "priority": 10},
+    {"name": "reviewers claim review", "subject": "role:reviewer", "action": "task.claim:review", "effect": "allow", "priority": 10},
+    {"name": "humans claim anything", "subject": "human", "action": "task.claim:*", "effect": "allow", "priority": 10},
+    {"name": "human-only label", "subject": "agent", "action": "task.claim:*", "effect": "deny", "priority": 100, "selector": {"labels": ["human-only"]}},
+    {"name": "anyone creates tasks", "subject": "*", "action": "task.create", "effect": "allow", "priority": 0},
+    {"name": "anyone edits", "subject": "*", "action": "task.edit", "effect": "allow", "priority": 0},
+    {"name": "humans edit held tasks", "subject": "human", "action": "task.edit_held", "effect": "allow", "priority": 10},
+    {"name": "anyone adds notes", "subject": "*", "action": "note.add:*", "effect": "allow", "priority": 0},
+    {"name": "holders complete", "subject": "*", "action": "task.complete:*", "effect": "allow", "priority": 0},
+    {"name": "holders hand off", "subject": "*", "action": "task.handoff", "effect": "allow", "priority": 0},
+    {"name": "workflow transitions", "subject": "*", "action": "task.transition:*", "effect": "allow", "priority": 0},
+    {"name": "only humans approve review directly", "subject": "agent", "action": "task.transition:review->done", "effect": "deny", "priority": 50},
+    {"name": "only humans cancel", "subject": "agent", "action": "task.transition:*->cancelled", "effect": "deny", "priority": 50},
+    {"name": "admins force-release", "subject": "role:admin", "action": "task.force_release", "effect": "allow", "priority": 10},
+    {"name": "admins configure", "subject": "role:admin", "action": "admin.*", "effect": "allow", "priority": 10}
+  ]
+}
