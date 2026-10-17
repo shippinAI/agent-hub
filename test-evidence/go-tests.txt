@@ -1,0 +1,30 @@
+# go test 2026-10-17 17:52 EDT
+go vet: ok
+=== RUN   TestAuthTokensAndCSRF
+--- PASS: TestAuthTokensAndCSRF (0.06s)
+=== RUN   TestHashChainVerifyAndAppendOnly
+    chain_test.go:37: tamper detected: row content does not match its hash
+--- PASS: TestHashChainVerifyAndAppendOnly (0.06s)
+=== RUN   TestExpiredLeaseReclaimedAndStaleFenceRejected
+--- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.37s)
+=== RUN   TestReaperExpiresAndEscalates
+--- PASS: TestReaperExpiresAndEscalates (2.47s)
+=== RUN   TestIdempotencyKeys
+--- PASS: TestIdempotencyKeys (0.06s)
+=== RUN   TestOptimisticConcurrency
+--- PASS: TestOptimisticConcurrency (0.06s)
+=== RUN   TestMCPToolsOverHTTP
+--- PASS: TestMCPToolsOverHTTP (0.09s)
+=== RUN   TestPolicyAndSafetyRules
+--- PASS: TestPolicyAndSafetyRules (0.09s)
+=== RUN   TestClaimNextRaceNeverDoubleClaims
+    race_test.go:70: 20 agents claimed 60 tasks: no task given twice, 60 unique fences
+--- PASS: TestClaimNextRaceNeverDoubleClaims (0.33s)
+=== RUN   TestSSEStreamsEventsAndResumes
+--- PASS: TestSSEStreamsEventsAndResumes (0.42s)
+PASS
+ok  	agenthub/hubtest	5.014s
+=== RUN   TestDecide
+--- PASS: TestDecide (0.00s)
+PASS
+ok  	agenthub/internal/policy	0.001s
