@@ -1,0 +1,15 @@
+# 9. Phased plan
+[Index](../devagotchi-spec.md) · Each phase lands with tests on the box (loopback ports, `agenthub_test` DB) and screenshots in `test-evidence/`, like v0.1. Files ≤150 lines, no barrels, no `core` names, no secrets printed. Nothing touches a user machine before phase 4, and phase 4 needs Jesse's approval per host.
+
+| Phase | Builds | Touches | Done when |
+|---|---|---|---|
+| **0. Spec** (this) | Docs | `docs/devagotchi*` in this repo | Committed; D1–D11 answered |
+| **1. Data** | Migrations for the tables in [01](01-data-model.md), presets, store functions, REST CRUD, new events | Hub Postgres schema, `server/internal/{store,httpapi,presets}`, migrations 003+ | CRUD + version-conflict + hash-chain tests pass |
+| **2. Access flow** | `request_access`, `wait_for_access`, `my_grants`; approve/narrow/deny/revoke REST; reaper for grant expiry; UI Requests, Access card, Narrow editor, Grants, header chip, banner | hub-server MCP + REST, `web/` | Tests: widening rejected, self-approval rejected, task-scoped grant dies with the lease, revoke event chain; desktop + phone screenshots |
+| **3. Linux bridge** | `bridge/` Go module: enroll, WSS/long-poll, signed calls, bubblewrap exec, fs ops with hashes, proc leases, probe, honest presence; hub routing of `exec`/`fs_*`/`proc_*` | New `bridge/` dir; hub-server `/bridge/v1`; **box only** (bridge runs on the box against a loopback hub) | Escape tests (symlink, `..`, `sh -c`, case), revoke-kills-process, hash-mismatch, orphan reaping, online-only-after-exec |
+| **4. macOS + Windows bridges** | Seatbelt profile generator; Windows sandbox user + ACL + firewall + ConPTY; signed builds; installers (user-run) | Build pipeline on the box; **then user machines, only with per-host approval** | Same test suite on each OS; Windows console apps (ssh) work |
+| **5. Subscriptions + router** | providers, secrets (per D5), subscriptions, role bindings, router endpoints, dispatch + fallback; Subscriptions / Role bindings / Catalog screens; Connect "subscription worker" templates | Hub DB + UI; an optional local LiteLLM on the box (loopback) | Secret never appears in any response/log (grep tests); dispatch picks by binding + presence; terms badges render |
+| **6. Hardening** | Rate limits, deny cooldown, redaction patterns, audit export anchor (D11), a11y pass | Hub + bridge | Threat-model tests T1–T17 have a check or a documented residual |
+| **7. Shippin cloud edition** | `tenant_id` + RLS, Zitadel proxy-header, MCP OAuth 2.1 / RFC 9728 / RFC 8707, per-tenant keys, plan limits, devagotchi.com deploy | Hub schema (adds `tenant_id` to existing tables), auth adapters; **Shippin infrastructure and DNS for devagotchi.com only after Jesse approves the host plan** | Cross-tenant tests; OAuth with a third-party MCP client |
+
+Ordering rationale (inference): grants before the bridge means no exec path ever exists without the approval flow; Linux first because the box is Linux and bubblewrap is testable there without touching user machines.
