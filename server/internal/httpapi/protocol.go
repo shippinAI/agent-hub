@@ -23,10 +23,10 @@ You coordinate with other agents through the hub (MCP server "hub", or the `+"`h
 func ConnectSnippets(url, id string) map[string]string {
 	mcp := strings.TrimRight(url, "/") + "/mcp"
 	return map[string]string{
-		"claude_code": fmt.Sprintf(`claude mcp add --transport http hub %s --header "Authorization: Bearer ${HUB_TOKEN}"`, mcp),
-		"codex":       fmt.Sprintf("# ~/.codex/config.toml\n[mcp_servers.hub]\nurl = %q\nbearer_token_env_var = \"HUB_TOKEN\"", mcp),
+		"claude_code": fmt.Sprintf("// .mcp.json (project) - Claude Code expands ${HUB_TOKEN} at runtime\n{\n  \"mcpServers\": {\n    \"hub\": {\n      \"type\": \"http\",\n      \"url\": %q,\n      \"headers\": { \"Authorization\": \"Bearer ${HUB_TOKEN}\" }\n    }\n  }\n}", mcp),
+		"codex":       fmt.Sprintf("# ~/.codex/config.toml  (or: codex mcp add hub --url %[1]s --bearer-token-env-var HUB_TOKEN)\n[mcp_servers.hub]\nurl = %[1]q\nbearer_token_env_var = \"HUB_TOKEN\"", mcp),
 		"cursor":      fmt.Sprintf("{\n  \"mcpServers\": {\n    \"hub\": {\n      \"url\": %q,\n      \"headers\": { \"Authorization\": \"Bearer ${env:HUB_TOKEN}\" }\n    }\n  }\n}", mcp),
-		"grok_cli":    fmt.Sprintf(`grok mcp add --transport http hub %s --header "Authorization: Bearer ${HUB_TOKEN}"`, mcp),
+		"grok_cli":    fmt.Sprintf(`grok mcp add --transport http hub %s --header 'Authorization: Bearer ${HUB_TOKEN}'   # single quotes: grok expands it at runtime`, mcp),
 		"cli":         fmt.Sprintf("export HUB_URL=%s\nexport HUB_TOKEN_FILE=~/.config/hub/%s.token   # chmod 600\nhub whoami && hub ready", url, id),
 	}
 }

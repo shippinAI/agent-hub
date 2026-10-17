@@ -1,0 +1,28 @@
+/* Design tokens: neutral zinc scale, one accent, semantic tones. Light + dark via prefers-color-scheme. */
+:root {
+  --bg: #ffffff; --bg-subtle: #fafafa; --card: #ffffff; --muted: #f4f4f5; --muted-2: #e4e4e7;
+  --fg: #09090b; --fg-muted: #71717a; --fg-subtle: #a1a1aa; --border: #e4e4e7; --input: #e4e4e7;
+  --primary: #18181b; --primary-fg: #fafafa; --ring: #a1a1aa;
+  --accent: #2563eb; --accent-soft: #eff6ff;
+  --blue: #2563eb; --blue-soft: #eff6ff; --green: #16a34a; --green-soft: #f0fdf4;
+  --amber: #d97706; --amber-soft: #fffbeb; --red: #dc2626; --red-soft: #fef2f2;
+  --violet: #7c3aed; --violet-soft: #f5f3ff;
+  --radius: 10px; --radius-sm: 7px; --radius-lg: 14px;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / .05); --shadow: 0 1px 3px rgb(0 0 0 / .08), 0 1px 2px rgb(0 0 0 / .04);
+  --shadow-lg: 0 10px 30px -10px rgb(0 0 0 / .25), 0 4px 10px -6px rgb(0 0 0 / .1);
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --tabbar-h: 60px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #09090b; --bg-subtle: #0c0c0f; --card: #111114; --muted: #18181b; --muted-2: #27272a;
+    --fg: #fafafa; --fg-muted: #a1a1aa; --fg-subtle: #71717a; --border: #27272a; --input: #3f3f46;
+    --primary: #fafafa; --primary-fg: #18181b; --ring: #52525b;
+    --accent-soft: #172554; --blue: #60a5fa; --blue-soft: #172554; --green: #4ade80; --green-soft: #052e16;
+    --amber: #fbbf24; --amber-soft: #422006; --red: #f87171; --red-soft: #450a0a; --violet: #a78bfa; --violet-soft: #2e1065;
+    --shadow: 0 1px 3px rgb(0 0 0 / .5); --shadow-lg: 0 10px 30px -10px rgb(0 0 0 / .8);
+    color-scheme: dark;
+  }
+}

@@ -45,6 +45,9 @@ func (s *Server) sse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	after := qInt(r, "after_seq")
+	if r.URL.Query().Get("from") == "now" {
+		after = s.Broker.Head()
+	}
 	if id, err := strconv.ParseInt(r.Header.Get("Last-Event-ID"), 10, 64); err == nil {
 		after = id
 	}

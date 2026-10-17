@@ -1,0 +1,7 @@
+PASS api: browser-session POST without X-Hub-Client is refused (CSRF)
+PASS api: same request with X-Hub-Client is accepted
+PASS api: /mcp without a bearer token is 401
+PASS api: unknown bearer token is 401 (no dev fallback)
+PASS api: CSP header on UI
+PASS api: dev auth refuses a non-loopback listen
+PASS api: no full token in test-evidence

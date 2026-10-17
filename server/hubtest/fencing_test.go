@@ -25,7 +25,10 @@ func TestExpiredLeaseReclaimedAndStaleFenceRejected(t *testing.T) {
 	if b.Body["claimed"] != true || num(taskOf(b)["id"]) != id || newFence <= oldFence {
 		t.Fatalf("codex reclaim: %v", b.Body)
 	}
-	checks := []struct{ name, method, path string; body map[string]any }{
+	checks := []struct {
+		name, method, path string
+		body               map[string]any
+	}{
 		{"heartbeat", "POST", "/tasks/{id}/heartbeat", map[string]any{"fence": oldFence}},
 		{"complete", "POST", "/tasks/{id}/complete", map[string]any{"fence": oldFence, "summary": "stale write"}},
 		{"update", "PATCH", "/tasks/{id}", map[string]any{"fence": oldFence, "version": ver, "title": "hijacked"}},

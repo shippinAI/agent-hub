@@ -1,0 +1,68 @@
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius-sm); font: 500 14px var(--font);
+  border: 1px solid transparent; cursor: pointer; white-space: nowrap; transition: background .15s, border-color .15s, opacity .15s; text-decoration: none;
+  color: var(--fg); background: transparent; -webkit-tap-highlight-color: transparent; }
+.btn-md { height: 40px; padding: 0 14px; } .btn-sm { height: 32px; padding: 0 10px; font-size: 13px; } .btn-icon { width: 36px; height: 36px; }
+@media (pointer: coarse) { .btn-md { height: 44px; } .btn-sm { height: 38px; } .btn-icon { width: 44px; height: 44px; } }
+.btn-primary { background: var(--primary); color: var(--primary-fg); box-shadow: var(--shadow-sm); }
+.btn-primary[data-hovered] { opacity: .9; }
+.btn-secondary { background: var(--muted); } .btn-secondary[data-hovered] { background: var(--muted-2); }
+.btn-outline { border-color: var(--input); background: var(--card); box-shadow: var(--shadow-sm); } .btn-outline[data-hovered] { background: var(--muted); }
+.btn-ghost[data-hovered] { background: var(--muted); }
+.btn-destructive { background: var(--red); color: #fff; } .btn-destructive[data-hovered] { opacity: .9; }
+.btn[data-pressed] { transform: translateY(.5px); } .btn[data-disabled] { opacity: .45; cursor: not-allowed; }
+.toggle[data-selected] { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+
+/* Fields */
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; min-width: 0; }
+.label { font-size: 13px; font-weight: 500; }
+.input { width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--input); border-radius: var(--radius-sm); background: var(--card);
+  color: var(--fg); font: 14px var(--font); box-shadow: var(--shadow-sm); transition: border-color .15s, box-shadow .15s; }
+@media (pointer: coarse) { .input { height: 44px; font-size: 16px; } }
+.input[data-focused], .input:focus-visible, .select-trigger[data-focus-visible] { outline: none; border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 25%, transparent); }
+.input[data-disabled] { opacity: .6; background: var(--muted); }
+.textarea { height: auto; padding: 10px 12px; resize: vertical; line-height: 1.5; }
+.field-error { color: var(--red); font-size: 12.5px; }
+.field[data-invalid] .input { border-color: var(--red); }
+.select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; text-align: left; }
+.select-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .select-value[data-placeholder] { color: var(--fg-subtle); }
+.chev { width: 16px; height: 16px; color: var(--fg-muted); flex: none; }
+.toolbar .field, .toolbar .select { margin: 0; }
+.popover { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg);
+  min-width: var(--trigger-width); max-height: 320px; overflow: auto; padding: 4px; }
+.popover[data-entering] { animation: pop .12s ease-out; }
+@keyframes pop { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.listbox { outline: none; }
+.option { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 6px; cursor: pointer; outline: none; font-size: 14px; }
+.option[data-focused] { background: var(--muted); } .option[data-selected] { font-weight: 600; }
+.option[data-selected]::after { content: "✓"; } .option-hint { color: var(--fg-muted); font-size: 12px; margin-left: auto; }
+.select-value .option-hint { display: none; }
+.search { position: relative; display: flex; align-items: center; flex: 1; min-width: 180px; }
+.search .input { padding-left: 34px; padding-right: 32px; }
+.search-icon { position: absolute; left: 10px; width: 16px; height: 16px; color: var(--fg-muted); pointer-events: none; }
+.search-clear { position: absolute; right: 6px; border: 0; background: none; color: var(--fg-muted); cursor: pointer; padding: 6px; }
+.search[data-empty] .search-clear { display: none; }
+.switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; min-height: 32px; }
+.switch-track { width: 38px; height: 22px; border-radius: 999px; background: var(--muted-2); position: relative; transition: background .15s; flex: none; }
+.switch-thumb { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 999px; background: #fff; box-shadow: var(--shadow); transition: transform .15s; }
+.switch[data-selected] .switch-track { background: var(--primary); } .switch[data-selected] .switch-thumb { transform: translateX(16px); }
+.switch[data-focus-visible] .switch-track { outline: 2px solid var(--ring); outline-offset: 2px; } .switch[data-disabled] { opacity: .5; }
+.check-grid { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.checkbox { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; min-height: 32px; }
+.checkbox-box { width: 18px; height: 18px; border: 1px solid var(--input); border-radius: 5px; display: grid; place-items: center; background: var(--card); }
+.checkbox-box svg { width: 12px; height: 12px; stroke: var(--primary-fg); stroke-width: 3; opacity: 0; }
+.checkbox[data-selected] .checkbox-box { background: var(--primary); border-color: var(--primary); } .checkbox[data-selected] svg { opacity: 1; }
+
+/* Dialogs: bottom sheet on phones, centred card on desktop */
+.overlay { position: fixed; inset: 0; z-index: 50; background: rgb(0 0 0 / .45); display: flex; align-items: flex-end; justify-content: center; }
+.overlay[data-entering] { animation: fade .15s; } @keyframes fade { from { opacity: 0; } }
+.modal { width: 100%; max-height: 92dvh; overflow: auto; background: var(--card); border-radius: 16px 16px 0 0; padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); outline: none; }
+.modal[data-entering] { animation: sheet .2s ease-out; } @keyframes sheet { from { transform: translateY(24px); opacity: .6; } }
+.dialog { outline: none; display: flex; flex-direction: column; gap: 12px; }
+.dialog-title { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.dialog-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; flex-wrap: wrap; }
+@media (min-width: 640px) {
+  .overlay { align-items: center; padding: 24px; } .modal { max-width: 520px; border-radius: var(--radius-lg); }
+  .modal-wide { max-width: 720px; }
+}

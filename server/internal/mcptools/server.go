@@ -16,7 +16,7 @@ import (
 
 // Instructions: the first 512 characters are self-contained (Codex truncates there).
 const Instructions = `agent-hub: shared task board for many agents. Loop: claim_next (or list_ready then claim) -> work -> ` +
-	`heartbeat {task_id, fence} every heartbeat_every_seconds -> add_note for decisions/blockers -> complete {summary} ` +
+	`heartbeat {task_id, fence} every heartbeat_every_seconds -> add_note for decisions/blockers -> complete {fence, text: summary} ` +
 	`or handoff {note, to?}. Every write on a held task needs the fence from your claim; update also needs version. ` +
 	`stale_fence / lease_expired / not_holder = you lost the task: stop writing and re-read. Reuse request_id when retrying. ` +
 	`Identity = your token.

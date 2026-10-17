@@ -22,7 +22,7 @@ if [ ! -s "$run/secrets/db-password" ]; then
 fi
 pw=$(cat "$run/secrets/db-password")
 psql=("$bin/psql" -h "$run" -p "$port" -U postgres -v ON_ERROR_STOP=1 -qAt)
-for db in ${HUB_PG_DBS:-agenthub agenthub_test}; do
+for db in ${HUB_PG_DBS:-agenthub agenthub_test agenthub_ui}; do
   "${psql[@]}" -d postgres -c "DO \$\$BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='hub') THEN CREATE ROLE hub LOGIN; END IF; END\$\$;" >/dev/null
   "${psql[@]}" -d postgres -c "ALTER ROLE hub PASSWORD '$pw';" >/dev/null
   "${psql[@]}" -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='$db'" | grep -q 1 \

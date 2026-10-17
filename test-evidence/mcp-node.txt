@@ -1,0 +1,8 @@
+PASS mcp-node: server instructions received
+PASS mcp-node: tools listed (15 tools)
+PASS mcp-node: identity from bearer token (cursor)
+PASS mcp-node: claim returns a fence (fence 8)
+PASS mcp-node: second agent cannot take a live lease
+PASS mcp-node: wrong fence rejected
+PASS mcp-node: handoff reserves the task for the target
+PASS mcp-node: handoff note visible to the next agent

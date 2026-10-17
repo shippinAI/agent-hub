@@ -1,0 +1,35 @@
+PASS board shows live lease countdowns (14m 55s | 29m 55s | 19m 55s)
+PASS board shows claim owners (Codex CLI, Claude Code, Clyffy (Grok Bot))
+PASS countdown ticks without reload (14m 55s -> 14m 53s)
+PASS new task appears live via SSE (no reload)
+PASS note added through the UI is stored
+PASS force release via alertdialog clears holder + audits it
+PASS token issued from UI is shown once
+PASS WIP default edited as data from the UI
+PASS audit page shows hash chain verified
+PASS 390px: no horizontal overflow on 01-board
+PASS 390px: state chips switch the list
+PASS 390px: no horizontal overflow on 03-task-detail
+PASS 390px: no horizontal overflow on 05-agents
+PASS 390px: no horizontal overflow on 06-settings-policies
+PASS 390px: no horizontal overflow on 07-settings-workflows
+PASS 390px: no horizontal overflow on 08-audit
+PASS 390px: bottom tab targets >= 44px tall (59px)
+PASS no console/page errors
+PASS mcp-node: server instructions received
+PASS mcp-node: tools listed (15 tools)
+PASS mcp-node: identity from bearer token (cursor)
+PASS mcp-node: claim returns a fence (fence 8)
+PASS mcp-node: second agent cannot take a live lease
+PASS mcp-node: wrong fence rejected
+PASS mcp-node: handoff reserves the task for the target
+PASS mcp-node: handoff note visible to the next agent
+PASS api: browser-session POST without X-Hub-Client is refused (CSRF)
+PASS api: same request with X-Hub-Client is accepted
+PASS api: /mcp without a bearer token is 401
+PASS api: unknown bearer token is 401 (no dev fallback)
+PASS api: CSP header on UI
+PASS api: dev auth refuses a non-loopback listen
+PASS api: no full token in test-evidence
+screenshots: 23
+ui+api: 33 passed, 0 failed
