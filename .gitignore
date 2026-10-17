@@ -1,0 +1,5 @@
+.run/
+node_modules/
+web/dist/
+server/bin/
+*.log
