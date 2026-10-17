@@ -41,7 +41,10 @@ func (s *Store) PutRole(ctx context.Context, p *Principal, reqID string, r Role)
 			return nil, errInvalid("role id required")
 		}
 		err := w.versioned("roles", r.ID, r.Version,
-			func() error { _, e := w.exec(`INSERT INTO roles(id,description) VALUES($1,$2)`, r.ID, r.Description); return e },
+			func() error {
+				_, e := w.exec(`INSERT INTO roles(id,description) VALUES($1,$2)`, r.ID, r.Description)
+				return e
+			},
 			func() error {
 				_, e := w.exec(`UPDATE roles SET description=$2,version=version+1 WHERE id=$1`, r.ID, r.Description)
 				return e

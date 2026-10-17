@@ -138,4 +138,7 @@ func pathID(r *http.Request) (int64, error) {
 	return id, nil
 }
 
-func qInt(r *http.Request, k string) int64 { v, _ := strconv.ParseInt(r.URL.Query().Get(k), 10, 64); return v }
+func qInt(r *http.Request, k string) int64 {
+	v, _ := strconv.ParseInt(r.URL.Query().Get(k), 10, 64)
+	return v
+}

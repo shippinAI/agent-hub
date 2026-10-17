@@ -29,7 +29,7 @@ func (s *Store) Heartbeat(ctx context.Context, p *Principal, reqID string, taskI
 			return nil, err
 		}
 		return Lease{Task: n, Fence: n.Fence, LeaseID: *n.LeaseID, LeaseExpiresAt: *n.LeaseExpiresAt,
-			HeartbeatEvery: st.Int("heartbeat_hint_seconds", 300), Claimed: true}, nil
+			HeartbeatEvery: beatEvery(st, derefInt(n.LeaseTTL)), Claimed: true}, nil
 	})
 }
 

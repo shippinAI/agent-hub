@@ -47,7 +47,7 @@ func (w *W) takeLease(t Task, lane Lane, st Settings, asked int) (Lease, error) 
 	err = w.Event("task.claimed", &n.ID, &n.Fence, map[string]any{"from": t.State, "to": n.State,
 		"ttl_seconds": ttl, "lease_expires_at": n.LeaseExpiresAt})
 	return Lease{Task: n, Fence: n.Fence, LeaseID: *n.LeaseID, LeaseExpiresAt: *n.LeaseExpiresAt,
-		HeartbeatEvery: st.Int("heartbeat_hint_seconds", ttl/3), Claimed: true}, err
+		HeartbeatEvery: beatEvery(st, ttl), Claimed: true}, err
 }
 
 // expire ends a lapsed lease: back to the lane's release state, or attention after too many expiries.

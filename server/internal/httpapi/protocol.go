@@ -24,9 +24,9 @@ func ConnectSnippets(url, id string) map[string]string {
 	mcp := strings.TrimRight(url, "/") + "/mcp"
 	return map[string]string{
 		"claude_code": fmt.Sprintf(`claude mcp add --transport http hub %s --header "Authorization: Bearer ${HUB_TOKEN}"`, mcp),
-		"codex": fmt.Sprintf("# ~/.codex/config.toml\n[mcp_servers.hub]\nurl = %q\nbearer_token_env_var = \"HUB_TOKEN\"", mcp),
-		"cursor": fmt.Sprintf("{\n  \"mcpServers\": {\n    \"hub\": {\n      \"url\": %q,\n      \"headers\": { \"Authorization\": \"Bearer ${env:HUB_TOKEN}\" }\n    }\n  }\n}", mcp),
-		"grok_cli": fmt.Sprintf(`grok mcp add --transport http hub %s --header "Authorization: Bearer ${HUB_TOKEN}"`, mcp),
-		"cli":      fmt.Sprintf("export HUB_URL=%s\nexport HUB_TOKEN_FILE=~/.config/hub/%s.token   # chmod 600\nhub whoami && hub ready", url, id),
+		"codex":       fmt.Sprintf("# ~/.codex/config.toml\n[mcp_servers.hub]\nurl = %q\nbearer_token_env_var = \"HUB_TOKEN\"", mcp),
+		"cursor":      fmt.Sprintf("{\n  \"mcpServers\": {\n    \"hub\": {\n      \"url\": %q,\n      \"headers\": { \"Authorization\": \"Bearer ${env:HUB_TOKEN}\" }\n    }\n  }\n}", mcp),
+		"grok_cli":    fmt.Sprintf(`grok mcp add --transport http hub %s --header "Authorization: Bearer ${HUB_TOKEN}"`, mcp),
+		"cli":         fmt.Sprintf("export HUB_URL=%s\nexport HUB_TOKEN_FILE=~/.config/hub/%s.token   # chmod 600\nhub whoami && hub ready", url, id),
 	}
 }

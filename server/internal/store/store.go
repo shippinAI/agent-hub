@@ -100,5 +100,7 @@ func (s *Store) writeOnce(ctx context.Context, p *Principal, reqID, op string, r
 // ReplayOf reports whether a write result came from the idempotency store.
 func ReplayOf(v any) bool { _, ok := v.(Replay); return ok }
 
-func (w *W) exec(sql string, args ...any) (pgconn.CommandTag, error) { return w.tx.Exec(w.ctx, sql, args...) }
-func (w *W) row(sql string, args ...any) pgx.Row                    { return w.tx.QueryRow(w.ctx, sql, args...) }
+func (w *W) exec(sql string, args ...any) (pgconn.CommandTag, error) {
+	return w.tx.Exec(w.ctx, sql, args...)
+}
+func (w *W) row(sql string, args ...any) pgx.Row { return w.tx.QueryRow(w.ctx, sql, args...) }

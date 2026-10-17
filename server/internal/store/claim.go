@@ -27,7 +27,7 @@ func (s *Store) Claim(ctx context.Context, p *Principal, reqID string, taskID in
 		if t.Holder != nil && !t.LeaseExpired {
 			if *t.Holder == p.ID {
 				return Lease{Task: t, Fence: t.Fence, LeaseID: *t.LeaseID, LeaseExpiresAt: *t.LeaseExpiresAt,
-					HeartbeatEvery: st.Int("heartbeat_hint_seconds", 300), AlreadyHeld: true, Claimed: true}, nil
+					HeartbeatEvery: beatEvery(st, derefInt(t.LeaseTTL)), AlreadyHeld: true, Claimed: true}, nil
 			}
 			e := fail(409, "held_by_other", "task is leased by %s", *t.Holder)
 			e.Current = map[string]any{"holder": t.Holder, "lease_expires_at": t.LeaseExpiresAt}

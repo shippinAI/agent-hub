@@ -35,7 +35,9 @@ func getTask(ctx context.Context, q querier, id int64, lock bool) (Task, error) 
 }
 
 // Task reads one task.
-func (s *Store) Task(ctx context.Context, id int64) (Task, error) { return getTask(ctx, s.DB, id, false) }
+func (s *Store) Task(ctx context.Context, id int64) (Task, error) {
+	return getTask(ctx, s.DB, id, false)
+}
 
 // TaskFilter selects tasks for lists, the board and search.
 type TaskFilter struct {
