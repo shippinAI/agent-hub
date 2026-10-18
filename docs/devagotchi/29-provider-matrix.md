@@ -5,7 +5,8 @@ Local paths, transcripts and detection per provider are in [32](32-provider-loca
 [30](30-cost-tracking.md); alignment with other installed tools in [31](31-installed-awareness.md).
 
 ## Decision this file applies (Jesse, 2026-10-18)
-The local edition is free, non-profit and for personal use. The user signs in to each official client
+The local edition is free, non-profit and for personal use. Both editions (local and hosted shippin.cloud) let
+users sign in with their own subscriptions; hosted runs the client in the user's own workspace ([34](34-provider-schema.md)). The user signs in to each official client
 themselves; Chatmaton drives that client and reads and combines its state. Terms are not shown as a blocker
 and no row carries an "unverified" badge. We still never read or copy a client's credential files
 ([08](08-threat-model.md) T11): we start the signed-in client and talk to its documented interface.
@@ -68,7 +69,7 @@ provider and model ([24](24-chatmaton-spec.md) tab chips), taken from the harnes
 - **Each provider row is data**: `kind`, `surface`, launch argv template, env template, detection rules
   ([32](32-provider-local-state.md)), icon ref and label. A new vendor is a new row plus, at most, an adapter.
 
-## Schema change implied
+## Schema change implied (full schema: [34](34-provider-schema.md))
 `providers` drops `terms_status` and keeps an optional `terms_url` and free-text `terms_note`, shown as plain
 info, never as a badge ([01](01-data-model.md)). New columns: `surface text[]` (preference order),
 `launch jsonb`, `detect jsonb`, `models_fetched_at`.

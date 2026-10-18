@@ -56,6 +56,7 @@ Nothing in this spec is built yet. Writing it touched only `docs/` in this repo,
 31. [Installed awareness](devagotchi/31-installed-awareness.md): detect other AI tools, import MCP servers, avoid conflicts, share AGENTS.md and skills
 32. [Provider local state](devagotchi/32-provider-local-state.md): config, MCP and session paths, read surfaces, detection per OS
 33. [Cost data model and UI](devagotchi/33-cost-data-and-ui.md): ledger tables, budgets and alerts, default graphs, React Aria screens
+34. [Provider schema](devagotchi/34-provider-schema.md): one row shape for every provider, five adapters, router option ([ADR 0002](devagotchi/adr/0002-provider-schema-and-adapters.md))
 
 ## Rules that apply everywhere
 - Every source, host, policy, role, capability, risk, grant preset, guide, provider, shell profile, and setting is **editable data** in the UI, seeded as presets and never hardcoded. Code holds only the safety invariants (listed in 01).

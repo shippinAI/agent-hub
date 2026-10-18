@@ -46,8 +46,8 @@ golden streams render, axe clean, keyboard tests for Tooltip/Popover/Modal pass.
 **P6. Chatmaton local edition.** *Touches:* hub DB (tables in [24](24-chatmaton-spec.md)), presets, `web/`, bridge
 exec grants for CLI workers on the box only. *Builds:* rooms, modes, roles, routines, approvals, ProviderChip tabs;
 workers for Claude Code, Codex app-server, Grok Build, Antigravity via their documented headless/ACP modes (G-16).
-*Done when:* a debate and a review room run end to end with two API-key endpoints; CLI workers only after Jesse
-answers D6 per provider.
+*Done when:* a debate and a review room run end to end with a Claude Code, a Codex and an ACP seat on the user's
+own sign-ins (D6 decided), plus one API-key seat.
 
 **P7. Mesh layer.** *Touches:* `bridge/` (optional mesh adapter build), a test network on the box, guide
 `add-mesh`. *Builds:* G-18 with `netbird-embed` against a self-hosted test control plane on loopback. *Done when:*
@@ -66,13 +66,13 @@ connector checks pass with a reviewer test account.
 3. Model environment setup as test/apply/verify components; keep elevated steps with the operator.
 4. Build A2UI v0.9.1 with our own catalog (Tooltip/Popover are not in the basic catalog); plan for v1.0.
 5. Next.js 16 for the SEO site; keep `web/` on Vite.
-6. Chatmaton: API-key routes first; CLI workers via documented headless/ACP; apply to OpenAI's Sign in with ChatGPT
-   for the hosted edition.
+6. Chatmaton: users sign in with their own subscriptions in both editions; five configurable adapters over one
+   provider schema ([34](34-provider-schema.md)); direct keys default, LiteLLM optional; Sign in with ChatGPT as an extra auth kind.
 7. Own the mesh control plane but reuse the BSD-3 NetBird client; settle AGPL obligations before hosting it.
 
 ## Open questions for Jesse
 1. ~~D6~~ decided 2026-10-18: local orchestration with the user's own login, no badge ([29](29-provider-matrix.md)).
-2. Apply to OpenAI's Sign in with ChatGPT partner programme for hosted Chatmaton? Is the local edition open source
+2. Also apply to OpenAI's Sign in with ChatGPT programme (an extra auth kind; not required by D21)? Is the local edition open source
    (the open-source path is documented separately)?
 3. WardenClyffe: is it derived from NetBird's AGPL server parts, and will Shippin publish changes or buy a licence?
    Does "Layer 2" mean OSI L2 (needs ZeroTier-style VL2 or VXLAN) or the second connectivity layer?

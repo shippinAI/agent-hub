@@ -17,6 +17,7 @@ schedules are data, not code.
 | C7 | Gemini/Antigravity extension (`gemini-extension.json`, per-platform archives) | plugin repo + GitHub topic | C1 | Check Antigravity's extension format before release (**unverified** whether it reads `gemini-extension.json`) |
 | C8 | MCP Registry `server.json` | registry entry under a domain namespace (`com.devagotchi/*`) | C1 | DNS proof on devagotchi.com |
 | C9 | **Remote connector** (cloud hub `/mcp`, OAuth 2.1, RFC 9728 metadata) | Shippin cloud (phase 7) | hub | The only route into the Claude and ChatGPT directories; also usable from the xAI API `mcp` tool |
+| C10 | **Hosted workspace runner** (per-user isolated workspace on shippin.cloud with the bridge) | Shippin cloud; one workspace and one encrypted home volume per user | C1 + a base image | Official clients are installed by the user's guide step from the vendor's own installer, not bundled; the user runs each client's login inside the workspace; the hub never reads those homes ([34](34-provider-schema.md), [ADR 0002](adr/0002-provider-schema-and-adapters.md)) |
 
 Listing checklist (data, shown as a release gate in the UI): every tool has `title`, `readOnlyHint`,
 `destructiveHint`, `openWorldHint` (bridge tools already declare titles and hints, [16](16-dc-parity.md) P1); tool

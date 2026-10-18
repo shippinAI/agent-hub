@@ -37,7 +37,7 @@
 
 ## Phase 7. Shippin cloud edition
 **Touches:** hub schema (adds `tenant_id` to existing tables), auth adapters; **Shippin infrastructure and DNS for devagotchi.com only after Jesse approves the host plan**; the Shippin guide bundle signing key and channel.
-**Builds:** `tenant_id` + RLS, Zitadel proxy-header, MCP OAuth 2.1 / RFC 9728 / RFC 8707, per-tenant keys, plan limits, devagotchi.com deploy, the Shippin guide publishing channel.
+**Builds:** `tenant_id` + RLS, Zitadel proxy-header, MCP OAuth 2.1 / RFC 9728 / RFC 8707, per-tenant keys, plan limits, per-user hosted workspaces where users sign in to official clients themselves (D21, [34](34-provider-schema.md)), devagotchi.com deploy, the Shippin guide publishing channel.
 **Done when:** cross-tenant tests pass (including guide overrides); OAuth works with a third-party MCP client.
 
 Ordering rationale (**inference**): guides and grants before the bridge mean no exec or GUI path ever exists without the approval flow and the operator-facing explanation; Linux first because the box is Linux and both X11 and Wayland paths, bubblewrap, rootless Docker, and Podman are testable there without touching user machines.

@@ -31,8 +31,8 @@ Consequences, enforced in code (code rule: `cli_login` subscriptions can bind on
 | Human auth | as spec.md (tailscale-whois / token / dev) | proxy-header via Zitadel (no Authentik) |
 | MCP auth | static bearer per agent | OAuth 2.1 resource server, RFC 9728 metadata, RFC 8707 `resource` ([MCP authorization](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization)); bearer kept for CLIs |
 | Secrets | local key (D5) | per-tenant data key wrapped by a KMS/vault (D5) |
-| Router | optional local LiteLLM | per-tenant router config (data) |
-| Bridges | dial the local hub | dial the cloud hub; all execution stays on user machines |
-| Subscriptions | `cli_login` workers on the user's own devices only | same, never on Shippin servers |
+| Router | direct keys by default; LiteLLM optional | same; per-tenant router config (data) |
+| Bridges | dial the local hub | dial the cloud hub from user machines, or run in the user's isolated hosted workspace |
+| Subscriptions | user signs in to official clients on their devices | same, or in their own hosted workspace (D21, [34](34-provider-schema.md)) |
 | Plans/limits | none | `tenants.plan` → limits as data (machines, grants, seats) |
 The personal edition is the cloud edition with `tenancy_mode=single`. No forked code paths beyond auth adapters and RLS.

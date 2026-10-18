@@ -8,14 +8,14 @@ cited. Nothing is hardcoded: modes, roles, providers, icons, prompts, limits and
 
 | | Local (personal hub) | Hosted (shippin.cloud) |
 |---|---|---|
-| Where models run | Official CLIs on the user's machines as **workers** (bridge exec under a grant), plus API keys via router | API keys via per-tenant router; OpenAI plan only through Sign in with ChatGPT once we are an approved partner ([help](https://help.openai.com/en/articles/20001542-using-your-chatgpt-plan-in-other-apps-and-sites)); the user's own bridges for CLI workers |
-| Consumer subscriptions | Yes, per provider rule in 23 (unmodified CLI, user's own login) | Never executed on Shippin servers |
+| Where models run | Official clients on the user's machines as **workers** (bridge exec under a grant); API keys direct, LiteLLM optional | Official clients in the user's isolated **hosted workspace** on shippin.cloud or on their own machines via the bridge; API keys direct, LiteLLM optional; Sign in with ChatGPT where offered ([help](https://help.openai.com/en/articles/20001542-using-your-chatgpt-plan-in-other-apps-and-sites)) |
+| Consumer subscriptions | Yes: the user signs in to each official client | Yes, same (Jesse, 2026-10-18): the user runs the client's own login inside their workspace; the hub never reads or proxies the credential |
 | Tenancy | `tenancy_mode=single` | `tenant_id` + RLS ([05](05-subscriptions.md)) |
 | Difference in code | Auth adapter and a provider-availability flag per edition | same |
-`providers.edition_availability` (data) decides which rows each edition shows; the UI explains why a row is hidden.
+`providers.editions` and `providers.runner` (data, [34](34-provider-schema.md)) decide which rows each edition shows and where the client runs; the UI explains why a row is hidden.
 
 ## Data model additions (new tables, `tenant_id` from day one per D8)
-- `model_endpoints(id, provider_id, kind: cli_worker|api_router|signin_plan, model_slug, display_label, icon_ref,
+- `model_endpoints(id, provider_id, adapter_kind (from the provider row, [34](34-provider-schema.md)), model_slug, display_label, icon_ref,
   capabilities jsonb, version)` — `icon_ref` points into an editable icon set (SVG asset rows), so the
   provider/model chip is data. Vendor logos only where the vendor's brand rules allow; otherwise a neutral glyph +
   label (**inference**; Anthropic forbids implying endorsement, [legal](https://code.claude.com/docs/en/legal-and-compliance)).
@@ -76,4 +76,4 @@ Per room and per seat: token budget, max turns, max parallel seats, timeout; rou
 read-only hints when the API exposes them. Usage, quota and budgets: [30](30-cost-tracking.md), [33](33-cost-data-and-ui.md).
 
 ## Decision (Jesse, 2026-10-18)
-Local edition is free, non-profit, personal use in the user's own devspace. The user signs in to each official client (Claude Code, Codex, Grok, Antigravity, Cursor) themselves; Chatmaton drives those clients and pulls/combines their state. No "unverified" badge; not a blocker.
+Local edition is free, non-profit, personal use in the user's own devspace. The user signs in to each official client (Claude Code, Codex, Grok, Antigravity, Cursor) themselves; Chatmaton drives those clients and pulls/combines their state. No "unverified" badge; not a blocker. Extended 2026-10-18: the hosted edition also lets users sign in with their own subscriptions ([34](34-provider-schema.md), [ADR 0002](adr/0002-provider-schema-and-adapters.md)).

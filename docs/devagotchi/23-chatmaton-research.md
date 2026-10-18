@@ -8,9 +8,9 @@ Jesse decides (D6, [10](10-decisions.md)).
 ## Rules that apply to all rows (inference from the sources below)
 - Drive only the vendor's **official, unmodified** CLI or app-server, as a child process on the user's machine,
   through its documented headless interface. Never read its token files, never call its private endpoints.
-- The hosted edition never runs a user's consumer subscription on Shippin servers unless the vendor has a program
-  for it (OpenAI "Sign in with ChatGPT" partners; Anthropic Commercial Terms for hosting Claude Code).
-- Where only API keys are allowed, use the router (LiteLLM/OpenRouter, [05](05-subscriptions.md)).
+- Superseded 2026-10-18 (Jesse): both editions let users sign in with their own subscriptions; in the hosted
+  edition the official client runs in the user's own workspace ([34](34-provider-schema.md)).
+- API keys go direct by default; LiteLLM or OpenRouter is optional ([30](30-cost-tracking.md)).
 
 ## Candidates
 
