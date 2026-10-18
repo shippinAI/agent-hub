@@ -1,0 +1,18 @@
+PASS desktop guides renders (Guides)
+PASS desktop guide-editor renders (Add a machine)
+PASS desktop guide-updates renders (Guide updates)
+PASS desktop gui-sessions renders (GUI sessions)
+PASS desktop gui-session renders (GUI session)
+PASS desktop role-bindings renders (Role bindings)
+PASS desktop catalog renders (Catalog)
+PASS guide editor Versions tab shows a draft to publish
+PASS guide editor Preview renders the runner side panel
+PASS guide updates inbox offers Accept/Merge/Skip
+PASS phone guides has no horizontal overflow
+PASS phone guide-editor has no horizontal overflow
+PASS phone guide-updates has no horizontal overflow
+PASS phone gui-sessions has no horizontal overflow
+PASS phone gui-session has no horizontal overflow
+PASS phone role-bindings has no horizontal overflow
+PASS phone catalog has no horizontal overflow
+PASS no console/page errors
