@@ -1,6 +1,7 @@
 package devapi
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"agenthub/internal/machines"
@@ -64,6 +65,25 @@ func (a *API) machineRoutes(reg func(string, h)) {
 	reg("POST /api/v1/gui-sessions/{id}/end", func(w http.ResponseWriter, r *http.Request, p *store.Principal) (any, error) {
 		return a.Ops.GUIEnd(r.Context(), p, r.PathValue("id"), "operator")
 	})
+	reg("GET /api/v1/gui-sessions/{id}", func(w http.ResponseWriter, r *http.Request, p *store.Principal) (any, error) {
+		id := r.PathValue("id")
+		sess, err := a.St.DB.Query(r.Context(), `SELECT to_jsonb(s) - 'monitors' FROM gui_sessions s WHERE s.id::text=$1`, id)
+		if err != nil {
+			return nil, err
+		}
+		s1, err := scanJSON(sess)
+		if err != nil {
+			return nil, err
+		}
+		if s1 == nil {
+			return nil, store.ErrNotFound("gui session " + id)
+		}
+		arts, err := rows(r, a.St, `SELECT jsonb_build_object('id',id::text,'kind',kind,'sha256',sha256,'width',width,'height',height,'bytes',bytes,'redacted',redacted,'has_image',blob_ct IS NOT NULL,'created_at',created_at) FROM gui_artifacts WHERE gui_session_id::text=$1 ORDER BY created_at DESC LIMIT 50`, id)
+		if err != nil {
+			return nil, err
+		}
+		return map[string]any{"session": s1, "artifacts": arts}, nil
+	})
 	reg("GET /api/v1/proc-leases", func(w http.ResponseWriter, r *http.Request, p *store.Principal) (any, error) {
 		return rows(r, a.St, `SELECT to_jsonb(l) FROM proc_leases l ORDER BY started_at DESC LIMIT $1`, 100)
 	})
@@ -90,4 +110,17 @@ func rows(r *http.Request, st *store.Store, sql string, args ...any) ([]map[stri
 		out = append(out, m)
 	}
 	return out, rs.Err()
+}
+
+func scanJSON(rs interface{ Next() bool; Scan(...any) error; Close() }) (map[string]any, error) {
+	defer rs.Close()
+	if !rs.Next() {
+		return nil, nil
+	}
+	var raw []byte
+	if err := rs.Scan(&raw); err != nil {
+		return nil, err
+	}
+	var m map[string]any
+	return m, json.Unmarshal(raw, &m)
 }
