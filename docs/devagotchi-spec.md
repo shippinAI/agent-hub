@@ -60,6 +60,7 @@ Nothing in this spec is built yet. Writing it touched only `docs/` in this repo,
 35. [Tenant defaults](devagotchi/35-tenant-defaults.md): Shippin console layers, lock modes, inheritance and overrides
 36. [Vaultix](devagotchi/36-vaultix.md): rebranded Infisical, Doppler-style additions, A2UI secret surfaces
 37. [Subscription sign-in](devagotchi/37-subscription-sign-in.md): ChatGPT/Codex and Grok official flows, hub and console use
+38. [Action feed and learning](devagotchi/38-action-feed-learning.md): recorded-action event schema (on_behalf_of, purpose_plain, terms, output refs), gold-rec ingest, React Aria live feed with expandable code and term tooltips
 
 ## Rules that apply everywhere
 - Every source, host, policy, role, capability, risk, grant preset, guide, provider, shell profile, and setting is **editable data** in the UI, seeded as presets and never hardcoded. Code holds only the safety invariants (listed in 01).
