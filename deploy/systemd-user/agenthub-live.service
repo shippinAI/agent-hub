@@ -1,0 +1,15 @@
+# For hosts WITH a systemd user bus (this box has none: pid 1 is tini, so hubctl.sh is used instead).
+#   cp deploy/systemd-user/agenthub-live.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload && systemctl --user enable --now agenthub-live && loginctl enable-linger $USER
+[Unit]
+Description=agent-hub live stack (Postgres, hub-server + web UI, box bridge)
+After=network-online.target
+
+[Service]
+ExecStart=/workspace/projects/agent-hub/scripts/live/supervise.sh
+Restart=always
+RestartSec=5
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=default.target
