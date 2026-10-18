@@ -1,0 +1,53 @@
+# agent-hub policy gate tests 2026-10-18 00:40 EDT (box only)
+# real PDP: gold-policy serve 127.0.0.1:8097 with presets/default.json v1
+=== RUN   TestPolicyGateBlocksBridgeCalls
+    policygate_test.go:103: allow passed, deny blocked without consuming a use, 500 and unreachable failed closed, 3 policy.denied events
+--- PASS: TestPolicyGateBlocksBridgeCalls (1.29s)
+=== RUN   TestPolicyGateRealPDP
+    policygate_test.go:124: real PDP verdict: map[error:map[code:policy_denied message:BLOCKED by gold-policy v1:
+        - [research-evidence] Cite the docs or evidence the change is based on (research: list of URLs / files).
+            * needs a change ticket: use 'gold-policy run <id>' or prefix the command with GOLD_TICKET=<id>
+        - [pre-change-snapshot] Take a pre-change snapshot and write down topology and blast radius.
+            * needs a change ticket: use 'gold-policy run <id>' or prefix the command with GOLD_TICKET=<id>
+        - [network-commit-confirm] Network changes run only through gold-policy run, with a revert timer and a checked out-of-band path.
+            * must run through the commit-confirm runner: gold-policy run <ticket-id>
+            * needs a change ticket: use 'gold-policy run <id>' or prefix the command with GOLD_TICKET=<id>
+        - [network-change-approval] The approver must sign this exact ticket version.
+            * needs a change ticket: use 'gold-policy run <id>' or prefix the command with GOLD_TICKET=<id>
+        - [post-change-verify] Every change carries verification checks; the runner reverts if they fail.
+            * needs a change ticket: use 'gold-policy run <id>' or prefix the command with GOLD_TICKET=<id>
+        - [documentation-entry] Write the change into the build log or runbook before running it.
+            * needs a change ticket: use 'gold-policy run <id>' or prefix the command with GOLD_TICKET=<id>]]
+--- PASS: TestPolicyGateRealPDP (1.29s)
+PASS
+ok  	agenthub/hubtest	2.587s
+
+# geo block via hub machine name (curl to the real PDP)
+hosts=[wi-infra-dev] argv=[uptime] -> allow=False regions=['WI']
+
+# full suite (go test -count=1 -p 1 ./...)
+?   	agenthub/cmd/hub	[no test files]
+?   	agenthub/cmd/hub-server	[no test files]
+ok  	agenthub/hubtest	16.059s
+?   	agenthub/internal/access	[no test files]
+?   	agenthub/internal/auth	[no test files]
+?   	agenthub/internal/bridgehub	[no test files]
+?   	agenthub/internal/catalog	[no test files]
+?   	agenthub/internal/config	[no test files]
+?   	agenthub/internal/db	[no test files]
+?   	agenthub/internal/devapi	[no test files]
+ok  	agenthub/internal/guidekit	0.016s
+?   	agenthub/internal/guides	[no test files]
+?   	agenthub/internal/httpapi	[no test files]
+?   	agenthub/internal/machineops	[no test files]
+?   	agenthub/internal/machines	[no test files]
+?   	agenthub/internal/mcptools	[no test files]
+ok  	agenthub/internal/policy	0.002s
+?   	agenthub/internal/policygate	[no test files]
+?   	agenthub/internal/presets	[no test files]
+?   	agenthub/internal/schemacheck	[no test files]
+ok  	agenthub/internal/secretbox	0.002s
+?   	agenthub/internal/store	[no test files]
+?   	agenthub/internal/stream	[no test files]
+?   	agenthub/internal/subs	[no test files]
+exit=0
