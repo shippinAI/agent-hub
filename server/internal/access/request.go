@@ -11,21 +11,21 @@ import (
 // Req is request_access. A preset expands into its items (one request row each, one group).
 type Req struct {
 	Machine      string         `json:"machine"`
-	Capability   string         `json:"capability"`
-	Selector     map[string]any `json:"selector"`
-	SandboxLevel string         `json:"sandbox_level"`
-	Duration     string         `json:"duration"`
+	Capability   string         `json:"capability,omitempty"`
+	Selector     map[string]any `json:"selector,omitempty"`
+	SandboxLevel string         `json:"sandbox_level,omitempty"`
+	Duration     string         `json:"duration,omitempty"`
 	Reason       string         `json:"reason"`
-	TaskID       *int64         `json:"task_id"`
-	GuideRunID   string         `json:"guide_run_id"`
-	Preset       string         `json:"preset"`
-	UsesMax      *int           `json:"uses_max"`
+	TaskID       *int64         `json:"task_id,omitempty"`
+	GuideRunID   string         `json:"guide_run_id,omitempty"`
+	Preset       string         `json:"preset,omitempty"`
+	UsesMax      *int           `json:"uses_max,omitempty"`
 }
 
 type item struct {
-	Capability   string         `json:"capability"`
-	Selector     map[string]any `json:"selector"`
-	SandboxLevel string         `json:"sandbox_level"`
+	Capability   string         `json:"capability,omitempty"`
+	Selector     map[string]any `json:"selector,omitempty"`
+	SandboxLevel string         `json:"sandbox_level,omitempty"`
 }
 
 // Request files an access request (pending until a human decides).

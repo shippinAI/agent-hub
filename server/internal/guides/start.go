@@ -10,12 +10,12 @@ import (
 // StartReq starts a run. Profile is only used for dry runs without a machine.
 type StartReq struct {
 	Guide     string         `json:"guide"`
-	MachineID string         `json:"machine_id"`
-	TaskID    *int64         `json:"task_id"`
-	Vars      map[string]any `json:"vars"`
-	DryRun    bool           `json:"dry_run"`
-	Profile   map[string]any `json:"profile"`
-	Parent    string         `json:"parent_run_id"`
+	MachineID string         `json:"machine_id,omitempty"`
+	TaskID    *int64         `json:"task_id,omitempty"`
+	Vars      map[string]any `json:"vars,omitempty"`
+	DryRun    bool           `json:"dry_run,omitempty"`
+	Profile   map[string]any `json:"profile,omitempty"`
+	Parent    string         `json:"parent_run_id,omitempty"`
 }
 
 // Start resolves the effective guide (tenant override first), pins its current version and settles on

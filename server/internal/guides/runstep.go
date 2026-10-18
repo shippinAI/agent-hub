@@ -12,9 +12,9 @@ import (
 type StepReq struct {
 	RunID   string `json:"run_id"`
 	StepID  string `json:"step_id"`
-	Outcome string `json:"outcome"`
-	Value   string `json:"value"`
-	Note    string `json:"note"`
+	Outcome string `json:"outcome,omitempty"`
+	Value   string `json:"value,omitempty"`
+	Note    string `json:"note,omitempty"`
 }
 
 // Step completes the current step. An empty outcome on an agent step makes the hub run the step's op on the

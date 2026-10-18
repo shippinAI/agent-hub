@@ -19,7 +19,8 @@ func (a *API) machineRoutes(reg func(string, h)) {
 		if err != nil {
 			return nil, err
 		}
-		return a.Machines.Create(r.Context(), p, rid, in)
+		_ = rid // never replay-cache a response that carries an enrollment code
+		return a.Machines.Create(r.Context(), p, "", in)
 	})
 	reg("PATCH /api/v1/machines/{id}", func(w http.ResponseWriter, r *http.Request, p *store.Principal) (any, error) {
 		in, rid, err := body[struct {
@@ -33,7 +34,7 @@ func (a *API) machineRoutes(reg func(string, h)) {
 		return a.Machines.Patch(r.Context(), p, rid, r.PathValue("id"), in.Label, in.Profiles, in.Version)
 	})
 	reg("POST /api/v1/machines/{id}/enroll-code", func(w http.ResponseWriter, r *http.Request, p *store.Principal) (any, error) {
-		return a.Machines.NewCode(r.Context(), p, r.Header.Get("Idempotency-Key"), r.PathValue("id"))
+		return a.Machines.NewCode(r.Context(), p, "", r.PathValue("id"))
 	})
 	reg("POST /api/v1/machines/{id}/test", func(w http.ResponseWriter, r *http.Request, p *store.Principal) (any, error) {
 		if err := humanOnly(p); err != nil {

@@ -37,7 +37,11 @@ func callTool(t *testing.T, cs *mcp.ClientSession, name string, args map[string]
 	}
 	out := map[string]any{}
 	if len(r.Content) > 0 {
-		_ = json.Unmarshal([]byte(r.Content[0].(*mcp.TextContent).Text), &out)
+		if tc, ok := r.Content[0].(*mcp.TextContent); ok {
+			if json.Unmarshal([]byte(tc.Text), &out) != nil {
+				out["error"] = tc.Text
+			}
+		}
 	}
 	return out, r.IsError
 }
