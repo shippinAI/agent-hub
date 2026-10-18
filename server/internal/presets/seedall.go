@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"agenthub/internal/catalog"
+	"agenthub/internal/changepolicy"
 	"agenthub/internal/guides"
 	"agenthub/internal/store"
 )
@@ -19,8 +20,12 @@ func SeedAll(ctx context.Context, st *store.Store, adminLogin string) (map[strin
 	if err != nil {
 		return nil, err
 	}
-	n, err := st.Seed(ctx, store.SeedData{Settings: append(p.Settings, d.Settings...), Roles: append(p.Roles, d.Roles...),
-		Principals: p.Principals, Workflows: p.Workflows, Projects: p.Projects, Policies: p.Policies}, adminLogin)
+	rv, err := LoadReview()
+	if err != nil {
+		return nil, err
+	}
+	n, err := st.Seed(ctx, store.SeedData{Settings: append(p.Settings, d.Settings...), Roles: append(append(p.Roles, d.Roles...), rv.Roles...),
+		Principals: append(p.Principals, rv.Principals...), Workflows: p.Workflows, Projects: p.Projects, Policies: p.Policies}, adminLogin)
 	if err != nil {
 		return nil, err
 	}
@@ -37,6 +42,14 @@ func SeedAll(ctx context.Context, st *store.Store, adminLogin string) (map[strin
 			return nil, err
 		}
 		n["devagotchi_policies"] = c
+		if c, err = catalog.SeedPolicies(w, "changepolicy/review.v1", rv.Policies); err != nil {
+			return nil, err
+		}
+		n["review_policies"] = c
+		if c, err = changepolicy.SeedDoc(w, "local", rv.Doc); err != nil {
+			return nil, err
+		}
+		n["policy_docs"] = c
 		for _, g := range d.Guides {
 			c, err := guides.Seed(w, g)
 			if err != nil {

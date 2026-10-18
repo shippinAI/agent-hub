@@ -1,0 +1,14 @@
+{
+ "roles": [
+  {"id": "reviewer", "description": "Reviews change tickets (PASS / BLOCK / FINDINGS) and may claim the review lane"}
+ ],
+ "principals": [
+  {"id": "clyffy-infra-auditor", "display_name": "Clyffy-Infra-Auditor", "kind": "grok", "roles": ["reviewer"], "enabled": true}
+ ],
+ "policies": [
+  {"name": "agents file change tickets", "subject": "agent", "action": "change.ticket", "effect": "allow", "priority": 10},
+  {"name": "humans file change tickets", "subject": "human", "action": "change.ticket", "effect": "allow", "priority": 10},
+  {"name": "reviewers review change tickets", "subject": "role:reviewer", "action": "change.review", "effect": "allow", "priority": 10},
+  {"name": "admins edit the change policy", "subject": "role:admin", "action": "policy.doc.edit", "effect": "allow", "priority": 10}
+ ]
+}
