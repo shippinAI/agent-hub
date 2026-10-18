@@ -26,8 +26,25 @@ type resp struct {
 	Error string          `json:"error,omitempty"`
 }
 
-// Serve runs the helper: it listens on an owner-only socket and services one backend. Each gui.observe opens
-// the backend, gui.session_end closes it; the panic hotkey calls onStop which closes the socket connection.
+// helper holds the one live backend shared across the short-lived service connections.
+type helper struct {
+	ctx context.Context
+	log func(string)
+	mu  sync.Mutex
+	b   Backend
+}
+
+func (h *helper) stop() {
+	h.mu.Lock()
+	if h.b != nil {
+		h.b.Close()
+		h.b = nil
+	}
+	h.mu.Unlock()
+}
+
+// Serve listens on an owner-only socket and services gui.* ops against a single shared backend. gui.observe
+// opens it; gui.session_end or the panic hotkey closes it (one GUI session per machine, invariant 01).
 func Serve(ctx context.Context, dir string, log func(string)) error {
 	sock := SocketPath(dir)
 	_ = os.Remove(sock)
@@ -37,32 +54,20 @@ func Serve(ctx context.Context, dir string, log func(string)) error {
 	}
 	_ = os.Chmod(sock, 0o600)
 	defer os.Remove(sock)
-	go func() { <-ctx.Done(); ln.Close() }()
+	h := &helper{ctx: ctx, log: log}
+	go func() { <-ctx.Done(); ln.Close(); h.stop() }()
 	log("gui helper listening on " + sock)
 	for {
 		c, err := ln.Accept()
 		if err != nil {
 			return nil
 		}
-		serveConn(ctx, c, log)
+		go h.serveConn(c)
 	}
 }
 
-func serveConn(ctx context.Context, c net.Conn, log func(string)) {
+func (h *helper) serveConn(c net.Conn) {
 	defer c.Close()
-	var (
-		mu sync.Mutex
-		b  Backend
-	)
-	stop := func() {
-		mu.Lock()
-		if b != nil {
-			b.Close()
-			b = nil
-		}
-		mu.Unlock()
-		c.Close()
-	}
 	sc := bufio.NewScanner(c)
 	sc.Buffer(make([]byte, 0, 64*1024), 8*1024*1024)
 	enc := json.NewEncoder(c)
@@ -71,34 +76,34 @@ func serveConn(ctx context.Context, c net.Conn, log func(string)) {
 		if json.Unmarshal(sc.Bytes(), &r) != nil {
 			continue
 		}
-		mu.Lock()
-		if r.Op == "gui.observe" && b == nil {
-			nb, err := Open(stop)
-			if err != nil {
-				mu.Unlock()
-				_ = enc.Encode(resp{Error: err.Error()})
-				continue
-			}
-			b = nb
-		}
-		cur := b
-		mu.Unlock()
-		if r.Op == "gui.session_end" {
-			stop()
-			_ = enc.Encode(resp{OK: true})
-			return
-		}
-		if cur == nil {
-			_ = enc.Encode(resp{Error: "no active gui session"})
-			continue
-		}
-		data, err := Handle(ctx, cur, r.Op, r.Args)
-		if err != nil {
-			_ = enc.Encode(resp{Error: err.Error()})
-			continue
-		}
-		_ = enc.Encode(resp{OK: true, Data: data})
+		_ = enc.Encode(h.handle(r))
 	}
+}
+
+func (h *helper) handle(r req) resp {
+	h.mu.Lock()
+	if r.Op == "gui.session" && h.b == nil {
+		nb, err := Open(h.stop)
+		if err != nil {
+			h.mu.Unlock()
+			return resp{Error: err.Error()}
+		}
+		h.b = nb
+	}
+	cur := h.b
+	h.mu.Unlock()
+	if r.Op == "gui.session_end" {
+		h.stop()
+		return resp{OK: true}
+	}
+	if cur == nil {
+		return resp{Error: "no active gui session"}
+	}
+	data, err := Handle(h.ctx, cur, r.Op, r.Args)
+	if err != nil {
+		return resp{Error: err.Error()}
+	}
+	return resp{OK: true, Data: data}
 }
 
 // Call connects to the helper socket and runs one op (used by the service). It returns the raw data payload.

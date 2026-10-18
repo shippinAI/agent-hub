@@ -45,7 +45,7 @@ func (o *Ops) GUIStart(ctx context.Context, p *store.Principal, machine string, 
 		}
 		rows.Close()
 		err = w.Row(`INSERT INTO gui_sessions(machine_id,grant_ids,holder,fence,ttl_seconds,lease_expires_at,state,monitors,display_server)
-			VALUES($1,$2::uuid[],$3,nextval('fence_seq'),$4,now()+make_interval(secs => $4),'active',$5,(SELECT display_server FROM machines WHERE id=$1))
+			VALUES($1,$2::uuid[],$3,nextval('fence_seq'),$4::int,now()+make_interval(secs => $4::int),'active',$5::jsonb,(SELECT display_server FROM machines WHERE id=$1))
 			RETURNING id::text, fence`, machine, grants, w.P.ID, ttl, res.Data).Scan(&s.ID, &s.Fence)
 		if err != nil {
 			return nil, store.Fail(409, "machine_busy", "another GUI session is live on this machine")
@@ -77,7 +77,7 @@ func (o *Ops) GUIOp(ctx context.Context, p *store.Principal, session string, fen
 		return wire.Result{}, err
 	}
 	args["gui_session_id"] = session
-	res, err := o.Call(ctx, p, machine, op, op, args, scope.Call{App: app}, 30*time.Second)
+	res, err := o.Call(ctx, p, machine, scope.CapabilityFor(op), op, args, scope.Call{App: app}, 30*time.Second)
 	if err == nil && op == "gui.screenshot" && res.OK {
 		var d struct {
 			SHA string `json:"sha256"`

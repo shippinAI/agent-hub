@@ -32,6 +32,9 @@ func cmdRun(args []string) error {
 	if err != nil {
 		return fmt.Errorf("read token: %w", err)
 	}
+	if t := os.Getenv("DEVAGOTCHI_TRANSPORT"); t != "" {
+		cfg.Transport = t
+	}
 	self, _ := os.Executable()
 	c := hubclient.New(cfg.HubURL, tok)
 	r := runner.New(cfg, c, wire.SignKey(tok), self)

@@ -60,7 +60,7 @@ func Handle(_ context.Context, b Backend, op string, raw json.RawMessage) (json.
 	var in Op
 	_ = json.Unmarshal(raw, &in)
 	switch op {
-	case "gui.observe":
+	case "gui.session", "gui.observe":
 		w, h, err := b.Size()
 		if err != nil {
 			return nil, err

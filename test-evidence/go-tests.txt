@@ -1,30 +1,61 @@
-# go test 2026-10-17 18:09 EDT
+# go test 2026-10-17 22:39 EDT
 go vet: ok
+=== RUN   TestAccessFlowExecRevoke
+--- PASS: TestAccessFlowExecRevoke (2.00s)
 === RUN   TestAuthTokensAndCSRF
---- PASS: TestAuthTokensAndCSRF (0.06s)
+--- PASS: TestAuthTokensAndCSRF (0.17s)
 === RUN   TestHashChainVerifyAndAppendOnly
     chain_test.go:37: tamper detected: row content does not match its hash
---- PASS: TestHashChainVerifyAndAppendOnly (0.07s)
+--- PASS: TestHashChainVerifyAndAppendOnly (0.16s)
 === RUN   TestExpiredLeaseReclaimedAndStaleFenceRejected
---- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.37s)
+--- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.47s)
 === RUN   TestReaperExpiresAndEscalates
---- PASS: TestReaperExpiresAndEscalates (2.55s)
+--- PASS: TestReaperExpiresAndEscalates (2.57s)
+=== RUN   TestGuidesEditPublishImportRun
+--- PASS: TestGuidesEditPublishImportRun (0.18s)
 === RUN   TestIdempotencyKeys
---- PASS: TestIdempotencyKeys (0.09s)
+--- PASS: TestIdempotencyKeys (0.17s)
 === RUN   TestOptimisticConcurrency
---- PASS: TestOptimisticConcurrency (0.07s)
+--- PASS: TestOptimisticConcurrency (0.16s)
 === RUN   TestMCPToolsOverHTTP
---- PASS: TestMCPToolsOverHTTP (0.10s)
+--- PASS: TestMCPToolsOverHTTP (0.20s)
 === RUN   TestPolicyAndSafetyRules
---- PASS: TestPolicyAndSafetyRules (0.10s)
+--- PASS: TestPolicyAndSafetyRules (0.19s)
 === RUN   TestClaimNextRaceNeverDoubleClaims
     race_test.go:70: 20 agents claimed 60 tasks: no task given twice, 60 unique fences
---- PASS: TestClaimNextRaceNeverDoubleClaims (0.32s)
+--- PASS: TestClaimNextRaceNeverDoubleClaims (0.39s)
+=== RUN   TestRealBridgeExecRevoke
+--- PASS: TestRealBridgeExecRevoke (2.65s)
+=== RUN   TestRealBridgeGUI
+--- PASS: TestRealBridgeGUI (2.31s)
 === RUN   TestSSEStreamsEventsAndResumes
---- PASS: TestSSEStreamsEventsAndResumes (0.41s)
+--- PASS: TestSSEStreamsEventsAndResumes (0.51s)
+=== RUN   TestSubscriptionsSecretsRouting
+--- PASS: TestSubscriptionsSecretsRouting (0.19s)
+=== RUN   TestUnsandboxedPolicyResumeAlertsDefaultPreset
+--- PASS: TestUnsandboxedPolicyResumeAlertsDefaultPreset (1.43s)
 PASS
-ok  	agenthub/hubtest	5.150s
+ok  	agenthub/hubtest	14.746s
+=== RUN   TestSeedGuidesValidateAndLint
+--- PASS: TestSeedGuidesValidateAndLint (0.01s)
+=== RUN   TestDockerDryRunPaths
+    guidekit_test.go:77: linux: [intro linux-choose access present-docker verify-docker done]
+    guidekit_test.go:77: macos: [intro mac-choose licence access present-docker verify-docker done]
+    guidekit_test.go:77: windows: [intro win-choose licence access present-docker verify-docker done]
+--- PASS: TestDockerDryRunPaths (0.00s)
+=== RUN   TestRetriesPause
+--- PASS: TestRetriesPause (0.00s)
+=== RUN   TestBadRefsAndSecrets
+--- PASS: TestBadRefsAndSecrets (0.00s)
+=== RUN   TestSignVerifyDiff
+--- PASS: TestSignVerifyDiff (0.00s)
+PASS
+ok  	agenthub/internal/guidekit	0.016s
 === RUN   TestDecide
 --- PASS: TestDecide (0.00s)
 PASS
 ok  	agenthub/internal/policy	0.002s
+=== RUN   TestSealOpenAndKeyFile
+--- PASS: TestSealOpenAndKeyFile (0.00s)
+PASS
+ok  	agenthub/internal/secretbox	0.002s
