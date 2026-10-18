@@ -22,7 +22,7 @@ type Ticket struct {
 	UpdatedAt string              `json:"updated_at"`
 }
 
-const ticketCols = `id, tenant_id, author, title, machine_id, command, fields, lists, sha256, status, version, to_char(updated_at,'YYYY-MM-DD"T"HH24:MI:SSOF')`
+const ticketCols = `id, tenant_id, author, title, machine_id, command, fields, lists, sha256, status, version, to_char(updated_at,'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')`
 
 func scanTicket(r interface{ Scan(...any) error }) (Ticket, error) {
 	var t Ticket

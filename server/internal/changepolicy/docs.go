@@ -78,7 +78,7 @@ func (s *Service) Rollback(ctx context.Context, p *store.Principal, reqID, tenan
 // Current returns the current version with its document.
 func (s *Service) Current(ctx context.Context, tenant string) (DocRow, error) {
 	var d DocRow
-	err := s.St.DB.QueryRow(ctx, `SELECT tenant_id, version, sha256, author, reason, to_char(created_at,'YYYY-MM-DD"T"HH24:MI:SSOF'), doc
+	err := s.St.DB.QueryRow(ctx, `SELECT tenant_id, version, sha256, author, reason, to_char(created_at,'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM'), doc
 		FROM policy_docs WHERE tenant_id=$1 ORDER BY version DESC LIMIT 1`, firstOr(tenant, "local")).
 		Scan(&d.Tenant, &d.Version, &d.SHA256, &d.Author, &d.Reason, &d.CreatedAt, &d.Doc)
 	if err != nil {
@@ -89,7 +89,7 @@ func (s *Service) Current(ctx context.Context, tenant string) (DocRow, error) {
 
 // Versions lists every version (newest first) without bodies, or one version with its body.
 func (s *Service) Versions(ctx context.Context, tenant string, one int64) ([]DocRow, error) {
-	rows, err := s.St.DB.Query(ctx, `SELECT tenant_id, version, sha256, author, reason, to_char(created_at,'YYYY-MM-DD"T"HH24:MI:SSOF'),
+	rows, err := s.St.DB.Query(ctx, `SELECT tenant_id, version, sha256, author, reason, to_char(created_at,'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM'),
 		CASE WHEN $2::bigint = version THEN doc END FROM policy_docs WHERE tenant_id=$1 AND ($2=0 OR version=$2) ORDER BY version DESC`, firstOr(tenant, "local"), one)
 	if err != nil {
 		return nil, err
