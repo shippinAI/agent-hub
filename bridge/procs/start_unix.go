@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"syscall"
+	"time"
 
 	"github.com/creack/pty"
 )
@@ -15,6 +16,7 @@ type unixProc struct {
 	cmd *exec.Cmd
 	in  io.Writer
 	tty *os.File
+	eof chan struct{} // closed when the PTY reader drained everything
 }
 
 func (p *unixProc) Pid() int         { return p.cmd.Process.Pid }
@@ -23,6 +25,11 @@ func (p *unixProc) Stdin() io.Writer { return p.in }
 func (p *unixProc) Wait() (int, error) {
 	err := p.cmd.Wait()
 	if p.tty != nil {
+		// Drain what the child wrote before exiting; a grandchild holding the PTY open must not block us.
+		select {
+		case <-p.eof:
+		case <-time.After(time.Second):
+		}
 		_ = p.tty.Close()
 	}
 	return p.cmd.ProcessState.ExitCode(), err
@@ -44,8 +51,9 @@ func start(cmd *exec.Cmd, usePTY bool, out io.Writer) (handle, error) {
 		if err != nil {
 			return nil, err
 		}
-		go func() { _, _ = io.Copy(out, f) }()
-		return &unixProc{cmd: cmd, in: f, tty: f}, nil
+		p := &unixProc{cmd: cmd, in: f, tty: f, eof: make(chan struct{})}
+		go func() { _, _ = io.Copy(out, f); close(p.eof) }()
+		return p, nil
 	}
 	cmd.Stdout, cmd.Stderr = out, out
 	in, err := cmd.StdinPipe()

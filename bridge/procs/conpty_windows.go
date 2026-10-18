@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"time"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -20,6 +21,7 @@ type conProc struct {
 	out *os.File
 	job windows.Handle
 	pid int
+	eof chan struct{}
 }
 
 func (p *conProc) Pid() int         { return p.pid }
@@ -29,7 +31,11 @@ func (p *conProc) Wait() (int, error) {
 	_, err := windows.WaitForSingleObject(p.pi.Process, windows.INFINITE)
 	var code uint32
 	_ = windows.GetExitCodeProcess(p.pi.Process, &code)
-	windows.ClosePseudoConsole(p.hpc)
+	windows.ClosePseudoConsole(p.hpc) // flushes the last output, then the reader sees EOF
+	select {
+	case <-p.eof:
+	case <-time.After(time.Second):
+	}
 	_ = p.in.Close()
 	_ = windows.CloseHandle(p.pi.Process)
 	_ = windows.CloseHandle(p.pi.Thread)
@@ -83,6 +89,7 @@ func startConPTY(cmd *exec.Cmd, out io.Writer) (handle, error) {
 	if job, err := newJob(); err == nil && windows.AssignProcessToJobObject(job, p.pi.Process) == nil {
 		p.job = job
 	}
-	go func() { _, _ = io.Copy(out, p.out) }()
+	p.eof = make(chan struct{})
+	go func() { _, _ = io.Copy(out, p.out); close(p.eof) }()
 	return p, nil
 }

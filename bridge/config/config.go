@@ -103,3 +103,17 @@ func ReadToken(dir string) (string, error) {
 	b, err := os.ReadFile(p)
 	return string(b), err
 }
+
+// UserDir holds per-user standalone state (policy.toml, history, http-token). Same as Dir except on Windows,
+// where it is %APPDATA%\Devagotchi so other users cannot read it.
+func UserDir() string {
+	if d := os.Getenv("DEVAGOTCHI_CONFIG_DIR"); d != "" {
+		return d
+	}
+	if runtime.GOOS == "windows" {
+		if a := os.Getenv("APPDATA"); a != "" {
+			return filepath.Join(a, "Devagotchi")
+		}
+	}
+	return Dir()
+}
