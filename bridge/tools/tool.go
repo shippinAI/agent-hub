@@ -70,6 +70,11 @@ func def[In any](t Tool, fn func(context.Context, *Env, In) Out) Tool {
 		panic(fmt.Sprintf("schema for %s: %v", t.Name, err))
 	}
 	s.AdditionalProperties = nil // accept DC-era extra fields (origin, options) instead of failing
+	for k, ps := range s.Properties {
+		if b, _ := json.Marshal(ps); string(b) == "true" { // `any` fields: TS clients reject boolean schemas
+			s.Properties[k] = &jsonschema.Schema{Description: ps.Description, Types: []string{"string", "number", "boolean", "object", "array", "null"}}
+		}
+	}
 	t.Schema = s
 	t.Run = func(ctx context.Context, e *Env, raw json.RawMessage) Out {
 		var in In
