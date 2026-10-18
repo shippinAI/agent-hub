@@ -17,7 +17,6 @@ import (
 	"devagotchi/bridge/config"
 	"devagotchi/bridge/fsops"
 	"devagotchi/bridge/hubclient"
-	"devagotchi/bridge/netproxy"
 	"devagotchi/bridge/redact"
 	"devagotchi/bridge/sandbox"
 	"devagotchi/bridge/scope"
@@ -276,5 +275,3 @@ func exitCode(err error) int {
 	}
 	return -1
 }
-
-var _ = netproxy.Forward
