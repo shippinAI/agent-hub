@@ -7,4 +7,8 @@ require (
 	github.com/coder/websocket v1.8.15
 )
 
-require github.com/jezek/xgb v1.3.1 // indirect
+require (
+	github.com/creack/pty v1.1.24 // indirect
+	github.com/jezek/xgb v1.3.1 // indirect
+	golang.org/x/sys v0.48.0 // indirect
+)
