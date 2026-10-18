@@ -40,6 +40,17 @@ Nothing in this spec is built yet. Writing it touched only `docs/` in this repo,
 15. [Live ops](devagotchi/15-live-ops.md): supervisor, reachability, Online semantics, gold-policy hub mode, install bundles
 16. [Desktop Commander parity](devagotchi/16-dc-parity.md): every DC tool mapped to ours, improvements, gaps left
 17. [Standalone mode, release, benchmarks](devagotchi/17-standalone-release.md): subcommands, install, client config, sizes, numbers
+18. [Public product research](devagotchi/18-public-product-research.md): client listing rules, update practice
+19. [Public product spec](devagotchi/19-public-product-spec.md): packaging channels, signed updates, extensions, config versions
+20. [Turnkey environment setup](devagotchi/20-env-setup.md): WSL, Docker, Podman as test/apply/verify components
+21. [A2UI surfaces](devagotchi/21-a2ui.md): protocol, our catalog, React Aria mapping, a11y
+22. [Website](devagotchi/22-website.md): Next.js 16 vs TanStack Start, recommendation
+23. [Chatmaton research](devagotchi/23-chatmaton-research.md): which subscriptions and CLIs can be driven
+24. [Chatmaton spec](devagotchi/24-chatmaton-spec.md): editions, tabs, rooms, roles, routines, approvals
+25. [Desktop Commander lessons](devagotchi/25-dc-lessons.md): DC issues by category and how we avoid each
+26. [Connectivity layers](devagotchi/26-connectivity.md): HTTPS first, then an owned WireGuard mesh
+27. [Gap tracking](devagotchi/27-gap-tracking.md): register G-01…G-20, board tasks, ADRs ([ADR 0001](devagotchi/adr/0001-track-gaps-as-tasks-and-adrs.md))
+28. [Public gaps, phases, open questions](devagotchi/28-public-gaps-and-phases.md)
 
 ## Rules that apply everywhere
 - Every source, host, policy, role, capability, risk, grant preset, guide, provider, shell profile, and setting is **editable data** in the UI, seeded as presets and never hardcoded. Code holds only the safety invariants (listed in 01).

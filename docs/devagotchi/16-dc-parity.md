@@ -85,12 +85,14 @@ official MCP Go SDK client: R/X rows over stdio, P5 over HTTP. Every row passed 
 
 ## Gaps left (deliberate or not built)
 
-1. **MCP-UI HTML widgets** (file preview, config editor): not ported. Plain text, image and JSON resources only.
-2. **.xls (BIFF) reading**: refused with a clear error. .xlsx/.xlsm work.
-3. **PDF styling**: no HTML/CSS/SVG. Core fonts cover Windows-1252, so other characters print as `?`.
-4. **DOCX create**: no embedded images.
-5. **Windows sandbox**: the restricted-token or AppContainer sandbox is not built, so `sandbox: none`. Processes
+Each gap has a register row in [27](27-gap-tracking.md); its board task is drafted there, pending import.
+
+1. [G-01](27-gap-tracking.md) **MCP-UI HTML widgets** (file preview, config editor): not ported. Plain text, image and JSON resources only.
+2. [G-02](27-gap-tracking.md) **.xls (BIFF) reading**: refused with a clear error. .xlsx/.xlsm work.
+3. [G-03](27-gap-tracking.md) **PDF styling**: no HTML/CSS/SVG. Core fonts cover Windows-1252, so other characters print as `?`.
+4. [G-04](27-gap-tracking.md) **DOCX create**: no embedded images.
+5. [G-05](27-gap-tracking.md) **Windows sandbox**: the restricted-token or AppContainer sandbox is not built, so `sandbox: none`. Processes
    are refused unless the policy says `unsandboxed`. File tools are still grant-checked.
-6. **Windows list_processes**: CPU and RSS are reported as 0.
-7. **macOS and Windows** were built (cross-compiled and vetted) but not run in this pass.
-8. **track_ui_event**: dropped, because it is UI telemetry.
+6. [G-06](27-gap-tracking.md) **Windows list_processes**: CPU and RSS are reported as 0.
+7. [G-07](27-gap-tracking.md) **macOS and Windows** were built (cross-compiled and vetted) but not run in this pass.
+8. [G-08](27-gap-tracking.md) **track_ui_event**: dropped, because it is UI telemetry.

@@ -34,7 +34,7 @@
 | D24 | Wayland compositors without RemoteDesktop (wlroots) | capture only / fall back to X11 via Xwayland / refuse GUI | Capture only, input reported `unsupported` |
 
 ## Unverified items carried in this spec
-- OpenAI policy on third-party reuse of ChatGPT sign-in (policy page behind a JS wall).
+- OpenAI policy on third-party reuse of ChatGPT sign-in: now documented as the Sign in with ChatGPT programme (partners + open source), see [23](23-chatmaton-research.md); kept here until D6 is answered.
 - xAI subscription-vs-API reuse (no clause found in the ToS updated 2026-10-12).
 - Whether running official CLIs non-interactively as workers counts as ordinary use (all vendors).
 - Long-term availability of macOS `sandbox-exec`.

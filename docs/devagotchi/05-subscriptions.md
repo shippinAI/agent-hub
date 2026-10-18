@@ -11,7 +11,7 @@ A **role binding** maps (role, chat app) → subscription, with priority and fal
 | Provider | Subscription use | API use | Status |
 |---|---|---|---|
 | Anthropic | Only through Claude Code / native apps. Third parties may not offer Claude.ai login or route requests through Free/Pro/Max credentials ([legal & compliance](https://code.claude.com/docs/en/legal-and-compliance)) | API key via router | **Verified** (per the research, 2026-10-17) |
-| OpenAI | Codex supports Sign in with ChatGPT in its own app/CLI/IDE ([Codex auth](https://developers.openai.com/codex/auth)); third-party reuse of ChatGPT credentials | API key via router | Reuse rule **unverified** (policy page behind a JS wall); treated like Anthropic |
+| OpenAI | Codex supports Sign in with ChatGPT in its own app/CLI/IDE ([Codex auth](https://developers.openai.com/codex/auth)); third-party reuse of ChatGPT credentials | API key via router | Update 2026-10-18: OpenAI now runs **Sign in with ChatGPT** for approved partners and open-source apps ([23](23-chatmaton-research.md) row 5); still treated like Anthropic until D6 is answered |
 | xAI | No clause found on subscription-vs-API reuse ([x.ai ToS](https://x.ai/legal/terms-of-service)) | API key via router | **Unverified**; default to API key only |
 Consequences, enforced in code (code rule: `cli_login` subscriptions can bind only to a worker principal running on the named machine):
 - The hub **never** proxies, stores, copies, or replays a subscription token or cookie.
