@@ -47,6 +47,11 @@ func build(s Spec) (*exec.Cmd, error) {
 			a = append(a, bind, p, p)
 		}
 	}
+	for _, p := range s.ReadPaths {
+		if _, err := os.Stat(p); err == nil {
+			a = append(a, "--ro-bind", p, p)
+		}
+	}
 	a = append(a, "--ro-bind", s.Self, "/run/devagotchi-init", "--clearenv")
 	for _, kv := range envList(s.Env, "/tmp/home") {
 		k, v, _ := cut(kv)

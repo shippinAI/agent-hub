@@ -31,6 +31,9 @@ func Profile(s Spec) string {
 			b.WriteString(fmt.Sprintf("(allow file-write* (subpath %q))\n", p))
 		}
 	}
+	for _, p := range s.ReadPaths {
+		b.WriteString(fmt.Sprintf("(allow file-read* (subpath %q))\n", p))
+	}
 	if s.ProxyTCP != "" {
 		b.WriteString(fmt.Sprintf("(allow network-outbound (remote tcp %q))\n", s.ProxyTCP))
 		b.WriteString("(allow network-outbound (remote unix-socket))\n")

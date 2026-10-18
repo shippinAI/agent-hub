@@ -13,6 +13,7 @@ import (
 type Spec struct {
 	Level      string            // read-only | workspace-write | unsandboxed
 	Paths      []string          // selector paths (read for read-only, read+write for workspace-write)
+	ReadPaths  []string          // extra paths that are always read-only (policy read_only_roots)
 	Cwd        string            // working directory (must sit inside Paths when Paths is set)
 	Argv       []string          // command
 	Env        map[string]string // already filtered by env_allow
@@ -28,6 +29,7 @@ func Kind() string { return kind() }
 // Command builds the confined command. Unsandboxed runs as the bridge user with no OS sandbox (never elevated).
 func Command(s Spec) (*exec.Cmd, error) {
 	s.Paths = expandAll(s.Paths)
+	s.ReadPaths = expandAll(s.ReadPaths)
 	s.Cwd = expand(s.Cwd)
 	if s.Cwd == "" && len(s.Paths) > 0 {
 		s.Cwd = s.Paths[0]
