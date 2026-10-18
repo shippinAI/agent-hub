@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"agenthub/internal/access"
+	"agenthub/internal/actionfeed"
+	"agenthub/internal/auditkeep"
 	"agenthub/internal/bridgehub"
 	"agenthub/internal/catalog"
 	"agenthub/internal/changepolicy"
@@ -14,6 +16,7 @@ import (
 	"agenthub/internal/machines"
 	"agenthub/internal/providers"
 	"agenthub/internal/store"
+	"agenthub/internal/stream"
 	"agenthub/internal/subs"
 )
 
@@ -30,6 +33,9 @@ type API struct {
 	Hub       *bridgehub.Hub
 	Policy    *changepolicy.Service
 	Providers *providers.Service
+	Keep      *auditkeep.Service
+	Feed      *actionfeed.Recorder
+	Actions   *stream.Broker // NOTIFY hub_actions: long-poll wake-ups for the action feed
 }
 
 type h = httpapi.Handler
@@ -44,6 +50,7 @@ func (a *API) Mount(mux *http.ServeMux) {
 	a.catalogRoutes(reg)
 	a.providerRoutes(reg)
 	a.policyRoutes(reg)
+	a.auditRoutes(reg)
 	a.bridgeRoutes(mux)
 }
 

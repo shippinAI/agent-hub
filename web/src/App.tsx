@@ -11,6 +11,7 @@ import { TaskDetail } from './pages/TaskDetail';
 import { Agents } from './pages/Agents';
 import { Settings } from './pages/Settings';
 import { Audit } from './pages/Audit';
+import { Actions } from './pages/Actions';
 import { Machines } from './pages/dev/Machines';
 import { MachineDetail } from './pages/dev/MachineDetail';
 import { Requests } from './pages/dev/Requests';
@@ -65,6 +66,7 @@ function Routes() {
       case 'agents': return <Agents />;
       case 'settings': return <Settings tab={a ?? 'policies'} />;
       case 'audit': return <Audit />;
+      case 'actions': return <Actions />;
       case 'dev': return devPage(a, b);
       default: return <Board project={a} state={b} />;
     }

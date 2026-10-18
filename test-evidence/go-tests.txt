@@ -1,59 +1,91 @@
-# go test 2026-10-18 12:37 EDT
+# go test 2026-10-18 14:25 EDT
 go vet: ok
 === RUN   TestAccessFlowExecRevoke
---- PASS: TestAccessFlowExecRevoke (2.04s)
+--- PASS: TestAccessFlowExecRevoke (2.08s)
+=== RUN   TestActionFeedMachineCalls
+--- PASS: TestActionFeedMachineCalls (1.36s)
+=== RUN   TestActionFeedCategorySwitch
+--- PASS: TestActionFeedCategorySwitch (0.25s)
 === RUN   TestAuthTokensAndCSRF
---- PASS: TestAuthTokensAndCSRF (0.21s)
+--- PASS: TestAuthTokensAndCSRF (0.23s)
 === RUN   TestHashChainVerifyAndAppendOnly
     chain_test.go:37: tamper detected: row content does not match its hash
---- PASS: TestHashChainVerifyAndAppendOnly (0.20s)
+--- PASS: TestHashChainVerifyAndAppendOnly (0.22s)
 === RUN   TestExpiredLeaseReclaimedAndStaleFenceRejected
---- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.51s)
+--- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.56s)
 === RUN   TestReaperExpiresAndEscalates
---- PASS: TestReaperExpiresAndEscalates (2.61s)
+--- PASS: TestReaperExpiresAndEscalates (2.66s)
 === RUN   TestGuidesEditPublishImportRun
---- PASS: TestGuidesEditPublishImportRun (0.21s)
+--- PASS: TestGuidesEditPublishImportRun (0.30s)
 === RUN   TestIdempotencyKeys
---- PASS: TestIdempotencyKeys (0.20s)
+--- PASS: TestIdempotencyKeys (0.27s)
 === RUN   TestOptimisticConcurrency
---- PASS: TestOptimisticConcurrency (0.23s)
+--- PASS: TestOptimisticConcurrency (0.25s)
 === RUN   TestMCPToolsOverHTTP
---- PASS: TestMCPToolsOverHTTP (0.24s)
+--- PASS: TestMCPToolsOverHTTP (0.31s)
 === RUN   TestMigration007KeepsData
---- PASS: TestMigration007KeepsData (0.12s)
+--- PASS: TestMigration007KeepsData (0.22s)
 === RUN   TestPolicyAndSafetyRules
---- PASS: TestPolicyAndSafetyRules (0.23s)
+--- PASS: TestPolicyAndSafetyRules (0.26s)
 === RUN   TestPolicyDocEditAndFailClosed
     policydoc_test.go:70: agent edit refused; invalid doc refused; v2 disable took effect; stale base 409; rollback v3 denies again; WI geo block; tenant without policy -> policy_unavailable
---- PASS: TestPolicyDocEditAndFailClosed (1.33s)
+--- PASS: TestPolicyDocEditAndFailClosed (1.39s)
 === RUN   TestPolicyGateBlocksBridgeCalls
     policygate_test.go:103: allow passed, deny blocked without consuming a use, 500 and unreachable failed closed, 3 policy.denied events
---- PASS: TestPolicyGateBlocksBridgeCalls (1.32s)
+--- PASS: TestPolicyGateBlocksBridgeCalls (1.29s)
 === RUN   TestPolicyGateRealPDP
     policygate_test.go:110: HUB_TEST_POLICY_URL not set
 --- SKIP: TestPolicyGateRealPDP (0.00s)
 === RUN   TestProvidersMCP
---- PASS: TestProvidersMCP (0.21s)
+--- PASS: TestProvidersMCP (0.31s)
 === RUN   TestProvidersREST
---- PASS: TestProvidersREST (0.22s)
+--- PASS: TestProvidersREST (0.27s)
 === RUN   TestClaimNextRaceNeverDoubleClaims
     race_test.go:70: 20 agents claimed 60 tasks: no task given twice, 60 unique fences
---- PASS: TestClaimNextRaceNeverDoubleClaims (0.51s)
+--- PASS: TestClaimNextRaceNeverDoubleClaims (0.54s)
 === RUN   TestRealBridgeExecRevoke
---- PASS: TestRealBridgeExecRevoke (3.08s)
+--- PASS: TestRealBridgeExecRevoke (3.22s)
 === RUN   TestRealBridgeGUI
---- PASS: TestRealBridgeGUI (2.65s)
+--- PASS: TestRealBridgeGUI (2.76s)
+=== RUN   TestRetentionArchivesThenDropsPartitions
+--- PASS: TestRetentionArchivesThenDropsPartitions (0.49s)
+=== RUN   TestRetentionRowCapAndArchiveFailure
+--- PASS: TestRetentionRowCapAndArchiveFailure (0.40s)
+=== RUN   TestRetentionStorageNeverFills
+    retention_test.go:138: round 0: live=72250 disk=360448 deleted=0
+    retention_test.go:138: round 1: live=144500 disk=483328 deleted=0
+    retention_test.go:138: round 2: live=216750 disk=573440 deleted=0
+    retention_test.go:138: round 3: live=289000 disk=688128 deleted=0
+    retention_test.go:138: round 4: live=361250 disk=811008 deleted=0
+    retention_test.go:138: round 5: live=409357 disk=942080 deleted=87
+    retention_test.go:138: round 6: live=409357 disk=1073152 deleted=250
+    retention_test.go:138: round 7: live=409357 disk=1138688 deleted=250
+--- PASS: TestRetentionStorageNeverFills (1.41s)
 === RUN   TestReviewerPassUnlocksChange
     review_test.go:116: plain allowed; rm -rf / denied; no ticket denied; self-review and non-reviewer refused; stale hash refused; PASS unlocked; other command denied; edit made the PASS stale; 2 allow/5 deny logged
---- PASS: TestReviewerPassUnlocksChange (1.25s)
+--- PASS: TestReviewerPassUnlocksChange (1.43s)
 === RUN   TestSSEStreamsEventsAndResumes
---- PASS: TestSSEStreamsEventsAndResumes (0.55s)
+--- PASS: TestSSEStreamsEventsAndResumes (0.64s)
 === RUN   TestSubscriptionsSecretsRouting
---- PASS: TestSubscriptionsSecretsRouting (0.22s)
+--- PASS: TestSubscriptionsSecretsRouting (0.45s)
 === RUN   TestUnsandboxedPolicyResumeAlertsDefaultPreset
---- PASS: TestUnsandboxedPolicyResumeAlertsDefaultPreset (1.52s)
+--- PASS: TestUnsandboxedPolicyResumeAlertsDefaultPreset (1.38s)
 PASS
-ok  	agenthub/hubtest	20.680s
+ok  	agenthub/hubtest	25.963s
+=== RUN   TestScrubberMasksSecrets
+--- PASS: TestScrubberMasksSecrets (0.00s)
+=== RUN   TestDiffFromArgs
+--- PASS: TestDiffFromArgs (0.00s)
+=== RUN   TestA2UIMessages
+--- PASS: TestA2UIMessages (0.00s)
+PASS
+ok  	agenthub/internal/actionfeed	0.004s
+=== RUN   TestVerifySegmentDetectsTampering
+--- PASS: TestVerifySegmentDetectsTampering (0.00s)
+=== RUN   TestFileSinkRefusesOverwriteAndTraversal
+--- PASS: TestFileSinkRefusesOverwriteAndTraversal (0.00s)
+PASS
+ok  	agenthub/internal/auditkeep	0.007s
 === RUN   TestSeedGuidesValidateAndLint
 --- PASS: TestSeedGuidesValidateAndLint (0.01s)
 === RUN   TestDockerDryRunPaths
@@ -68,7 +100,7 @@ ok  	agenthub/hubtest	20.680s
 === RUN   TestSignVerifyDiff
 --- PASS: TestSignVerifyDiff (0.00s)
 PASS
-ok  	agenthub/internal/guidekit	0.016s
+ok  	agenthub/internal/guidekit	0.017s
 === RUN   TestDecide
 --- PASS: TestDecide (0.00s)
 PASS
@@ -78,7 +110,7 @@ ok  	agenthub/internal/policy	0.002s
 === RUN   TestApprovalNeedsHuman
 --- PASS: TestApprovalNeedsHuman (0.00s)
 PASS
-ok  	agenthub/internal/policyrules	0.004s
+ok  	agenthub/internal/policyrules	0.003s
 === RUN   TestAdapterKindsAreExactlyFive
 --- PASS: TestAdapterKindsAreExactlyFive (0.00s)
 === RUN   TestRouterOption

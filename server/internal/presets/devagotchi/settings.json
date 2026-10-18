@@ -31,5 +31,12 @@
   {"key": "machine_kinds", "value": ["native", "wsl", "vm", "container"], "description": "Machine kinds offered in Add machine"},
   {"key": "tenancy_mode", "value": "single", "description": "single (personal edition) | multi (cloud)"},
   {"key": "browser_notifications", "value": false, "description": "Offer browser notifications for new access requests"},
-  {"key": "audit_anchor_dir", "value": "", "description": "Folder for the daily head-hash export (D11); empty = off"}
+  {"key": "audit_anchor_dir", "value": "", "description": "Folder for the daily head-hash export (D11); empty = off"},
+  {"key": "audit_archive_dir", "value": "", "description": "Folder for compressed, hash-chained action-feed archives (40); empty = no archive"},
+  {"key": "audit_total_max_bytes", "value": 1073741824, "description": "Hard cap for all action-feed partitions together; oldest partitions go first (40)"},
+  {"key": "audit_partition_ahead_days", "value": 2, "description": "Daily action-feed partitions created ahead of time (40)"},
+  {"key": "audit_prune_interval_seconds", "value": 300, "description": "How often the retention job runs (40); 0 = only on demand"},
+  {"key": "audit_on_archive_failure", "value": "drop", "description": "drop (storage never fills; a governance event records the loss) | keep (stop pruning until the archive works)"},
+  {"key": "audit_redact_keys", "value": ["token", "secret", "password", "passwd", "api_key", "apikey", "authorization", "cookie", "private_key"], "description": "Argument keys whose values the action feed always masks (39)"},
+  {"key": "audit_tool_skip", "value": ["wait_for_updates"], "description": "MCP tools the action feed does not record (long-polls and other noise) (39)"}
 ]}

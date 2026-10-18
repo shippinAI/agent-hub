@@ -1,4 +1,4 @@
-// Package stream fans Postgres NOTIFY hub_events out to SSE clients and long-pollers.
+// Package stream fans Postgres NOTIFY (hub_events, hub_actions) out to SSE clients and long-pollers.
 package stream
 
 import (
@@ -13,13 +13,20 @@ import (
 
 // Broker tracks the newest event seq and wakes subscribers when it moves.
 type Broker struct {
-	mu   sync.Mutex
-	subs map[chan int64]struct{}
-	head int64
+	mu      sync.Mutex
+	subs    map[chan int64]struct{}
+	head    int64
+	channel string
+	headSQL string
 }
 
-// New returns an idle broker; call Run.
-func New() *Broker { return &Broker{subs: map[chan int64]struct{}{}} }
+// New returns an idle broker for the governance event log; call Run.
+func New() *Broker { return NewFor("hub_events", `SELECT coalesce(max(seq),0) FROM events`) }
+
+// NewFor returns a broker on another NOTIFY channel whose payload is an increasing id (the action feed).
+func NewFor(channel, headSQL string) *Broker {
+	return &Broker{subs: map[chan int64]struct{}{}, channel: channel, headSQL: headSQL}
+}
 
 // Run LISTENs on hub_events until ctx ends, reconnecting on errors.
 func (b *Broker) Run(ctx context.Context, pool *pgxpool.Pool) {
@@ -37,11 +44,11 @@ func (b *Broker) listen(ctx context.Context, pool *pgxpool.Pool) error {
 		return err
 	}
 	defer conn.Release()
-	if _, err := conn.Exec(ctx, "LISTEN hub_events"); err != nil {
+	if _, err := conn.Exec(ctx, "LISTEN "+b.channel); err != nil {
 		return err
 	}
 	var head int64
-	_ = conn.QueryRow(ctx, `SELECT coalesce(max(seq),0) FROM events`).Scan(&head)
+	_ = conn.QueryRow(ctx, b.headSQL).Scan(&head)
 	b.publish(head)
 	for {
 		n, err := conn.Conn().WaitForNotification(ctx)

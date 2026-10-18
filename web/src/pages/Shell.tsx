@@ -18,6 +18,7 @@ const NAV = [
   { id: 'changes', href: 'dev/changes', label: 'Changes', icon: 'M5 4h14v16H5zM8 9l2 2 4-4M8 15h8' },
   { id: 'guides', href: 'dev/guides', label: 'Guides', icon: 'M5 4h11l3 3v13H5zM9 9h6M9 13h6' },
   { id: 'gui', href: 'dev/gui-sessions', label: 'GUI', icon: 'M3 5h18v11H3zM8 20h8M12 16v4' },
+  { id: 'actions', href: 'actions', label: 'Actions', icon: 'M4 6h16M4 12h10M4 18h6M18 14l3 3-3 3' },
   { id: 'audit', href: 'audit', label: 'Audit', icon: 'M5 4h14v16H5zM8 8h8M8 12h8M8 16h5' },
   { id: 'settings', href: 'settings', label: 'Settings', icon: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm7-3 2-1-2-4-2 1-2-1V4h-4v3l-2 1-2-1-2 4 2 1v2l-2 1 2 4 2-1 2 1v3h4v-3l2-1 2 1 2-4-2-1z' },
 ];

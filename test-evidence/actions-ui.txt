@@ -1,0 +1,30 @@
+PASS 1280: feed renders 15 action cards
+PASS 1280: demo secret is masked in the DOM
+PASS 1280: policy line names the approver
+PASS 1280: denied call is shown
+PASS 1280: argv is a labelled list
+PASS 1280: feed has no horizontal overflow
+PASS 1280: feed -> test-evidence/screenshots/actions-feed-1280.png
+PASS 1280: edit_block card shows the diff
+PASS 1280: diff card -> test-evidence/screenshots/actions-diff-card-1280.png
+PASS 1280: retention table lists the 6 seeded categories
+PASS 1280: retention is a selected ARIA tab
+PASS 1280: retention -> test-evidence/screenshots/actions-retention-1280.png
+PASS category editor uses labelled switches
+PASS 1280: retention-edit -> test-evidence/screenshots/actions-retention-edit-1280.png
+PASS Prune now reports its result
+PASS 1280: retention-pruned -> test-evidence/screenshots/actions-retention-pruned-1280.png
+PASS 1280: no page errors 
+PASS 390: feed renders 15 action cards
+PASS 390: demo secret is masked in the DOM
+PASS 390: policy line names the approver
+PASS 390: denied call is shown
+PASS 390: argv is a labelled list
+PASS 390: feed has no horizontal overflow
+PASS 390: feed -> test-evidence/screenshots/actions-feed-390.png
+PASS 390: edit_block card shows the diff
+PASS 390: diff card -> test-evidence/screenshots/actions-diff-card-390.png
+PASS 390: retention table lists the 6 seeded categories
+PASS 390: retention is a selected ARIA tab
+PASS 390: retention -> test-evidence/screenshots/actions-retention-390.png
+PASS 390: no page errors 

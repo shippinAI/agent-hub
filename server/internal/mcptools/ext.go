@@ -18,6 +18,7 @@ type Ext struct {
 	Register     func(*mcp.Server)
 	Instructions string
 	OnInit       func(ctx context.Context, p *store.Principal)
+	Observe      func(ctx context.Context, call ToolCall) // optional: sees every tools/call after it ran
 }
 
 // Tool registers a typed JSON tool with the hub error envelope (for other packages).

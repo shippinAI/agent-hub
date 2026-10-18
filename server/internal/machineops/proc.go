@@ -1,6 +1,7 @@
 package machineops
 
 import (
+	"agenthub/internal/actionfeed"
 	"context"
 	"time"
 
@@ -63,7 +64,12 @@ func (o *Ops) ProcOp(ctx context.Context, p *store.Principal, lease string, fenc
 	var res wire.Result
 	var err error
 	if p.IsHuman && op == "proc.kill" {
+		feed := o.feedStart(ctx, p, machine, op, args, scope.Call{Op: op})
+		if feed != nil {
+			feed.base.Policy = &actionfeed.Policy{Decision: "allow", GrantID: "operator", Approver: p.ID}
+		}
 		res, err = o.send(ctx, machine, "operator", 0, cur, op, args, &wire.Grant{Capability: "proc.kill", Level: "read-only", Selector: map[string]any{}, Principal: p.ID}, 20*time.Second)
+		feed.finished(ctx, res, err)
 	} else {
 		res, err = o.Call(ctx, p, machine, "proc.*", op, args, scope.Call{}, 30*time.Second)
 	}

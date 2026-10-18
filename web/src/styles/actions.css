@@ -1,0 +1,30 @@
+/* Action feed (39) and audit retention admin (40). */
+.action-feed { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.action-card { min-width: 0; overflow-wrap: anywhere; border: 1px solid var(--border); border-left: 3px solid var(--border); border-radius: var(--radius); background: var(--card); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.action-card.action-ok { border-left-color: var(--green); } .action-card.action-error { border-left-color: var(--red); }
+.action-card.action-denied { border-left-color: var(--amber); } .action-card.action-running { border-left-color: var(--blue); }
+.action-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.action-title { font-family: var(--mono); font-size: 14px; }
+.action-meta { margin-left: auto; font-size: 12.5px; }
+.action-error { color: var(--red); margin: 0; font-size: 13.5px; }
+.argv { display: flex; flex-direction: column; gap: 4px; }
+.argv-cwd { font-size: 12.5px; } .argv-cwd code { font-family: var(--mono); }
+.argv-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.argv-chip { font-family: var(--mono); font-size: 12.5px; background: var(--muted); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; white-space: pre-wrap; word-break: break-all; }
+.policy-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; }
+.disclosure { border-top: 1px solid var(--border); padding-top: 6px; }
+.disclosure-head { margin: 0; font-size: 13px; }
+.disclosure-trigger { display: inline-flex; align-items: center; gap: 4px; background: none; border: 0; color: var(--fg-muted); font-weight: 600; cursor: pointer; padding: 2px 0; outline: none; }
+.disclosure-trigger[data-focus-visible] { outline: 2px solid var(--ring); border-radius: 4px; }
+.disclosure-trigger .chev { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; transition: transform .15s; }
+.disclosure[data-expanded] .disclosure-trigger .chev { transform: rotate(90deg); }
+.disclosure-panel { padding-top: 6px; }
+.output, .diff { font-family: var(--mono); font-size: 12.5px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; margin: 0; max-height: 320px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+.output-stderr { color: var(--red); }
+.diff-line { display: block; } .diff-add { background: var(--green-soft); color: var(--green); } .diff-del { background: var(--red-soft); color: var(--red); }
+.diff-hunk { color: var(--violet); } .diff-head { color: var(--fg-muted); font-weight: 600; }
+.output-tabs .tablist { margin-bottom: 6px; }
+.knob-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.knob-cell { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.plain-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"agenthub/internal/access"
+	"agenthub/internal/actionfeed"
 	"agenthub/internal/bridgehub"
 	"agenthub/internal/machines"
 	"agenthub/internal/store"
@@ -23,6 +24,7 @@ type Ops struct {
 	Access   *access.Service
 	Machines *machines.Service
 	Hub      *bridgehub.Hub
+	Feed     *actionfeed.Recorder // optional: every call lands in the action feed (39)
 }
 
 // Call runs op with args under the caller's grant. action is the policy action (exec, fs.read, ...).
@@ -30,19 +32,25 @@ func (o *Ops) Call(ctx context.Context, p *store.Principal, machine, action, op 
 	if p.Kind == "machine" {
 		return wire.Result{}, store.Fail(403, "policy_denied", "machine principals cannot call machine tools")
 	}
-	set, _ := o.St.LoadSettings(ctx)
-	if !o.Hub.Connected(machine, time.Duration(2*set.Int("bridge_poll_seconds", 25)+5)*time.Second) {
-		return wire.Result{}, store.Fail(503, "machine_offline", "the bridge on %s is not connected", machine)
-	}
 	if c.Op == "" {
 		c.Op = op // the tool op authorizes as the op its capability covers
 	}
-	u, err := o.Access.Authorize(ctx, p, machine, action, c)
-	if err != nil {
+	feed := o.feedStart(ctx, p, machine, op, args, c)
+	set, _ := o.St.LoadSettings(ctx)
+	if !o.Hub.Connected(machine, time.Duration(2*set.Int("bridge_poll_seconds", 25)+5)*time.Second) {
+		err := store.Fail(503, "machine_offline", "the bridge on %s is not connected", machine)
+		feed.denied(ctx, err)
 		return wire.Result{}, err
 	}
+	u, err := o.Access.Authorize(ctx, p, machine, action, c)
+	if err != nil {
+		feed.denied(ctx, err)
+		return wire.Result{}, err
+	}
+	feed.allowed(ctx, u)
 	g := &wire.Grant{Capability: u.Capability, Level: u.Level, Selector: u.Selector, Principal: p.ID}
 	res, err := o.send(ctx, machine, u.GrantID, u.Version, 0, op, args, g, timeout)
+	feed.finished(ctx, res, err)
 	fp := access.Fingerprint(append(append([]string{}, c.Argv...), c.Paths...))
 	code := ""
 	if err != nil {

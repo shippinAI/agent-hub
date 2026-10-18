@@ -79,3 +79,6 @@ func (s Settings) String(key, fallback string) string {
 	}
 	return v
 }
+
+// Admin is the configuration-write rule for other packages: a human principal and a policy allow of admin.<action>.
+func (w *W) Admin(action string) error { return w.admin(action) }

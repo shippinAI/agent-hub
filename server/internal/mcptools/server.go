@@ -40,6 +40,9 @@ func Handler(st *store.Store, br *stream.Broker, res *hubauth.Resolver, ext Ext)
 	if ext.Register != nil {
 		ext.Register(s)
 	}
+	if ext.Observe != nil {
+		s.AddReceivingMiddleware(observe(ext.Observe))
+	}
 	h := mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server { return s },
 		&mcp.StreamableHTTPOptions{Stateless: true, JSONResponse: true})
 	verify := func(ctx context.Context, tok string, _ *http.Request) (*auth.TokenInfo, error) {

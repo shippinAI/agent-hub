@@ -8,5 +8,6 @@ import './styles/layout.css';
 import './styles/board.css';
 import './styles/devagotchi.css';
 import './styles/gate.css';
+import './styles/actions.css';
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

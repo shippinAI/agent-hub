@@ -2,11 +2,15 @@ package devapi
 
 import (
 	"context"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
 	"agenthub/internal/access"
+	"agenthub/internal/actionfeed"
+	"agenthub/internal/auditkeep"
 	"agenthub/internal/auth"
 	"agenthub/internal/bridgehub"
 	"agenthub/internal/catalog"
@@ -38,9 +42,20 @@ func Build(ctx context.Context, st *store.Store, res *auth.Resolver, br *stream.
 	acc := &access.Service{St: st, Policy: gates}
 	ops := &machineops.Ops{St: st, Access: acc, Machines: ms, Hub: hub}
 	acc.Notify = ops
+	keep := &auditkeep.Service{St: st}
+	if sg, err := auditkeep.SignerFromFile(os.Getenv("HUB_AUDIT_SIGNING_KEY_FILE")); err != nil {
+		log.Printf("auditkeep: archive signing off: %v", err)
+	} else {
+		keep.Signer = sg
+	}
+	feed := &actionfeed.Recorder{St: st, Keep: keep}
+	ops.Feed = feed
+	actions := stream.NewFor("hub_actions", `SELECT coalesce(max(id),0) FROM action_events`)
+	go actions.Run(ctx, st.DB)
+	go keep.Run(ctx)
 	a := &API{St: st, Machines: ms, Access: acc, Ops: ops, Hub: hub, Catalog: &catalog.Service{St: st}, Policy: pol,
-		Providers: &providers.Service{St: st},
-		Guides:    &guides.Service{St: st, HubURL: cfg.PublicURL}, Subs: &subs.Service{St: st, Box: box}}
+		Providers: &providers.Service{St: st}, Keep: keep, Feed: feed, Actions: actions,
+		Guides: &guides.Service{St: st, HubURL: cfg.PublicURL}, Subs: &subs.Service{St: st, Box: box}}
 	a.Guides.Hooks = guideHooks{a}
 	ext := mcptools.Ext{Instructions: Instructions, Register: func(s *mcp.Server) {
 		a.accessTools(s)
@@ -50,7 +65,8 @@ func Build(ctx context.Context, st *store.Store, res *auth.Resolver, br *stream.
 		a.guideResources(ctx, s)
 		a.policyTools(s)
 		a.providerTools(s)
-	}, OnInit: func(c context.Context, p *store.Principal) { _ = acc.AgentResumed(c, p.ID, "mcp_session") }}
+	}, OnInit: func(c context.Context, p *store.Principal) { _ = acc.AgentResumed(c, p.ID, "mcp_session") },
+		Observe: a.observeTool}
 	srv := &httpapi.Server{St: st, Auth: res, Broker: br, Cfg: cfg, MCP: mcptools.Handler(st, br, res, ext)}
 	a.Srv = srv
 	srv.Extra = func(mux *http.ServeMux) { a.Mount(mux) }

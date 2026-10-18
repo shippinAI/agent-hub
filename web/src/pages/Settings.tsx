@@ -1,4 +1,5 @@
 import { Tab, TabList, TabPanel, Tabs } from 'react-aria-components';
+import { AuditRetention } from './AuditRetention';
 import { useHub } from '../lib/hub';
 import { go } from '../lib/route';
 import { Notice } from '../ui/Notice';
@@ -25,12 +26,14 @@ export function Settings({ tab }: { tab: string }) {
           <Tab id="workflows" className="tab">Workflows</Tab>
           <Tab id="lease" className="tab">Leases & limits</Tab>
           <Tab id="catalog" className="tab">Catalog</Tab>
+          <Tab id="retention" className="tab">Audit retention</Tab>
         </TabList>
         <TabPanel id="policies" className="tabpanel"><Policies /></TabPanel>
         <TabPanel id="roles" className="tabpanel"><Roles /></TabPanel>
         <TabPanel id="workflows" className="tabpanel"><Workflows /></TabPanel>
         <TabPanel id="lease" className="tabpanel"><Knobs /></TabPanel>
         <TabPanel id="catalog" className="tabpanel"><Catalog /></TabPanel>
+        <TabPanel id="retention" className="tabpanel"><AuditRetention /></TabPanel>
       </Tabs>
     </div>
   );
