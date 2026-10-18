@@ -9,7 +9,7 @@ cd "$root/bridge"
 for t in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64; do
   os=${t%/*}; arch=${t#*/}; ext=""
   [ "$os" = windows ] && ext=".exe"
-  GOOS=$os GOARCH=$arch CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" \
+  GOOS=$os GOARCH=$arch CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -X devagotchi/bridge/buildinfo.Version=${VERSION:-$(git describe --tags --always 2>/dev/null || echo dev)}" \
     -o "$out/devagotchi-bridge-$os-$arch$ext" ./cmd/devagotchi-bridge
   echo "built devagotchi-bridge-$os-$arch$ext"
 done
