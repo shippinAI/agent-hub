@@ -16,6 +16,12 @@ import { MachineDetail } from './pages/dev/MachineDetail';
 import { Requests } from './pages/dev/Requests';
 import { Grants } from './pages/dev/Grants';
 import { Subscriptions } from './pages/dev/Subscriptions';
+import { Guides } from './pages/dev/Guides';
+import { GuideEditor } from './pages/dev/GuideEditor';
+import { GuideUpdates } from './pages/dev/GuideUpdates';
+import { GuiSessions } from './pages/dev/GuiSessions';
+import { GuiSession } from './pages/dev/GuiSession';
+import { RoleBindings } from './pages/dev/RoleBindings';
 import { ResumeAlert } from './pages/dev/ResumeAlert';
 
 function devPage(a: string | undefined, b: string | undefined) {
@@ -24,6 +30,12 @@ function devPage(a: string | undefined, b: string | undefined) {
     case 'requests': return <Requests />;
     case 'grants': return <Grants />;
     case 'subscriptions': return <Subscriptions />;
+    case 'guides': return <Guides />;
+    case 'guide': return <GuideEditor id={String(b)} />;
+    case 'guide-updates': return <GuideUpdates />;
+    case 'gui-sessions': return <GuiSessions />;
+    case 'gui-session': return <GuiSession id={String(b)} />;
+    case 'role-bindings': return <RoleBindings />;
     default: return <Machines />;
   }
 }

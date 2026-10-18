@@ -35,3 +35,36 @@
 @media (max-width: 640px) {
   .split { grid-template-columns: 1fr; } .page { padding: 14px; } .table-card { font-size: 13px; }
 }
+
+/* Devagotchi: guides, GUI sessions, role bindings, catalog */
+.w-sm { max-width: 14rem; }
+.split { display: grid; grid-template-columns: 1fr minmax(18rem, 22rem); gap: 1rem; align-items: start; }
+@media (max-width: 860px) { .split { grid-template-columns: 1fr; } }
+
+.runner { border: 1px solid var(--border); border-radius: 12px; background: var(--card); padding: 1rem; display: flex; flex-direction: column; gap: .75rem; }
+.runner-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.runner-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .25rem; counter-reset: step; }
+.runner-step { display: flex; justify-content: space-between; gap: .5rem; padding: .35rem .5rem; border-radius: 8px; counter-increment: step; color: var(--fg-muted); }
+.runner-step::before { content: counter(step) ". "; color: var(--fg-muted); }
+.runner-step-title { flex: 1; }
+.runner-step.is-done { color: var(--fg-muted); text-decoration: line-through; opacity: .7; }
+.runner-step.is-current { background: var(--bg-subtle); color: var(--fg); font-weight: 600; }
+.runner-current { border-top: 1px solid var(--border); padding-top: .75rem; display: flex; flex-direction: column; gap: .5rem; }
+.runner-current h3 { margin: 0; }
+
+.step-card { display: flex; flex-direction: column; gap: .5rem; }
+.diff-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+.diff-row { display: flex; flex-direction: column; gap: .25rem; padding: .5rem; border: 1px solid var(--border); border-radius: 8px; }
+
+.matrix-card { overflow-x: auto; }
+.matrix td, .matrix th { vertical-align: top; min-width: 13rem; }
+.role-cell { display: flex; flex-direction: column; gap: .5rem; }
+.role-bind { display: flex; flex-direction: column; gap: .25rem; border: 1px solid var(--border); border-radius: 8px; padding: .4rem; }
+.role-prio { display: flex; flex-direction: column; align-items: center; }
+.prio-btn { border: 1px solid var(--border); background: var(--card); border-radius: 6px; cursor: pointer; line-height: 1; padding: .1rem .3rem; color: var(--fg-muted); }
+.role-fallback { opacity: .85; }
+
+.frame-meta { display: flex; flex-direction: column; gap: .75rem; }
+.frame-placeholder { display: grid; place-items: center; aspect-ratio: 16/9; background: var(--bg-subtle); border: 1px dashed var(--border); border-radius: 8px; color: var(--fg-muted); }
+.log-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .25rem; }
+.log-row { display: flex; gap: .5rem; align-items: center; }

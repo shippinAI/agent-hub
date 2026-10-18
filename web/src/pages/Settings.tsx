@@ -6,6 +6,7 @@ import { Knobs } from './Knobs';
 import { Policies } from './Policies';
 import { Roles } from './Roles';
 import { Workflows } from './Workflows';
+import { Catalog } from './dev/Catalog';
 
 // Everything here is data: editing it changes behaviour without a deploy. Writes need a human admin.
 export function Settings({ tab }: { tab: string }) {
@@ -23,11 +24,13 @@ export function Settings({ tab }: { tab: string }) {
           <Tab id="roles" className="tab">Roles</Tab>
           <Tab id="workflows" className="tab">Workflows</Tab>
           <Tab id="lease" className="tab">Leases & limits</Tab>
+          <Tab id="catalog" className="tab">Catalog</Tab>
         </TabList>
         <TabPanel id="policies" className="tabpanel"><Policies /></TabPanel>
         <TabPanel id="roles" className="tabpanel"><Roles /></TabPanel>
         <TabPanel id="workflows" className="tabpanel"><Workflows /></TabPanel>
         <TabPanel id="lease" className="tabpanel"><Knobs /></TabPanel>
+        <TabPanel id="catalog" className="tabpanel"><Catalog /></TabPanel>
       </Tabs>
     </div>
   );
