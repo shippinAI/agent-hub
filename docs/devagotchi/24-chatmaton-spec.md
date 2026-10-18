@@ -16,7 +16,7 @@ cited. Nothing is hardcoded: modes, roles, providers, icons, prompts, limits and
 
 ## Data model additions (new tables, `tenant_id` from day one per D8)
 - `model_endpoints(id, provider_id, kind: cli_worker|api_router|signin_plan, model_slug, display_label, icon_ref,
-  capabilities jsonb, terms_status, version)` — `icon_ref` points into an editable icon set (SVG asset rows), so the
+  capabilities jsonb, version)` — `icon_ref` points into an editable icon set (SVG asset rows), so the
   provider/model chip is data. Vendor logos only where the vendor's brand rules allow; otherwise a neutral glyph +
   label (**inference**; Anthropic forbids implying endorsement, [legal](https://code.claude.com/docs/en/legal-and-compliance)).
 - `rooms(id, name, mode_id, participants jsonb, settings jsonb, visibility, version)`;
@@ -31,7 +31,7 @@ cited. Nothing is hardcoded: modes, roles, providers, icons, prompts, limits and
 - A **tab** is a view of one room (or one thread in it). All tabs read the same room state from the hub; switching
   tabs never forks state. Open tabs sync over the SSE stream (`room.*` events).
 - Each tab header shows `ProviderChip`s (icon + provider + model label, from `model_endpoints`) for its seats, with a
-  `Tooltip` for model details and terms badge (verified/unverified). A tab whose model is offline shows the honest
+  `Tooltip` for model details and last-turn usage ([33](33-cost-data-and-ui.md)). A tab whose model is offline shows the honest
   presence state ([15](15-live-ops.md)).
 - Phone: tabs become a `Select` of rooms; seats as a horizontal chip row.
 
@@ -73,7 +73,7 @@ reusing the Requests inbox pattern. Agent-generated widgets in a room render as 
 ## Limits and costs (data)
 Per room and per seat: token budget, max turns, max parallel seats, timeout; router spend caps per virtual key
 ([05](05-subscriptions.md)); OpenAI per-app weekly limits are set by the user in ChatGPT, and we show them as
-read-only hints when the API exposes them (**unverified** whether it does).
+read-only hints when the API exposes them. Usage, quota and budgets: [30](30-cost-tracking.md), [33](33-cost-data-and-ui.md).
 
 ## Decision (Jesse, 2026-10-18)
 Local edition is free, non-profit, personal use in the user's own devspace. The user signs in to each official client (Claude Code, Codex, Grok, Antigravity, Cursor) themselves; Chatmaton drives those clients and pulls/combines their state. No "unverified" badge; not a blocker.

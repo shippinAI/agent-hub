@@ -17,7 +17,7 @@
 |---|---|---|---|
 | D3 | Approval channel | hub card only / MCP elicitation only / both | Both, hub card canonical |
 | D5 | Secret store | Postgres + pgcrypto with a local key file / OS keychain on the bridge / external vault (cloud) | Personal: local key file 0600 + pgcrypto; cloud: KMS-wrapped per-tenant keys |
-| D6 | Accept that Claude/ChatGPT subscriptions run only as on-device official CLIs (hub workers), never proxied? Non-interactive worker use is unverified as "ordinary use" | accept / API keys only | Accept, with a visible "unverified" badge |
+| D6 | Accept that Claude/ChatGPT subscriptions run only as on-device official CLIs (hub workers), never proxied? Non-interactive worker use is unverified as "ordinary use" | accept / API keys only | **Decided 2026-10-18: accept** for the free, personal local edition; users sign in themselves; no badge ([29](29-provider-matrix.md)) |
 | D8 | Tenancy in the personal edition | `tenant_id` from day one / add in phase 7 | New tables get it in phase 1; existing tables in phase 7 |
 | D9 | macOS sandbox fallback if `sandbox-exec` goes away | Endpoint Security / VM / refuse sandboxed grants | Refuse (read-only only) until decided |
 | D11 | Audit anchoring | none / periodic hash export to a file or git / external timestamping | Daily export of the head hash to a file the operator keeps |
@@ -34,9 +34,7 @@
 | D24 | Wayland compositors without RemoteDesktop (wlroots) | capture only / fall back to X11 via Xwayland / refuse GUI | Capture only, input reported `unsupported` |
 
 ## Unverified items carried in this spec
-- OpenAI policy on third-party reuse of ChatGPT sign-in: now documented as the Sign in with ChatGPT programme (partners + open source), see [23](23-chatmaton-research.md); kept here until D6 is answered.
-- xAI subscription-vs-API reuse (no clause found in the ToS updated 2026-10-12).
-- Whether running official CLIs non-interactively as workers counts as ordinary use (all vendors).
+- Hosted edition only: OpenAI's Sign in with ChatGPT programme ([23](23-chatmaton-research.md)). The local edition question is closed by D6.
 - Long-term availability of macOS `sandbox-exec`.
 - macOS Screen Recording needing a relaunch after first grant (community source only); Accessibility PPPC deprecation in macOS 26.2 (third-party wiki); launchd-started helpers failing TCC responsible-process checks on macOS 26 (forum report). See [11](11-gui-control.md).
 - Window move/resize of other apps on Wayland (compositor-specific; no portal found).

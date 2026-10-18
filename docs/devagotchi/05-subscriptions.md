@@ -12,11 +12,11 @@ A **role binding** maps (role, chat app) → subscription, with priority and fal
 |---|---|---|---|
 | Anthropic | Only through Claude Code / native apps. Third parties may not offer Claude.ai login or route requests through Free/Pro/Max credentials ([legal & compliance](https://code.claude.com/docs/en/legal-and-compliance)) | API key via router | **Verified** (per the research, 2026-10-17) |
 | OpenAI | Codex supports Sign in with ChatGPT in its own app/CLI/IDE ([Codex auth](https://developers.openai.com/codex/auth)); third-party reuse of ChatGPT credentials | API key via router | Update 2026-10-18: OpenAI now runs **Sign in with ChatGPT** for approved partners and open-source apps ([23](23-chatmaton-research.md) row 5); still treated like Anthropic until D6 is answered |
-| xAI | No clause found on subscription-vs-API reuse ([x.ai ToS](https://x.ai/legal/terms-of-service)) | API key via router | **Unverified**; default to API key only |
+| xAI | No clause found on subscription-vs-API reuse ([x.ai ToS](https://x.ai/legal/terms-of-service)) | API key via router | Grok Build sign-in drives the official CLI ([29](29-provider-matrix.md) row 3) |
 Consequences, enforced in code (code rule: `cli_login` subscriptions can bind only to a worker principal running on the named machine):
 - The hub **never** proxies, stores, copies, or replays a subscription token or cookie.
 - A `cli_login` worker is launched by the user (or by the bridge under a user-approved `exec` grant whose argv is the official CLI) and talks to the hub over MCP. The chat itself stays inside the vendor's CLI.
-- Whether running the official CLI non-interactively as a task worker is "ordinary use" is **unverified** for each vendor; `providers.terms_status` and `terms_note` show this in the UI, and decision D6 asks Jesse to accept it.
+- Decided (Jesse, 2026-10-18, D6): the local edition is free, non-profit and personal; the user signs in to each official client and Chatmaton drives it. No terms badge; `terms_note` is plain info. Full list: [29](29-provider-matrix.md).
 
 ## Dispatch
 1. A task gets a role label (e.g. `role:reviewer`). Lane rules still apply (`distinct_from_previous`).

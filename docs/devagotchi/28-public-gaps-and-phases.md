@@ -71,8 +71,7 @@ connector checks pass with a reviewer test account.
 7. Own the mesh control plane but reuse the BSD-3 NetBird client; settle AGPL obligations before hosting it.
 
 ## Open questions for Jesse
-1. D6 per provider: accept local orchestration of Claude Code, Grok Build, Antigravity, Cursor CLI with the user's
-   own login, shown as "unverified"? (Anthropic's "ordinary use" wording is the main risk, [23](23-chatmaton-research.md).)
+1. ~~D6~~ decided 2026-10-18: local orchestration with the user's own login, no badge ([29](29-provider-matrix.md)).
 2. Apply to OpenAI's Sign in with ChatGPT partner programme for hosted Chatmaton? Is the local edition open source
    (the open-source path is documented separately)?
 3. WardenClyffe: is it derived from NetBird's AGPL server parts, and will Shippin publish changes or buy a licence?
