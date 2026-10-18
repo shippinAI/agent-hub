@@ -1,0 +1,30 @@
+# podman-setup guide, linux steps, in disposable container  2026-10-17 22:43:15 EDT
+## present step: podman version
+  Client:        Podman Engine
+  Version:       5.4.2
+  API Version:   5.4.2
+  Go Version:    go1.24.4
+  Built:         Sun Dec 21 16:42:01 2025
+  Build Origin:  Debian
+  OS/Arch:       linux/amd64
+## verify step:  podman run --storage-driver=vfs --network=host --cgroups=disabled --rm quay.io/podman/hello
+  !... Hello Podman World ...!
+  
+           .--"--.           
+         / -     - \         
+        / (O)   (O) \        
+     ~~~| -=(,Y,)=- |         
+      .---. /`  \   |~~      
+   ~/  o  o \~~~~.----. ~~   
+    | =(X)= |~  / (O (O) \   
+     ~~~~~~~  ~| =(Y_)=-  |   
+    ~~~~    ~~~|   U      |~~ 
+  
+  Project:   https://github.com/containers/podman
+  Website:   https://podman.io
+  Desktop:   https://podman-desktop.io
+  Documents: https://docs.podman.io
+  YouTube:   https://youtube.com/@Podman
+  X/Twitter: @Podman_io
+  Mastodon:  @Podman_io@fosstodon.org
+## OK: guide steps ran in the disposable container; the box host was not touched.
