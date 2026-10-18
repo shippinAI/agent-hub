@@ -26,6 +26,7 @@ type Ended struct {
 type Service struct {
 	St     *store.Store
 	Notify Notifier
+	Policy PolicyGate // optional external PDP (HUB_POLICY_URL); nil = grants only
 }
 
 func (s *Service) notify(ctx context.Context, e []Ended) {

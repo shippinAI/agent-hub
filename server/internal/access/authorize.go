@@ -24,8 +24,12 @@ type Use struct {
 
 // Authorize is per-call check 1 (03): policy allows the op, then a live grant for this principal, machine,
 // capability, selector and level exists (task lease still held, uses left). It consumes one use.
+// When a PolicyGate is set it is asked first, and a deny or an unreachable PDP blocks the call.
 func (s *Service) Authorize(ctx context.Context, p *store.Principal, machine, action string, c scope.Call) (Use, error) {
 	var u Use
+	if err := s.policyCheck(ctx, p, machine, c); err != nil {
+		return u, err
+	}
 	_, err := s.St.Write(ctx, p, "", "grant_check", nil, func(w *store.W) (any, error) {
 		var disabled, guiPaused bool
 		if err := w.Row(`SELECT disabled, gui_paused, sandbox_kind FROM machines WHERE id=$1`, machine).Scan(&disabled, &guiPaused, &u.SandboxKind); err != nil {
