@@ -30,23 +30,26 @@ type deps struct {
 }
 
 // Handler returns the /mcp handler wrapped in bearer-token auth.
-func Handler(st *store.Store, br *stream.Broker, res *hubauth.Resolver) http.Handler {
+func Handler(st *store.Store, br *stream.Broker, res *hubauth.Resolver, ext Ext) http.Handler {
 	s := mcp.NewServer(&mcp.Implementation{Name: "agent-hub", Version: "0.1.0"},
-		&mcp.ServerOptions{Instructions: Instructions})
+		&mcp.ServerOptions{Instructions: Instructions + ext.Instructions})
 	d := deps{st: st, br: br}
 	d.readTools(s)
 	d.leaseTools(s)
 	d.editTools(s)
+	if ext.Register != nil {
+		ext.Register(s)
+	}
 	h := mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server { return s },
 		&mcp.StreamableHTTPOptions{Stateless: true, JSONResponse: true})
 	verify := func(ctx context.Context, tok string, _ *http.Request) (*auth.TokenInfo, error) {
 		p, err := res.Token(ctx, tok)
-		if err != nil {
+		if err != nil || p.Kind == "machine" {
 			return nil, auth.ErrInvalidToken
 		}
 		return &auth.TokenInfo{UserID: p.ID, Extra: map[string]any{"principal": p}}, nil
 	}
-	return auth.RequireBearerToken(verify, &auth.RequireBearerTokenOptions{AllowMissingExpiration: true})(h)
+	return auth.RequireBearerToken(verify, &auth.RequireBearerTokenOptions{AllowMissingExpiration: true})(onInit(h, ext.OnInit))
 }
 
 func principal(req *mcp.CallToolRequest) *store.Principal {

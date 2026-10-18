@@ -14,8 +14,8 @@ import (
 	"agenthub/internal/auth"
 	"agenthub/internal/config"
 	"agenthub/internal/db"
-	"agenthub/internal/httpapi"
-	"agenthub/internal/mcptools"
+	"agenthub/internal/devapi"
+	"agenthub/internal/secretbox"
 	"agenthub/internal/store"
 	"agenthub/internal/stream"
 )
@@ -47,7 +47,12 @@ func main() {
 	br := stream.New()
 	go br.Run(ctx, pool)
 	go st.RunReaper(ctx)
-	srv := &httpapi.Server{St: st, Auth: res, Broker: br, Cfg: c, MCP: mcptools.Handler(st, br, res)}
+	box, err := secretbox.Open(c.SecretKeyFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	srv, api := devapi.Build(ctx, st, res, br, c, box)
+	go api.Access.RunReaper(ctx, 2*time.Second)
 	hs := &http.Server{Addr: c.Listen, Handler: srv.Handler(), ReadHeaderTimeout: 10 * time.Second}
 	go func() {
 		<-ctx.Done()

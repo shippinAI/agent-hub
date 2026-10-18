@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
-	"devagotchi/bridge/scope"
 	"agenthub/internal/store"
+	"devagotchi/bridge/scope"
 )
 
 // Narrow is an approve body; any field left empty keeps what was requested. Nothing may be wider.

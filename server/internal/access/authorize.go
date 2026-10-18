@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"strings"
 
-	"devagotchi/bridge/scope"
 	"agenthub/internal/store"
+	"devagotchi/bridge/scope"
 )
 
 // Use is the grant a call runs under.

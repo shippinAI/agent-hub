@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
-	"devagotchi/bridge/scope"
 	"agenthub/internal/store"
+	"devagotchi/bridge/scope"
 )
 
 // Req is request_access. A preset expands into its items (one request row each, one group).

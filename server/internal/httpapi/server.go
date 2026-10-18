@@ -28,6 +28,8 @@ type Server struct {
 	Broker *stream.Broker
 	Cfg    config.Config
 	MCP    http.Handler
+	// Extra mounts more routes (the Devagotchi API and bridge endpoints).
+	Extra func(mux *http.ServeMux)
 }
 
 type handler func(w http.ResponseWriter, r *http.Request, p *store.Principal) (any, error)
@@ -38,6 +40,9 @@ func (s *Server) Handler() http.Handler {
 	s.taskRoutes(mux)
 	s.adminRoutes(mux)
 	s.eventRoutes(mux)
+	if s.Extra != nil {
+		s.Extra(mux)
+	}
 	if s.MCP != nil {
 		mux.Handle("/mcp", s.MCP)
 	}
@@ -53,22 +58,16 @@ func (s *Server) Handler() http.Handler {
 	return secHeaders(mux)
 }
 
-func secHeaders(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("X-Frame-Options", "DENY")
-		w.Header().Set("X-Content-Type-Options", "nosniff")
-		w.Header().Set("Referrer-Policy", "no-referrer")
-		w.Header().Set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:")
-		h.ServeHTTP(w, r)
-	})
-}
-
 // authed resolves the principal; cookie-less browser writes also need X-Hub-Client (CSRF guard).
 func (s *Server) authed(h handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		p, _, err := s.Auth.Identify(r)
 		if err != nil {
 			js(w, 401, map[string]any{"error": map[string]string{"code": "unauthenticated", "message": err.Error()}})
+			return
+		}
+		if p.Kind == "machine" {
+			js(w, 403, map[string]any{"error": map[string]string{"code": "policy_denied", "message": "machine tokens are for /bridge/v1 only"}})
 			return
 		}
 		if r.Method != "GET" && auth.Bearer(r) == "" && r.Header.Get("X-Hub-Client") == "" {

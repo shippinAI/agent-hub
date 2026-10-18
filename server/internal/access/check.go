@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"agenthub/internal/schemacheck"
-	"devagotchi/bridge/scope"
 	"agenthub/internal/store"
+	"devagotchi/bridge/scope"
 )
 
 // checkItem applies the code rules to one requested item: known capability at an offered level with a

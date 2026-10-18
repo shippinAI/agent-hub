@@ -9,15 +9,16 @@ import (
 
 // Config holds deployment wiring only. Behaviour (leases, WIP, roles...) lives in the DB settings table.
 type Config struct {
-	Listen       string // HUB_LISTEN, default 127.0.0.1:8088
-	DatabaseURL  string // from HUB_DATABASE_URL_FILE (preferred) or HUB_DATABASE_URL
-	HumanAuth    string // HUB_HUMAN_AUTH: none | tailscale-whois | proxy-header | dev
-	HeaderUser   string // HUB_PROXY_USER_HEADER (proxy-header)
-	HeaderSecret string // HUB_PROXY_SECRET_HEADER (proxy-header)
-	ProxySecret  string // from HUB_PROXY_SECRET_FILE
-	TailscaleBin string // HUB_TAILSCALE_BIN
-	DevLogin     string // HUB_DEV_LOGIN (dev, loopback only)
-	PublicURL    string // HUB_PUBLIC_URL, used in generated connect snippets
+	SecretKeyFile string // AES-256 key for write-only secrets (D5), created 0600 if missing
+	Listen        string // HUB_LISTEN, default 127.0.0.1:8088
+	DatabaseURL   string // from HUB_DATABASE_URL_FILE (preferred) or HUB_DATABASE_URL
+	HumanAuth     string // HUB_HUMAN_AUTH: none | tailscale-whois | proxy-header | dev
+	HeaderUser    string // HUB_PROXY_USER_HEADER (proxy-header)
+	HeaderSecret  string // HUB_PROXY_SECRET_HEADER (proxy-header)
+	ProxySecret   string // from HUB_PROXY_SECRET_FILE
+	TailscaleBin  string // HUB_TAILSCALE_BIN
+	DevLogin      string // HUB_DEV_LOGIN (dev, loopback only)
+	PublicURL     string // HUB_PUBLIC_URL, used in generated connect snippets
 }
 
 func env(k, def string) string {
@@ -46,6 +47,7 @@ func Load() (Config, error) {
 		DevLogin:     env("HUB_DEV_LOGIN", ""),
 	}
 	c.PublicURL = env("HUB_PUBLIC_URL", "http://"+c.Listen)
+	c.SecretKeyFile = env("HUB_SECRET_KEY_FILE", ".run/secrets/hub-secret.key")
 	var err error
 	if f := env("HUB_DATABASE_URL_FILE", ""); f != "" {
 		if c.DatabaseURL, err = readSecret(f); err != nil {

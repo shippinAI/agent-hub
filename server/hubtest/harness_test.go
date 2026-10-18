@@ -16,8 +16,8 @@ import (
 	"agenthub/internal/auth"
 	"agenthub/internal/config"
 	"agenthub/internal/db"
-	"agenthub/internal/httpapi"
-	"agenthub/internal/mcptools"
+	"agenthub/internal/devapi"
+	"agenthub/internal/secretbox"
 	"agenthub/internal/presets"
 	"agenthub/internal/store"
 	"agenthub/internal/stream"
@@ -31,6 +31,7 @@ type env struct {
 	st     *store.Store
 	pool   *pgxpool.Pool
 	tokens map[string]string
+	api    *devapi.API
 }
 
 // setup wipes the test DB, migrates, seeds presets and starts an httptest server.
@@ -67,10 +68,11 @@ func setup(t *testing.T) *env {
 	br := stream.New()
 	bctx, cancel := context.WithCancel(ctx)
 	go br.Run(bctx, pool)
-	srv := &httpapi.Server{St: st, Auth: res, Broker: br, Cfg: cfg, MCP: mcptools.Handler(st, br, res)}
+	box, _ := secretbox.FromKey(make([]byte, 32))
+	srv, api := devapi.Build(bctx, st, res, br, cfg, box)
 	hs := httptest.NewServer(srv.Handler())
 	t.Cleanup(func() { hs.Close(); cancel(); pool.Close() })
-	e := &env{t: t, url: hs.URL, st: st, pool: pool, tokens: map[string]string{}}
+	e := &env{t: t, url: hs.URL, st: st, pool: pool, tokens: map[string]string{}, api: api}
 	for _, id := range []string{"jesse", "claude-code", "codex", "cursor", "clyffy"} {
 		tok, err := st.CreateToken(ctx, store.System, id, "test", 0)
 		if err != nil {
