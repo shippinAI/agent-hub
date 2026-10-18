@@ -3,7 +3,12 @@ package store
 import (
 	"context"
 	"encoding/json"
+
+	"agenthub/internal/schemacheck"
 )
+
+// dedicated settings change only through their own endpoint, which enforces the spec's safety rules.
+var dedicated = map[string]string{"grant_default_preset": "PUT /api/v1/settings/grant_default_preset"}
 
 // SettingRow is one editable behaviour knob.
 type SettingRow struct {
@@ -22,6 +27,14 @@ func (s *Store) PutSetting(ctx context.Context, p *Principal, reqID string, in S
 		var v any
 		if json.Unmarshal(in.Value, &v) != nil {
 			return nil, errInvalid("value must be JSON")
+		}
+		if dedicated[in.Key] != "" {
+			return nil, fail(409, "use_dedicated_endpoint", "%s changes through %s (it has safety checks)", in.Key, dedicated[in.Key])
+		}
+		if in.Key == "guide_step_schema" {
+			if _, err := schemacheck.Compile(in.Value); err != nil {
+				return nil, errInvalid("guide_step_schema: %v", err)
+			}
 		}
 		var cur int64
 		err := w.row(`SELECT version FROM settings WHERE key=$1 FOR UPDATE`, in.Key).Scan(&cur)
