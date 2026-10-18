@@ -39,7 +39,7 @@ func onInit(h http.Handler, fn func(context.Context, *store.Principal)) http.Han
 		if r.Method == "POST" && r.Body != nil {
 			b, _ := io.ReadAll(io.LimitReader(r.Body, 4<<20))
 			r.Body = io.NopCloser(bytes.NewReader(b))
-			if bytes.Contains(b, []byte(`"method":"initialize"`)) || bytes.Contains(b, []byte(`"method": "initialize"`)) {
+			if sessionStart(b) {
 				if ti := auth.TokenInfoFromContext(r.Context()); ti != nil {
 					if p, ok := ti.Extra["principal"].(*store.Principal); ok {
 						go fn(context.WithoutCancel(r.Context()), p)
@@ -49,4 +49,14 @@ func onInit(h http.Handler, fn func(context.Context, *store.Principal)) http.Han
 		}
 		h.ServeHTTP(w, r)
 	})
+}
+
+// sessionStart reports a new client session: initialize (2025 spec) or server/discover (stateless revision).
+func sessionStart(b []byte) bool {
+	for _, m := range []string{"initialize", "server/discover"} {
+		if bytes.Contains(b, []byte(`"method":"`+m+`"`)) || bytes.Contains(b, []byte(`"method": "`+m+`"`)) {
+			return true
+		}
+	}
+	return false
 }

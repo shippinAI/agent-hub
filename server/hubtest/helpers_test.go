@@ -33,3 +33,15 @@ func (e *env) setSetting(key string, value any) {
 func num(v any) int64 { f, _ := v.(float64); return int64(f) }
 
 func taskOf(r resp) map[string]any { m, _ := r.Body["task"].(map[string]any); return m }
+
+// callList GETs a JSON array.
+func (e *env) callList(who, path string) []map[string]any {
+	r := e.call(who, "GET", path, nil)
+	l, _ := r.Body["list"].([]any)
+	out := []map[string]any{}
+	for _, x := range l {
+		m, _ := x.(map[string]any)
+		out = append(out, m)
+	}
+	return out
+}
