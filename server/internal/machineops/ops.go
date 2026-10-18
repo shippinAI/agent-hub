@@ -34,7 +34,9 @@ func (o *Ops) Call(ctx context.Context, p *store.Principal, machine, action, op 
 	if !o.Hub.Connected(machine, time.Duration(2*set.Int("bridge_poll_seconds", 25)+5)*time.Second) {
 		return wire.Result{}, store.Fail(503, "machine_offline", "the bridge on %s is not connected", machine)
 	}
-	c.Op = op
+	if c.Op == "" {
+		c.Op = op // the tool op authorizes as the op its capability covers
+	}
 	u, err := o.Access.Authorize(ctx, p, machine, action, c)
 	if err != nil {
 		return wire.Result{}, err

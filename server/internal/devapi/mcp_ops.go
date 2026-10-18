@@ -69,4 +69,5 @@ func (a *API) opsTools(s *mcp.Server) {
 		})
 	}
 	a.procTools(s)
+	a.machineToolTools(s)
 }
