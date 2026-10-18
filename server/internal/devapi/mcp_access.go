@@ -19,7 +19,7 @@ Machines (Devagotchi): machines_list -> request_access {machine, capability|pres
 	`Follow guides with guides_search, guide_run_start, guide_run_step. Never ask the operator for secrets.`
 
 type machineIn struct {
-	Machine string `json:"machine" jsonschema:"machine id"`
+	Machine string `json:"machine,omitempty" jsonschema:"machine id"`
 }
 
 type waitIn struct {

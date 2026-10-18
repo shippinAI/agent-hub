@@ -1,41 +1,41 @@
-# go test 2026-10-17 22:39 EDT
+# go test 2026-10-17 22:53 EDT
 go vet: ok
 === RUN   TestAccessFlowExecRevoke
---- PASS: TestAccessFlowExecRevoke (2.00s)
+--- PASS: TestAccessFlowExecRevoke (1.99s)
 === RUN   TestAuthTokensAndCSRF
---- PASS: TestAuthTokensAndCSRF (0.17s)
+--- PASS: TestAuthTokensAndCSRF (0.15s)
 === RUN   TestHashChainVerifyAndAppendOnly
     chain_test.go:37: tamper detected: row content does not match its hash
---- PASS: TestHashChainVerifyAndAppendOnly (0.16s)
+--- PASS: TestHashChainVerifyAndAppendOnly (0.15s)
 === RUN   TestExpiredLeaseReclaimedAndStaleFenceRejected
---- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.47s)
+--- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.46s)
 === RUN   TestReaperExpiresAndEscalates
 --- PASS: TestReaperExpiresAndEscalates (2.57s)
 === RUN   TestGuidesEditPublishImportRun
---- PASS: TestGuidesEditPublishImportRun (0.18s)
+--- PASS: TestGuidesEditPublishImportRun (0.17s)
 === RUN   TestIdempotencyKeys
 --- PASS: TestIdempotencyKeys (0.17s)
 === RUN   TestOptimisticConcurrency
---- PASS: TestOptimisticConcurrency (0.16s)
+--- PASS: TestOptimisticConcurrency (0.15s)
 === RUN   TestMCPToolsOverHTTP
 --- PASS: TestMCPToolsOverHTTP (0.20s)
 === RUN   TestPolicyAndSafetyRules
---- PASS: TestPolicyAndSafetyRules (0.19s)
+--- PASS: TestPolicyAndSafetyRules (0.18s)
 === RUN   TestClaimNextRaceNeverDoubleClaims
     race_test.go:70: 20 agents claimed 60 tasks: no task given twice, 60 unique fences
---- PASS: TestClaimNextRaceNeverDoubleClaims (0.39s)
+--- PASS: TestClaimNextRaceNeverDoubleClaims (0.40s)
 === RUN   TestRealBridgeExecRevoke
---- PASS: TestRealBridgeExecRevoke (2.65s)
+--- PASS: TestRealBridgeExecRevoke (2.69s)
 === RUN   TestRealBridgeGUI
---- PASS: TestRealBridgeGUI (2.31s)
+--- PASS: TestRealBridgeGUI (2.29s)
 === RUN   TestSSEStreamsEventsAndResumes
 --- PASS: TestSSEStreamsEventsAndResumes (0.51s)
 === RUN   TestSubscriptionsSecretsRouting
---- PASS: TestSubscriptionsSecretsRouting (0.19s)
+--- PASS: TestSubscriptionsSecretsRouting (0.20s)
 === RUN   TestUnsandboxedPolicyResumeAlertsDefaultPreset
 --- PASS: TestUnsandboxedPolicyResumeAlertsDefaultPreset (1.43s)
 PASS
-ok  	agenthub/hubtest	14.746s
+ok  	agenthub/hubtest	14.725s
 === RUN   TestSeedGuidesValidateAndLint
 --- PASS: TestSeedGuidesValidateAndLint (0.01s)
 === RUN   TestDockerDryRunPaths
@@ -50,12 +50,12 @@ ok  	agenthub/hubtest	14.746s
 === RUN   TestSignVerifyDiff
 --- PASS: TestSignVerifyDiff (0.00s)
 PASS
-ok  	agenthub/internal/guidekit	0.016s
+ok  	agenthub/internal/guidekit	0.017s
 === RUN   TestDecide
 --- PASS: TestDecide (0.00s)
 PASS
-ok  	agenthub/internal/policy	0.002s
+ok  	agenthub/internal/policy	0.001s
 === RUN   TestSealOpenAndKeyFile
 --- PASS: TestSealOpenAndKeyFile (0.00s)
 PASS
-ok  	agenthub/internal/secretbox	0.002s
+ok  	agenthub/internal/secretbox	0.001s

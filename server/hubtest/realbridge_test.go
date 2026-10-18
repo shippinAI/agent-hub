@@ -79,8 +79,15 @@ func TestRealBridgeExecRevoke(t *testing.T) {
 		t.Fatalf("real exec: %v", out)
 	}
 
-	// Sandbox confinement: writing outside the granted path must fail (read-only bind of the rest of the fs).
-	out, _ = callTool(t, cs, "exec", map[string]any{"machine": "realpc", "argv": []string{"sleep", "0"}})
+	// Sandbox confinement: a file outside the granted path is not bound into the sandbox, so it cannot be read.
+	secret := filepath.Join(t.TempDir(), "outside-secret.txt")
+	if err := os.WriteFile(secret, []byte("TOP-SECRET-DO-NOT-LEAK"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	out, _ = callTool(t, cs, "exec", map[string]any{"machine": "realpc", "argv": []string{"cat", secret}})
+	if strings.Contains(stringOf(out["stdout"]), "TOP-SECRET") {
+		t.Fatalf("sandbox leaked a file outside the grant: %v", out)
+	}
 
 	// Mid-run revoke kills the running process.
 	done := make(chan map[string]any, 1)
