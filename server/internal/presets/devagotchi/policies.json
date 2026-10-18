@@ -10,6 +10,7 @@
   {"name": "admins edit and publish guides", "subject": "role:admin", "action": "guide.*", "effect": "allow", "priority": 10},
   {"name": "admins manage secrets", "subject": "role:admin", "action": "secret.*", "effect": "allow", "priority": 10},
   {"name": "admins manage subscriptions", "subject": "role:admin", "action": "subscription.*", "effect": "allow", "priority": 10},
+  {"name": "admins manage role bindings", "subject": "role:admin", "action": "role_binding.*", "effect": "allow", "priority": 10},
   {"name": "admins edit the catalog", "subject": "role:admin", "action": "catalog.*", "effect": "allow", "priority": 10},
   {"name": "admins edit tenants", "subject": "role:admin", "action": "tenant.*", "effect": "allow", "priority": 10},
   {"name": "admins view retained GUI images", "subject": "role:admin", "action": "gui.view", "effect": "allow", "priority": 10},

@@ -1,6 +1,7 @@
 package hubtest
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 )
@@ -18,3 +19,5 @@ func errCode(out map[string]any) string {
 	}
 	return ""
 }
+
+func fmtAny(v any) string { b, _ := json.Marshal(v); return string(b) }
