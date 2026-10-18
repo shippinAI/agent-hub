@@ -5,6 +5,9 @@ import (
 	"regexp"
 )
 
+// SecretNote flags notes that look like they carry a credential.
+var SecretNote = regexp.MustCompile(`(?i)(api[_-]?key|password|secret|token)\s*[:=]\s*\S{6,}`)
+
 var placeholder = regexp.MustCompile(`\{\{\s*([a-z_]+(?:\.[a-z0-9_]+)?)\s*\}\}`)
 
 // Fill replaces {{hub_url}} and {{vars.x}} in s; unknown names stay as written so a reader sees the gap.

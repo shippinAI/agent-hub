@@ -23,12 +23,7 @@ func admin(ctx context.Context, st *store.Store, args []string) error {
 		if err := fs.Parse(args[1:]); err != nil {
 			return err
 		}
-		p, err := presets.Default()
-		if err != nil {
-			return err
-		}
-		n, err := st.Seed(ctx, store.SeedData{Settings: p.Settings, Roles: p.Roles, Principals: p.Principals,
-			Workflows: p.Workflows, Projects: p.Projects, Policies: p.Policies}, *login)
+		n, err := presets.SeedAll(ctx, st, *login)
 		if err != nil {
 			return err
 		}

@@ -69,7 +69,7 @@ func Sign(b Bundle, priv ed25519.PrivateKey) (Bundle, error) {
 // TrustedKey is one entry of the guide_signing_keys setting.
 type TrustedKey struct {
 	ID     string `json:"id"`
-	PubB64 string `json:"public_key"`
+	PubB64 string `json:"key"`
 }
 
 // Verify checks the bundle against the trusted keys; an unknown key id or a bad signature is refused.

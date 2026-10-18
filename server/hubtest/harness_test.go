@@ -59,9 +59,7 @@ func setup(t *testing.T) *env {
 		t.Fatal(err)
 	}
 	st := store.New(pool)
-	p, _ := presets.Default()
-	if _, err := st.Seed(ctx, store.SeedData{Settings: p.Settings, Roles: p.Roles, Principals: p.Principals,
-		Workflows: p.Workflows, Projects: p.Projects, Policies: p.Policies}, "jesse@test"); err != nil {
+	if _, err := presets.SeedAll(ctx, st, "jesse@test"); err != nil {
 		t.Fatal(err)
 	}
 	cfg := config.Config{Listen: "127.0.0.1:0", HumanAuth: "none", PublicURL: "http://hub.test"}
