@@ -16,7 +16,7 @@
 | # | Decision | Options | Proposed default |
 |---|---|---|---|
 | D3 | Approval channel | hub card only / MCP elicitation only / both | Both, hub card canonical |
-| D5 | Secret store | Postgres + pgcrypto with a local key file / OS keychain on the bridge / external vault (cloud) | Personal: local key file 0600 + pgcrypto; cloud: KMS-wrapped per-tenant keys |
+| D5 | Secret store | Postgres + pgcrypto with a local key file / OS keychain on the bridge / external vault (cloud) | Personal: local key file 0600 + pgcrypto; cloud: KMS-wrapped per-tenant keys; **2026-10-18: hosted uses Vaultix (rebranded Infisical, [36](36-vaultix.md)); local keeps the built-in store, Vaultix optional** |
 | D6 | Accept that Claude/ChatGPT subscriptions run only as on-device official CLIs (hub workers), never proxied? Non-interactive worker use is unverified as "ordinary use" | accept / API keys only | **Decided 2026-10-18: accept** for the free, personal local edition; users sign in themselves; no badge ([29](29-provider-matrix.md)) |
 | D21 | Subscriptions in the hosted edition | API keys only / user's own sign-in | **Decided 2026-10-18: user's own sign-in in both editions** (hosted workspace or own machine); [ADR 0002](adr/0002-provider-schema-and-adapters.md) |
 | D8 | Tenancy in the personal edition | `tenant_id` from day one / add in phase 7 | New tables get it in phase 1; existing tables in phase 7 |

@@ -49,7 +49,7 @@ Nothing in this spec is built yet. Writing it touched only `docs/` in this repo,
 24. [Chatmaton spec](devagotchi/24-chatmaton-spec.md): editions, tabs, rooms, roles, routines, approvals
 25. [Desktop Commander lessons](devagotchi/25-dc-lessons.md): DC issues by category and how we avoid each
 26. [Connectivity layers](devagotchi/26-connectivity.md): HTTPS first, then an owned WireGuard mesh
-27. [Gap tracking](devagotchi/27-gap-tracking.md): register G-01…G-24, board tasks, ADRs ([ADR 0001](devagotchi/adr/0001-track-gaps-as-tasks-and-adrs.md))
+27. [Gap tracking](devagotchi/27-gap-tracking.md): register G-01…G-27, board tasks, ADRs ([ADR 0001](devagotchi/adr/0001-track-gaps-as-tasks-and-adrs.md))
 28. [Public gaps, phases, open questions](devagotchi/28-public-gaps-and-phases.md)
 29. [Provider matrix](devagotchi/29-provider-matrix.md): the 18 subscriptions, surface per client, model list sources
 30. [Cost and usage sources](devagotchi/30-cost-tracking.md): price lists, usage APIs, quota windows, accounting rules, router option
@@ -57,6 +57,9 @@ Nothing in this spec is built yet. Writing it touched only `docs/` in this repo,
 32. [Provider local state](devagotchi/32-provider-local-state.md): config, MCP and session paths, read surfaces, detection per OS
 33. [Cost data model and UI](devagotchi/33-cost-data-and-ui.md): ledger tables, budgets and alerts, default graphs, React Aria screens
 34. [Provider schema](devagotchi/34-provider-schema.md): one row shape for every provider, five adapters, router option ([ADR 0002](devagotchi/adr/0002-provider-schema-and-adapters.md))
+35. [Tenant defaults](devagotchi/35-tenant-defaults.md): Shippin console layers, lock modes, inheritance and overrides
+36. [Vaultix](devagotchi/36-vaultix.md): rebranded Infisical, Doppler-style additions, A2UI secret surfaces
+37. [Subscription sign-in](devagotchi/37-subscription-sign-in.md): ChatGPT/Codex and Grok official flows, hub and console use
 
 ## Rules that apply everywhere
 - Every source, host, policy, role, capability, risk, grant preset, guide, provider, shell profile, and setting is **editable data** in the UI, seeded as presets and never hardcoded. Code holds only the safety invariants (listed in 01).
