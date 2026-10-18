@@ -36,6 +36,15 @@ labels are rows seeded from `server/internal/presets/default.json` and editable 
 versioned (optimistic concurrency) and lands in the audit chain. Only safety rules live in code: fencing, versions,
 idempotency, append-only hash-chained events, humans-only admin/force-release, no self-escalation, CSRF guard.
 
+## External policy gate (gold-policy)
+
+Set `HUB_POLICY_URL` (e.g. `http://127.0.0.1:8097/v1`, a `gold-policy serve` PDP) and optionally `HUB_POLICY_TOKEN_FILE`.
+Every bridge call (`access.Authorize`) then asks `POST /decide` first, with tool `hub:<op>`, argv, paths and hosts plus the
+machine id (so WI/TX/VA region globs match machine names). A deny returns `policy_denied` (403); a timeout (3 s), non-200
+or malformed answer returns `policy_unavailable` (503): fail closed, like a Kubernetes webhook with `failurePolicy: Fail`.
+Neither consumes a grant use, and both append `policy.denied` to the audit chain. Unset = grants only (old behaviour).
+Proof: `server/hubtest/policygate_test.go`, `test-evidence/policy-gate.txt`.
+
 ## Tests
 
 ```sh
