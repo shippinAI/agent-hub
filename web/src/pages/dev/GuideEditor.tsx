@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { get, post, errText } from '../../lib/api';
 import { useData } from '../../lib/useData';
-import type { Guide, GuideStep } from '../../lib/dtypes';
+import type { Guide, GuideStep, GuideVersion } from '../../lib/dtypes';
 import { Tab, TabList, TabPanel, Tabs } from 'react-aria-components';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/Field';
@@ -14,14 +14,19 @@ import { GuidePreview } from './GuidePreview';
 // (POST /guides/{id}/versions) with a bumped semver; publishing happens on the Versions tab.
 export function GuideEditor({ id }: { id: string }) {
   const guide = useData(() => get<Guide>(`/guides/${id}`), [id]);
+  const vers = useData(() => get<GuideVersion[]>(`/guides/${id}/versions`), [id]);
   const [steps, setSteps] = useState<GuideStep[]>([]);
   const [notes, setNotes] = useState('');
   const [semver, setSemver] = useState('');
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   useEffect(() => {
-    if (guide.data) { setSteps((guide.data.steps as GuideStep[]) ?? []); setSemver(bump(guide.data.semver)); }
-  }, [guide.data]);
+    if (!guide.data) return;
+    const own = (guide.data.steps as GuideStep[]) ?? [];
+    const latest = (vers.data?.[0]?.steps as GuideStep[]) ?? [];
+    setSteps(own.length ? own : latest);
+    setSemver(bump(guide.data.semver ?? vers.data?.[0]?.semver ?? null));
+  }, [guide.data, vers.data]);
   if (guide.error) return <Notice tone="error">{errText(guide.error)}</Notice>;
   if (!guide.data) return <Card><p role="status">Loading…</p></Card>;
   const g = guide.data;

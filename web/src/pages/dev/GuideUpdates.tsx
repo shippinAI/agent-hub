@@ -46,7 +46,7 @@ export function GuideUpdates() {
               <span className="hint">{ago(u.created_at)}</span>
             </div>
             <p>{u.change_notes}</p>
-            <div className="row gap-1">
+            <div className="row gap-1 wrap">
               {u.status === 'pending' && <>
                 <Button size="sm" variant="primary" onPress={() => decide(u, 'accept')}>Accept</Button>
                 <Button size="sm" onPress={() => decide(u, 'merge')}>Merge into my override</Button>

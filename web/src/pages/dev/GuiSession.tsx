@@ -14,7 +14,7 @@ type Ev = { seq: number; at: string; actor: string; action: string; data: Record
 // the action log, a lease countdown, and Stop. It refreshes live via the SSE-backed useData hook.
 export function GuiSession({ id }: { id: string }) {
   const d = useData(() => get<Detail>(`/gui-sessions/${id}`), [id]);
-  const log = useData(() => get<Ev[]>('/events?action=gui.&order=desc&limit=100'), [id]);
+  const log = useData(() => get<{ events: Ev[] }>('/events?action=gui.&order=desc&limit=100'), [id]);
   const now = useNow();
   const [err, setErr] = useState<string | null>(null);
   if (d.error) return <Notice tone="error">{errText(d.error)}</Notice>;
@@ -22,7 +22,7 @@ export function GuiSession({ id }: { id: string }) {
   const { session: s, artifacts } = d.data;
   const last = artifacts[0];
   const stop = async () => { setErr(null); try { await post(`/gui-sessions/${id}/end`); d.reload(); } catch (e) { setErr(errText(e)); } };
-  const evs = (log.data ?? []).filter((e) => String((e.data ?? {}).session ?? (e.data ?? {}).gui_session ?? '') === id);
+  const evs = (log.data?.events ?? []).filter((e) => String((e.data ?? {}).session ?? (e.data ?? {}).gui_session ?? '') === id);
   const live = s.state === 'active' && !s.ended_at;
   return (
     <div className="page">
