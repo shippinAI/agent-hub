@@ -56,7 +56,6 @@ func (g *Gate) Level() string { return g.P.SandboxLevel }
 // Limits returns the policy limits.
 func (g *Gate) Limits() Limits { return g.P.Limits }
 
-
 func (g *Gate) grants(c string) []Grant {
 	out := []Grant{}
 	for _, gr := range g.P.Grants {

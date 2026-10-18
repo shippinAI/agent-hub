@@ -29,7 +29,7 @@ func getConfig() Tool {
 			cfg := map[string]any{
 				"version": buildinfo.Version, "commit": buildinfo.CommitOrVCS(), "mode": e.Mode, "config_path": e.ConfigPath,
 				"sandbox": map[string]any{"kind": sandbox.Kind(), "level": e.Gate.Level()},
-				"roots": rw, "read_only_roots": ro, "client_roots_narrowing": e.Gate.Narrowed(),
+				"roots":   rw, "read_only_roots": ro, "client_roots_narrowing": e.Gate.Narrowed(),
 				"capabilities": p.Capabilities, "grants": grants, "limits": e.Gate.Limits(),
 				"shell": p.Shell, "shell_profiles": p.ShellProfiles, "code_runners": p.CodeRunners,
 				"url_hosts": p.URLHosts, "egress_hosts": p.EgressHosts, "env_allow": p.EnvAllow, "history": p.History,

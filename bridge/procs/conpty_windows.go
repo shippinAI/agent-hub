@@ -14,12 +14,12 @@ import (
 // conProc is a process attached to a Windows pseudo console (ConPTY), so console programs such as ssh.exe,
 // REPLs and installers see a real console (DC #702) without ever opening a visible window.
 type conProc struct {
-	pi    windows.ProcessInformation
-	hpc   windows.Handle
-	in    *os.File
-	out   *os.File
-	job   windows.Handle
-	pid   int
+	pi  windows.ProcessInformation
+	hpc windows.Handle
+	in  *os.File
+	out *os.File
+	job windows.Handle
+	pid int
 }
 
 func (p *conProc) Pid() int         { return p.pid }

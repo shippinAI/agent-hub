@@ -15,9 +15,9 @@ const maxScanBytes = 64 << 20
 
 // Hooks lets the caller confine and extend the walk.
 type Hooks struct {
-	Allow   func(path string) bool           // symlink targets must stay inside the policy roots
+	Allow   func(path string) bool             // symlink targets must stay inside the policy roots
 	Extract func(path string) ([]string, bool) // non-text formats (xlsx) as searchable lines
-	Emit    func(Hit) bool                    // false = stop (max results reached)
+	Emit    func(Hit) bool                     // false = stop (max results reached)
 	Skipped func()
 }
 

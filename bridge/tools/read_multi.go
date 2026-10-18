@@ -30,4 +30,3 @@ func readMultipleFiles() Tool {
 			return out
 		})
 }
-

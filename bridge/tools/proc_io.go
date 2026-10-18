@@ -87,4 +87,3 @@ func session(e *Env, pid int) (*procs.Session, error) {
 	}
 	return s, nil
 }
-
