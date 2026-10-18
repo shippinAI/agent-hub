@@ -16,6 +16,7 @@ import (
 	"agenthub/internal/machineops"
 	"agenthub/internal/machines"
 	"agenthub/internal/mcptools"
+	"agenthub/internal/policygate"
 	"agenthub/internal/secretbox"
 	"agenthub/internal/store"
 	"agenthub/internal/stream"
@@ -28,6 +29,9 @@ func Build(ctx context.Context, st *store.Store, res *auth.Resolver, br *stream.
 	ms := &machines.Service{St: st, Box: box}
 	hub.Seen = func(m string, connected bool) { ms.Seen(context.Background(), m, connected) }
 	acc := &access.Service{St: st}
+	if g := policygate.FromEnv(); g != nil {
+		acc.Policy = g // HUB_POLICY_URL: every bridge call is also checked by gold-policy, fail-closed
+	}
 	ops := &machineops.Ops{St: st, Access: acc, Machines: ms, Hub: hub}
 	acc.Notify = ops
 	a := &API{St: st, Machines: ms, Access: acc, Ops: ops, Hub: hub, Catalog: &catalog.Service{St: st},
