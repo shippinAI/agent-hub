@@ -49,7 +49,7 @@ Nothing in this spec is built yet. Writing it touched only `docs/` in this repo,
 24. [Chatmaton spec](devagotchi/24-chatmaton-spec.md): editions, tabs, rooms, roles, routines, approvals
 25. [Desktop Commander lessons](devagotchi/25-dc-lessons.md): DC issues by category and how we avoid each
 26. [Connectivity layers](devagotchi/26-connectivity.md): HTTPS first, then an owned WireGuard mesh
-27. [Gap tracking](devagotchi/27-gap-tracking.md): register G-01…G-27, board tasks, ADRs ([ADR 0001](devagotchi/adr/0001-track-gaps-as-tasks-and-adrs.md))
+27. [Gap tracking](devagotchi/27-gap-tracking.md): register G-01…G-29, board tasks, ADRs ([ADR 0001](devagotchi/adr/0001-track-gaps-as-tasks-and-adrs.md))
 28. [Public gaps, phases, open questions](devagotchi/28-public-gaps-and-phases.md)
 29. [Provider matrix](devagotchi/29-provider-matrix.md): the 18 subscriptions, surface per client, model list sources
 30. [Cost and usage sources](devagotchi/30-cost-tracking.md): price lists, usage APIs, quota windows, accounting rules, router option
@@ -61,6 +61,7 @@ Nothing in this spec is built yet. Writing it touched only `docs/` in this repo,
 36. [Vaultix](devagotchi/36-vaultix.md): rebranded Infisical, Doppler-style additions, A2UI secret surfaces
 37. [Subscription sign-in](devagotchi/37-subscription-sign-in.md): ChatGPT/Codex and Grok official flows, hub and console use
 38. [Action feed and learning](devagotchi/38-action-feed-learning.md): recorded-action event schema (on_behalf_of, purpose_plain, terms, output refs), gold-rec ingest, React Aria live feed with expandable code and term tooltips
+39. [Chatmaton on Gold: build plan](devagotchi/39-chatmaton-gold-build-plan.md): app-shell and sync research, architecture by SWEBOK area, phases P1 chat page (Claude Code, Codex, Grok over WebSocket) to P5 devpulse sync
 
 ## Rules that apply everywhere
 - Every source, host, policy, role, capability, risk, grant preset, guide, provider, shell profile, and setting is **editable data** in the UI, seeded as presets and never hardcoded. Code holds only the safety invariants (listed in 01).
