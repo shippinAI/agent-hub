@@ -7,10 +7,25 @@ import (
 	"devagotchi/bridge/scope"
 )
 
-// PolicyGate is an external policy decision point (gold-policy's PDP) asked before any grant is
-// checked. A deny or an unreachable PDP blocks the call; no grant use is consumed.
+// PolicyGate is a policy decision point asked before any grant is checked: the hub's own change-policy
+// module and, optionally, an external PDP. A deny or an error blocks the call; no grant use is consumed.
 type PolicyGate interface {
-	Decide(ctx context.Context, principal, machine string, c scope.Call) (PolicyVerdict, error)
+	Decide(ctx context.Context, p *store.Principal, machine string, c scope.Call) (PolicyVerdict, error)
+}
+
+// Gates asks each gate in order; the first deny or error wins (strictest wins).
+type Gates []PolicyGate
+
+// Decide implements PolicyGate.
+func (g Gates) Decide(ctx context.Context, p *store.Principal, machine string, c scope.Call) (PolicyVerdict, error) {
+	v := PolicyVerdict{Allow: true}
+	for _, one := range g {
+		var err error
+		if v, err = one.Decide(ctx, p, machine, c); err != nil || !v.Allow {
+			return v, err
+		}
+	}
+	return v, nil
 }
 
 // PolicyVerdict is the PDP's answer.
@@ -26,11 +41,14 @@ func (s *Service) policyCheck(ctx context.Context, p *store.Principal, machine s
 	if s.Policy == nil {
 		return nil
 	}
-	v, err := s.Policy.Decide(ctx, p.ID, machine, c)
+	v, err := s.Policy.Decide(ctx, p, machine, c)
 	status, code, msg := 403, "policy_denied", v.Reason
 	switch {
 	case err != nil:
 		status, code, msg = 503, "policy_unavailable", "policy decision point unavailable, failing closed: "+err.Error()
+		if e, ok := store.AsError(err); ok && e.Code == "policy_unavailable" {
+			msg = e.Message
+		}
 	case v.Allow:
 		return nil
 	}

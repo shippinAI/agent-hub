@@ -19,6 +19,7 @@ type execIn struct {
 	TimeoutS int               `json:"timeout_s,omitempty" jsonschema:"default 120, max exec_timeout_max_seconds (preset 1800)"`
 	Stdin    string            `json:"stdin,omitempty"`
 	Level    string            `json:"sandbox_level,omitempty" jsonschema:"optional: run at a narrower level than the grant"`
+	Ticket   string            `json:"ticket,omitempty" jsonschema:"change ticket id when the policy needs one (argv must equal the ticket's command)"`
 }
 
 type fsIn struct {
@@ -42,7 +43,7 @@ func (a *API) opsTools(s *mcp.Server) {
 				t = 120
 			}
 			t = min(t, set.Int("exec_timeout_max_seconds", 1800))
-			c := scope.Call{Argv: in.Argv, Level: in.Level}
+			c := scope.Call{Argv: in.Argv, Level: in.Level, Ticket: in.Ticket}
 			if in.Cwd != "" {
 				c.Paths = []string{in.Cwd}
 			}

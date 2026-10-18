@@ -10,6 +10,7 @@ import (
 	"agenthub/internal/auth"
 	"agenthub/internal/bridgehub"
 	"agenthub/internal/catalog"
+	"agenthub/internal/changepolicy"
 	"agenthub/internal/config"
 	"agenthub/internal/guides"
 	"agenthub/internal/httpapi"
@@ -28,13 +29,15 @@ func Build(ctx context.Context, st *store.Store, res *auth.Resolver, br *stream.
 	hub := bridgehub.New()
 	ms := &machines.Service{St: st, Box: box}
 	hub.Seen = func(m string, connected bool) { ms.Seen(context.Background(), m, connected) }
-	acc := &access.Service{St: st}
+	pol := &changepolicy.Service{St: st}
+	gates := access.Gates{changepolicy.Gate{S: pol}} // the hub's own policy module: always on, fail-closed
 	if g := policygate.FromEnv(); g != nil {
-		acc.Policy = g // HUB_POLICY_URL: every bridge call is also checked by gold-policy, fail-closed
+		gates = append(gates, g) // HUB_POLICY_URL: an external PDP must allow too
 	}
+	acc := &access.Service{St: st, Policy: gates}
 	ops := &machineops.Ops{St: st, Access: acc, Machines: ms, Hub: hub}
 	acc.Notify = ops
-	a := &API{St: st, Machines: ms, Access: acc, Ops: ops, Hub: hub, Catalog: &catalog.Service{St: st},
+	a := &API{St: st, Machines: ms, Access: acc, Ops: ops, Hub: hub, Catalog: &catalog.Service{St: st}, Policy: pol,
 		Guides: &guides.Service{St: st, HubURL: cfg.PublicURL}, Subs: &subs.Service{St: st, Box: box}}
 	a.Guides.Hooks = guideHooks{a}
 	ext := mcptools.Ext{Instructions: Instructions, Register: func(s *mcp.Server) {
@@ -43,6 +46,7 @@ func Build(ctx context.Context, st *store.Store, res *auth.Resolver, br *stream.
 		a.guiTools(s)
 		a.guideTools(s)
 		a.guideResources(ctx, s)
+		a.policyTools(s)
 	}, OnInit: func(c context.Context, p *store.Principal) { _ = acc.AgentResumed(c, p.ID, "mcp_session") }}
 	srv := &httpapi.Server{St: st, Auth: res, Broker: br, Cfg: cfg, MCP: mcptools.Handler(st, br, res, ext)}
 	a.Srv = srv

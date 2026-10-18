@@ -11,6 +11,7 @@ type Call struct {
 	App    string   // gui target app
 	Action string   // gui input action kind
 	Level  string   // requested sandbox level ("" = the grant's)
+	Ticket string   // change ticket the call runs under (hub policy gate only; the bridge ignores it)
 }
 
 // CapabilityFor maps an op to the capability that covers it.

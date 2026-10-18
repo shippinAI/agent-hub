@@ -7,6 +7,7 @@ import (
 	"agenthub/internal/access"
 	"agenthub/internal/bridgehub"
 	"agenthub/internal/catalog"
+	"agenthub/internal/changepolicy"
 	"agenthub/internal/guides"
 	"agenthub/internal/httpapi"
 	"agenthub/internal/machineops"
@@ -26,6 +27,7 @@ type API struct {
 	Catalog  *catalog.Service
 	Ops      *machineops.Ops
 	Hub      *bridgehub.Hub
+	Policy   *changepolicy.Service
 }
 
 type h = httpapi.Handler
@@ -38,6 +40,7 @@ func (a *API) Mount(mux *http.ServeMux) {
 	a.guideRoutes(reg)
 	a.subRoutes(reg)
 	a.catalogRoutes(reg)
+	a.policyRoutes(reg)
 	a.bridgeRoutes(mux)
 }
 

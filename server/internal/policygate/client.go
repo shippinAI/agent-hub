@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"agenthub/internal/access"
+	"agenthub/internal/store"
 	"devagotchi/bridge/scope"
 )
 
@@ -59,7 +60,8 @@ type answer struct {
 
 // Decide asks the PDP about one bridge call. The machine id is sent as a host, so region globs
 // (e.g. WI/TX/VA) match hub machines named after their site.
-func (c *Client) Decide(ctx context.Context, principal, machine string, call scope.Call) (access.PolicyVerdict, error) {
+func (c *Client) Decide(ctx context.Context, p *store.Principal, machine string, call scope.Call) (access.PolicyVerdict, error) {
+	principal := p.ID
 	if c.err != nil {
 		return access.PolicyVerdict{}, c.err
 	}
