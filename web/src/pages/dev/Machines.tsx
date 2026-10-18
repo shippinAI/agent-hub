@@ -36,7 +36,7 @@ export function Machines() {
                   <td><a href={`#/dev/machine/${m.id}`}><strong>{m.label}</strong></a></td>
                   <td>{m.os} · {m.kind}</td>
                   <td>
-                    <span className={`dot ${m.connected ? 'dot-green' : 'dot-grey'}`} aria-hidden /> {m.connected ? 'connected' : 'offline'}
+                    <span className={`dot ${m.connected ? 'dot-green' : 'dot-grey'}`} aria-hidden /> {m.online ? 'Online' : m.connected ? 'connected' : 'offline'}
                     {m.online && <span className="hint"> · ok {ago(m.last_exec_ok_at)}</span>}
                   </td>
                   <td><Badge tone={m.sandbox_kind === 'none' ? 'red' : 'neutral'}>{m.sandbox_kind}</Badge></td>

@@ -16,7 +16,7 @@ export function MachineDetail({ id }: { id: string }) {
   return (
     <div className="page">
       <header className="page-head"><h1>{d.label}</h1>
-        <span className={`dot ${d.connected ? 'dot-green' : 'dot-grey'}`} aria-hidden /> {d.connected ? 'connected' : 'offline'}</header>
+        <span className={`dot ${d.connected ? 'dot-green' : 'dot-grey'}`} aria-hidden /> {d.online ? 'Online' : d.connected ? 'connected' : 'offline'}</header>
       <Card title="Overview">
         <dl className="kv-grid">
           <Kv k="OS">{d.os} · {d.kind}</Kv>
