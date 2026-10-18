@@ -45,7 +45,8 @@ func (a *API) policyTools(s *mcp.Server) {
 		})
 	mcptools.Tool(s, "review_queue", "Reviewer role: change tickets waiting for review that you did not author.",
 		func(ctx context.Context, p *store.Principal, in queueIn) (any, error) {
-			return a.Policy.List(ctx, in.Status, p.ID)
+			ts, err := a.Policy.List(ctx, in.Status, p.ID)
+			return map[string]any{"tickets": ts}, err
 		})
 	mcptools.Tool(s, "review_ticket", "Reviewer role: one ticket with its evidence, reviews and what the policy would decide now. Note its sha256 for review_submit.",
 		func(ctx context.Context, p *store.Principal, in ticketIDIn) (any, error) {

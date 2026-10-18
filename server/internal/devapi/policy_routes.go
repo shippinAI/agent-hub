@@ -15,7 +15,6 @@ type rollbackIn struct {
 	Reason      string `json:"reason"`
 }
 
-
 func (a *API) policyRoutes(reg func(string, h)) {
 	reg("GET /api/v1/policy/doc", func(w http.ResponseWriter, r *http.Request, p *store.Principal) (any, error) {
 		return a.Policy.Current(r.Context(), r.URL.Query().Get("tenant"))

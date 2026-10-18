@@ -57,7 +57,7 @@ type Check struct {
 	ContainsID bool   `json:"contains_id,omitempty"` // file must mention the ticket id
 	Min        *int   `json:"min,omitempty"`         // number value / list length
 	Max        *int   `json:"max,omitempty"`
-	Role       string `json:"role,omitempty"`        // review: only reviewers holding this role count
+	Role       string `json:"role,omitempty"` // review: only reviewers holding this role count
 	Msg        string `json:"msg,omitempty"`
 }
 

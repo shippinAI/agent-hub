@@ -89,4 +89,3 @@ func shaJSON(v any) string {
 	h := sha256.Sum256(b)
 	return hex.EncodeToString(h[:])
 }
-
