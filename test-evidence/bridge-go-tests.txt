@@ -1,0 +1,11 @@
+?   	devagotchi/bridge/cmd/devagotchi-bridge	[no test files]
+?   	devagotchi/bridge/config	[no test files]
+ok  	devagotchi/bridge/fsops	0.009s
+?   	devagotchi/bridge/gui	[no test files]
+?   	devagotchi/bridge/hubclient	[no test files]
+ok  	devagotchi/bridge/netproxy	0.057s
+ok  	devagotchi/bridge/redact	0.002s
+?   	devagotchi/bridge/runner	[no test files]
+?   	devagotchi/bridge/sandbox	[no test files]
+ok  	devagotchi/bridge/scope	0.002s
+ok  	devagotchi/bridge/wire	0.002s

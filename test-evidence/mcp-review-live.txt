@@ -1,0 +1,12 @@
+PASS mcp-review: reviewer + ticket tools listed (53 tools)
+PASS mcp-review: real exec on the bridge (Linux 6.12.94+ x86_64)
+PASS mcp-review: rm -rf /etc denied by policy (grant allows rm) (- [destructive-root-delete] Recursive deletes of /, /etc, /home, /root or ~ are never allowed through the hub.)
+PASS mcp-review: ticket_create (draft)
+PASS mcp-review: snapshot evidence attached from a real exec
+PASS mcp-review: ticket submitted for review
+PASS mcp-review: change blocked until a reviewer PASS
+PASS mcp-review: author cannot review own ticket
+PASS mcp-review: ticket in Clyffy-Infra-Auditor review queue
+PASS mcp-review: reviewer sees evidence and the pending decision
+PASS mcp-review: Clyffy-Infra-Auditor PASS
+PASS mcp-review: PASS unlocked the change; it ran on the real bridge (exit 0: 1 lines )

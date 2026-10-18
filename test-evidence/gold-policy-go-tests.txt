@@ -1,0 +1,6 @@
+ok  	goldpolicy/hookio	0.003s
+ok  	goldpolicy/hubpdp	0.006s
+ok  	goldpolicy/pdp	0.014s
+ok  	goldpolicy/proof	0.002s
+ok  	goldpolicy/rules	0.013s
+ok  	goldpolicy/ruleset	0.013s

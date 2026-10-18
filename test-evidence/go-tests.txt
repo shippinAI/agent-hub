@@ -1,41 +1,53 @@
-# go test 2026-10-17 23:21 EDT
+# go test 2026-10-18 01:21 EDT
 go vet: ok
 === RUN   TestAccessFlowExecRevoke
 --- PASS: TestAccessFlowExecRevoke (2.00s)
 === RUN   TestAuthTokensAndCSRF
---- PASS: TestAuthTokensAndCSRF (0.15s)
+--- PASS: TestAuthTokensAndCSRF (0.16s)
 === RUN   TestHashChainVerifyAndAppendOnly
     chain_test.go:37: tamper detected: row content does not match its hash
 --- PASS: TestHashChainVerifyAndAppendOnly (0.16s)
 === RUN   TestExpiredLeaseReclaimedAndStaleFenceRejected
---- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.47s)
+--- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.48s)
 === RUN   TestReaperExpiresAndEscalates
---- PASS: TestReaperExpiresAndEscalates (2.56s)
+--- PASS: TestReaperExpiresAndEscalates (2.58s)
 === RUN   TestGuidesEditPublishImportRun
---- PASS: TestGuidesEditPublishImportRun (0.17s)
+--- PASS: TestGuidesEditPublishImportRun (0.19s)
 === RUN   TestIdempotencyKeys
---- PASS: TestIdempotencyKeys (0.27s)
+--- PASS: TestIdempotencyKeys (0.18s)
 === RUN   TestOptimisticConcurrency
---- PASS: TestOptimisticConcurrency (0.15s)
+--- PASS: TestOptimisticConcurrency (0.17s)
 === RUN   TestMCPToolsOverHTTP
---- PASS: TestMCPToolsOverHTTP (0.18s)
+--- PASS: TestMCPToolsOverHTTP (0.20s)
 === RUN   TestPolicyAndSafetyRules
 --- PASS: TestPolicyAndSafetyRules (0.19s)
+=== RUN   TestPolicyDocEditAndFailClosed
+    policydoc_test.go:70: agent edit refused; invalid doc refused; v2 disable took effect; stale base 409; rollback v3 denies again; WI geo block; tenant without policy -> policy_unavailable
+--- PASS: TestPolicyDocEditAndFailClosed (1.29s)
+=== RUN   TestPolicyGateBlocksBridgeCalls
+    policygate_test.go:103: allow passed, deny blocked without consuming a use, 500 and unreachable failed closed, 3 policy.denied events
+--- PASS: TestPolicyGateBlocksBridgeCalls (1.29s)
+=== RUN   TestPolicyGateRealPDP
+    policygate_test.go:110: HUB_TEST_POLICY_URL not set
+--- SKIP: TestPolicyGateRealPDP (0.00s)
 === RUN   TestClaimNextRaceNeverDoubleClaims
     race_test.go:70: 20 agents claimed 60 tasks: no task given twice, 60 unique fences
---- PASS: TestClaimNextRaceNeverDoubleClaims (0.40s)
+--- PASS: TestClaimNextRaceNeverDoubleClaims (0.77s)
 === RUN   TestRealBridgeExecRevoke
---- PASS: TestRealBridgeExecRevoke (2.67s)
+--- PASS: TestRealBridgeExecRevoke (2.68s)
 === RUN   TestRealBridgeGUI
---- PASS: TestRealBridgeGUI (2.30s)
+--- PASS: TestRealBridgeGUI (2.32s)
+=== RUN   TestReviewerPassUnlocksChange
+    review_test.go:116: plain allowed; rm -rf / denied; no ticket denied; self-review and non-reviewer refused; stale hash refused; PASS unlocked; other command denied; edit made the PASS stale; 2 allow/5 deny logged
+--- PASS: TestReviewerPassUnlocksChange (1.33s)
 === RUN   TestSSEStreamsEventsAndResumes
---- PASS: TestSSEStreamsEventsAndResumes (0.51s)
+--- PASS: TestSSEStreamsEventsAndResumes (0.53s)
 === RUN   TestSubscriptionsSecretsRouting
---- PASS: TestSubscriptionsSecretsRouting (0.16s)
+--- PASS: TestSubscriptionsSecretsRouting (0.20s)
 === RUN   TestUnsandboxedPolicyResumeAlertsDefaultPreset
---- PASS: TestUnsandboxedPolicyResumeAlertsDefaultPreset (1.43s)
+--- PASS: TestUnsandboxedPolicyResumeAlertsDefaultPreset (1.44s)
 PASS
-ok  	agenthub/hubtest	14.775s
+ok  	agenthub/hubtest	19.176s
 === RUN   TestSeedGuidesValidateAndLint
 --- PASS: TestSeedGuidesValidateAndLint (0.01s)
 === RUN   TestDockerDryRunPaths
@@ -55,7 +67,13 @@ ok  	agenthub/internal/guidekit	0.015s
 --- PASS: TestDecide (0.00s)
 PASS
 ok  	agenthub/internal/policy	0.002s
+=== RUN   TestReviewCheck
+--- PASS: TestReviewCheck (0.00s)
+=== RUN   TestApprovalNeedsHuman
+--- PASS: TestApprovalNeedsHuman (0.00s)
+PASS
+ok  	agenthub/internal/policyrules	0.004s
 === RUN   TestSealOpenAndKeyFile
 --- PASS: TestSealOpenAndKeyFile (0.00s)
 PASS
-ok  	agenthub/internal/secretbox	0.003s
+ok  	agenthub/internal/secretbox	0.002s

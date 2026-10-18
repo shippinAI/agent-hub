@@ -1,0 +1,12 @@
+PASS 1280: Machines lists clyffy-box Online -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-machines-online-1280.png
+PASS 1280: Try it shows rm -rf /etc denied by destructive-root-delete -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-policy-denial-1280.png
+PASS 1280: decision log (hash-chained) shows real denials -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-decisions-1280.png
+PASS 1280: CHG-20261018052053 passed by Clyffy-Infra-Auditor, change unlocked -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-review-pass-1280.png
+PASS 1280: policy editor (Rules) -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-policy-editor-1280.png
+PASS 1280: policy editor (JSON) -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-policy-json-1280.png
+PASS 390: Machines lists clyffy-box Online -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-machines-online-390.png
+PASS 390: Try it shows rm -rf /etc denied by destructive-root-delete -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-policy-denial-390.png
+PASS 390: decision log (hash-chained) shows real denials -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-decisions-390.png
+PASS 390: CHG-20261018052053 passed by Clyffy-Infra-Auditor, change unlocked -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-review-pass-390.png
+PASS 390: policy editor (Rules) -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-policy-editor-390.png
+PASS 390: policy editor (JSON) -> /workspace/projects/agent-hub/test-evidence/screenshots/gate-policy-json-390.png
