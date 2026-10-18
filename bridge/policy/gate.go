@@ -56,8 +56,6 @@ func (g *Gate) Level() string { return g.P.SandboxLevel }
 // Limits returns the policy limits.
 func (g *Gate) Limits() Limits { return g.P.Limits }
 
-// Roots lists the effective read+write and read-only roots.
-func (g *Gate) Roots() (rw, ro []string) { return g.roots, g.ro }
 
 func (g *Gate) grants(c string) []Grant {
 	out := []Grant{}

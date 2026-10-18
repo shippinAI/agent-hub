@@ -116,3 +116,17 @@ func settle(b *Buffer, d time.Duration) bool {
 		}
 	}
 }
+
+// Done is closed when the process exits.
+func (s *Session) Done() <-chan struct{} { return s.done }
+
+// MarkRead moves the unread cursor to the end of the output.
+func (s *Session) MarkRead() {
+	lines, first := s.out.Lines()
+	s.mu.Lock()
+	s.cursor = first + len(lines)
+	if n := len(lines); n > 0 && !strings.HasSuffix(lines[n-1], "\n") {
+		s.cursor--
+	}
+	s.mu.Unlock()
+}

@@ -24,6 +24,7 @@ type Policy struct {
 	Capabilities   []string       `toml:"capabilities"`    // always-on capabilities
 	URLHosts       []string       `toml:"url_hosts"`       // hosts read_file may fetch ("*" = any); empty = none
 	EgressHosts    []string       `toml:"egress_hosts"`    // hosts sandboxed processes may reach through the proxy
+	EnvAllow       []string       `toml:"env_allow"`       // environment variables passed into processes
 	Shell          string         `toml:"shell"`           // shell profile for string commands
 	History        bool           `toml:"history"`         // keep local tool-call history (never sent anywhere)
 	FeedbackURL    string         `toml:"feedback_url"`    // what the feedback tool points at

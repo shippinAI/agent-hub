@@ -118,7 +118,7 @@ func Set(p Policy, key, value string) (Policy, error) {
 	return out, out.Validate()
 }
 
-var listKeys = []string{"roots", "read_only_roots", "capabilities", "url_hosts", "egress_hosts", "secret_patterns", "prompt_patterns"}
+var listKeys = []string{"roots", "read_only_roots", "capabilities", "url_hosts", "egress_hosts", "env_allow", "secret_patterns", "prompt_patterns"}
 
 func parseLike(old any, leaf, v string) (any, error) {
 	switch old.(type) {

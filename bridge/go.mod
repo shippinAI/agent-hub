@@ -7,6 +7,7 @@ require (
 	github.com/coder/websocket v1.8.15
 	github.com/creack/pty v1.1.24
 	github.com/go-pdf/fpdf v0.9.0
+	github.com/google/jsonschema-go v0.4.3
 	github.com/jezek/xgb v1.3.1
 	github.com/ledongthuc/pdf v0.0.0-20260907135840-6c8c28e0e8a0
 	github.com/pdfcpu/pdfcpu v0.16.2
