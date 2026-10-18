@@ -14,7 +14,7 @@ import (
 // admin runs bootstrap tasks as the "system" actor. Secrets go to files (0600), never to stdout.
 func admin(ctx context.Context, st *store.Store, args []string) error {
 	if len(args) == 0 {
-		return errors.New("usage: hub-server admin seed [--admin-login L] | token create --principal ID --out FILE [--name N] [--expires-days D]")
+		return errors.New("usage: hub-server admin seed [--admin-login L] | token create --principal ID --out FILE [--name N] [--expires-days D] | audit anchor [--dir DIR]")
 	}
 	switch args[0] {
 	case "seed":
@@ -59,6 +59,11 @@ func admin(ctx context.Context, st *store.Store, args []string) error {
 		}
 		fmt.Printf("token %s (%s…) for %s written to %s\n", tok.Info.ID, tok.Info.Prefix, *pid, *out)
 		return nil
+	case "audit":
+		if len(args) < 2 || args[1] != "anchor" {
+			return errAuditUsage
+		}
+		return auditAnchor(ctx, st, args[2:])
 	}
 	return fmt.Errorf("unknown admin command %q", args[0])
 }
