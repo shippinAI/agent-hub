@@ -52,9 +52,9 @@ func New(c Config) *Server {
 	env.ConfigPath = c.ConfigPath
 	s := &Server{env: env, roots: newRootCache()}
 	s.MCP = mcp.NewServer(&mcp.Implementation{Name: "devagotchi", Title: "Devagotchi", Version: buildinfo.Version},
-		&mcp.ServerOptions{Instructions: instructions, RootsListChangedHandler: func(_ context.Context, r *mcp.RootsListChangedRequest) {
-			s.roots.forget(r.Session)
-		}})
+		&mcp.ServerOptions{Instructions: instructions,
+			InitializedHandler:      func(_ context.Context, r *mcp.InitializedRequest) { s.roots.refresh(r.Session) },
+			RootsListChangedHandler: func(_ context.Context, r *mcp.RootsListChangedRequest) { s.rootsChanged(r.Session) }})
 	for _, t := range tools.All() {
 		s.MCP.AddTool(describe(t), s.handler(t))
 	}
@@ -81,7 +81,11 @@ func describe(t tools.Tool) *mcp.Tool {
 func (s *Server) handler(t tools.Tool) mcp.ToolHandler {
 	return func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		env := *s.env
-		env.Gate = s.roots.gate(ctx, req.Session, s.env.Gate)
+		g, input := s.roots.resolve(ctx, req, s.env.Gate)
+		if input != nil {
+			return input, nil
+		}
+		env.Gate = g
 		if ip := req.Session.InitializeParams(); ip != nil && ip.ClientInfo != nil {
 			env.Client = ip.ClientInfo.Name
 		}
@@ -90,4 +94,12 @@ func (s *Server) handler(t tools.Tool) mcp.ToolHandler {
 		s.record(t.Name, req.Params.Arguments, out, env.Client, start)
 		return result(out), nil
 	}
+}
+
+func (s *Server) rootsChanged(ss *mcp.ServerSession) {
+	if ip := ss.InitializeParams(); ip != nil && ip.ProtocolVersion >= newProtocol {
+		s.roots.forget(ss)
+		return
+	}
+	s.roots.refresh(ss)
 }

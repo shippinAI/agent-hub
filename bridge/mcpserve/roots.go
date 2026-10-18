@@ -14,56 +14,66 @@ import (
 )
 
 // rootCache remembers each session's MCP roots. Client roots can only narrow the policy, never widen it.
+// Before protocol 2026-07-28 roots are fetched after initialize and on roots/list_changed; from 2026-07-28 on,
+// server-to-client requests are forbidden, so the first tool call asks for them as a multi-round-trip input request.
 type rootCache struct {
 	mu  sync.Mutex
-	got map[*mcp.ServerSession][]string
+	got map[*mcp.ServerSession]*rootEntry
 }
 
-func newRootCache() *rootCache { return &rootCache{got: map[*mcp.ServerSession][]string{}} }
+type rootEntry struct {
+	ready chan struct{}
+	roots []string
+}
 
-func (c *rootCache) forget(ss *mcp.ServerSession) {
+func newRootCache() *rootCache { return &rootCache{got: map[*mcp.ServerSession]*rootEntry{}} }
+
+// refresh (re)fetches a session's roots in the background.
+func (c *rootCache) refresh(ss *mcp.ServerSession) {
+	e := &rootEntry{ready: make(chan struct{})}
 	c.mu.Lock()
-	delete(c.got, ss)
+	c.got[ss] = e
 	c.mu.Unlock()
+	go func() {
+		e.roots = fetchRoots(ss)
+		close(e.ready)
+	}()
 }
 
 func (c *rootCache) gate(ctx context.Context, ss *mcp.ServerSession, base *policy.Gate) *policy.Gate {
-	if ss == nil {
-		return base
-	}
 	c.mu.Lock()
-	roots, seen := c.got[ss]
+	e := c.got[ss]
 	c.mu.Unlock()
-	if !seen {
-		roots = fetchRoots(ctx, ss)
-		c.mu.Lock()
-		c.got[ss] = roots
-		c.mu.Unlock()
-	}
-	if len(roots) == 0 {
+	if e == nil {
 		return base
 	}
-	return base.Narrow(roots)
+	select {
+	case <-e.ready:
+	case <-time.After(3 * time.Second):
+	case <-ctx.Done():
+	}
+	select {
+	case <-e.ready:
+		if len(e.roots) > 0 {
+			return base.Narrow(e.roots)
+		}
+	default:
+	}
+	return base
 }
 
-func fetchRoots(ctx context.Context, ss *mcp.ServerSession) []string {
+func fetchRoots(ss *mcp.ServerSession) []string {
 	ip := ss.InitializeParams()
 	if ip == nil || ip.Capabilities == nil || ip.Capabilities.RootsV2 == nil {
 		return nil
 	}
-	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	res, err := ss.ListRoots(ctx, &mcp.ListRootsParams{})
 	if err != nil || res == nil {
 		return nil
 	}
-	var out []string
-	for _, r := range res.Roots {
-		if p := fileURIPath(r.URI); p != "" {
-			out = append(out, p)
-		}
-	}
-	return out
+	return rootPaths(res)
 }
 
 func fileURIPath(uri string) string {

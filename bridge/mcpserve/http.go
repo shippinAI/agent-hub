@@ -68,7 +68,12 @@ func (s *Server) RunHTTP(ctx context.Context, addr, token string, ready func(str
 		ready(ln.Addr().String())
 	}
 	srv := &http.Server{Handler: s.Handler(token), ReadHeaderTimeout: 10 * time.Second}
-	go func() { <-ctx.Done(); sc, c := context.WithTimeout(context.Background(), 3*time.Second); defer c(); srv.Shutdown(sc) }()
+	go func() {
+		<-ctx.Done()
+		sc, c := context.WithTimeout(context.Background(), 3*time.Second)
+		defer c()
+		srv.Shutdown(sc)
+	}()
 	if err := srv.Serve(ln); !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
