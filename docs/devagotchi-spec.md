@@ -1,35 +1,45 @@
 # Devagotchi spec (v0.1 design, docs only)
-Devagotchi (devagotchi.com) **extends** agent-hub; it does not replace it. The hub stays the single source of truth: lease-based claiming with fences, notes, the hash-chained `events` log, MCP at `/mcp`, and the React Aria UI ([spec.md](spec.md), [connect.md](connect.md)). This spec adds machines, grants, and provider bindings to that hub.
-Research base: `shippin-cloud/docs/agent-hub/desktop-bridge-research.md` ("the research", researched 2026-10-17). Its sources are cited inline. **Inference** marks a design choice of ours that no source states. **Unverified** marks a claim we could not confirm.
+Devagotchi (devagotchi.com) **extends** agent-hub; it does not replace it. The hub stays the single source of truth: lease-based claiming with fences, notes, the hash-chained `events` log, MCP at `/mcp`, and the React Aria UI ([spec.md](spec.md), [connect.md](connect.md)). This spec adds machines, grants, desktop GUI control, guided setup content, and provider bindings to that hub.
+Research base: `shippin-cloud/docs/agent-hub/desktop-bridge-research.md` ("the research", 2026-10-17) for the bridge, plus fresh research on 2026-10-17 for GUI control ([11](devagotchi/11-gui-control.md)), guided content ([12](devagotchi/12-guides.md)), and Docker setup ([13](devagotchi/13-docker-setup.md)). Sources are cited inline. **Inference** marks a design choice of ours that no source states. **Unverified** marks a claim we could not confirm from a primary source.
+
+## Who is who
+- **Operator**: the person at the machine who approves access and does the steps only a human may do. Can be technical or not; the spec assumes nothing either way.
+- **The AI as SME**: the agent acts as the subject-matter expert. It follows Shippin-authored guides ([12](devagotchi/12-guides.md)) to walk the operator through granting access, enrolling machines, installing Docker, and similar tasks. It explains, checks, and does the steps it has a grant for (decision D10, resolved).
 
 ## What will be built, and what each piece touches
 | # | Piece | Touches | Does not touch |
 |---|---|---|---|
-| 1 | Schema additions: `machines`, `shell_profiles`, `capabilities`, `risks`, `access_requests`, `grants`, `proc_leases`, `providers`, `subscriptions`, `role_bindings`, `secrets`, `tenants` | The hub's Postgres DB (new migrations) and store package | Existing tables (except adding the nullable `tenant_id` in phase 7) |
-| 2 | Presets for all of the above | `server/internal/presets/*.json`, seeded on first boot only, then edited in the UI | Code paths (no hardcoded hosts, roles, or policies) |
-| 3 | MCP and REST additions (`request_access`, `exec`, `fs_*`, `proc_*`, `machines_list`, …) | hub-server `/mcp`, `/api/v1` | Agent configs (agents keep the one `HUB_TOKEN`) |
+| 1 | Schema additions: `machines`, `shell_profiles`, `capabilities`, `risks`, `grant_presets`, `access_requests`, `grants`, `proc_leases`, `gui_sessions`, `gui_artifacts`, `guides`, `guide_versions`, `guide_runs`, `providers`, `subscriptions`, `role_bindings`, `secrets`, `tenants` | The hub's Postgres DB (new migrations) and store package | Existing tables (except adding the nullable `tenant_id` in phase 7) |
+| 2 | Presets for all of the above, including the Shippin guide bundle | `server/internal/presets/*.json`, seeded on first boot only, then edited in the UI | Code paths (no hardcoded hosts, roles, policies, or guide text) |
+| 3 | MCP and REST additions (`request_access`, `exec`, `fs_*`, `proc_*`, `gui_*`, `guides_*`, `machines_list`, …) | hub-server `/mcp`, `/api/v1` | Agent configs (agents keep the one `HUB_TOKEN`) |
 | 4 | `devagotchi-bridge` daemon (Go, a single signed binary) | Only the machine it is installed on: one config dir, one 0600 token file, an OS sandbox per call, and an outbound HTTPS/WSS connection to the hub | Inbound ports, the system shell profile, telemetry endpoints, and other machines |
-| 5 | Access flow (request card, narrowing, grant chip, revoke) | Hub DB, SSE, and the UI | The bridge's own config (the model can never edit grants) |
-| 6 | Subscriptions and role bindings | Hub DB, the router (LiteLLM-style) for API keys, and official CLIs on user devices as hub workers | Provider credentials of subscription logins (they never leave the device) |
-| 7 | UI screens (desktop and phone) | `web/` (React Aria Components plus our own CSS) | No shadcn or Radix |
-| 8 | Cloud edition (Shippin) | The same code with tenancy on, OAuth 2.1 at `/mcp` | The personal edition (local, single tenant, loopback) |
+| 5 | GUI helper (`devagotchi-bridge gui-agent`, runs in the operator's desktop session) | Screen capture, input injection, and window/app control on that machine's desktop, only under a `gui.*` grant, through the OS permission gates (TCC, UIPI, portals) | Elevated/secure desktops (UAC, login), other users' sessions, the exec sandbox user |
+| 6 | Access flow (request card, narrowing, grant presets, unsandboxed policy, reminders, revoke) | Hub DB, SSE, and the UI | The bridge's own config (the model can never edit grants) |
+| 7 | Guides: versioned content, runner, admin editor, update flow | Hub DB (`guides*`), UI, MCP resources/prompts | Guide text in code; secrets in guides |
+| 8 | Docker/Podman setup guides per OS | Guide content plus bridge calls under grants on the chosen machine | Privileged installs by the bridge (operator does elevated steps) |
+| 9 | Subscriptions and role bindings | Hub DB, the router (LiteLLM-style) for API keys, and official CLIs on user devices as hub workers | Provider credentials of subscription logins (they never leave the device) |
+| 10 | UI screens (desktop and phone) | `web/` (React Aria Components plus our own CSS) | No shadcn or Radix |
+| 11 | Cloud edition (Shippin) | The same code with tenancy on, OAuth 2.1 at `/mcp` | The personal edition (local, single tenant, loopback) |
 Nothing in this spec is built yet. Writing it touched only `docs/` in this repo, with no hosts changed.
 
 ## Files (each ≤150 lines)
-1. [Data model](devagotchi/01-data-model.md): tables, data-vs-code rules, and presets
-2. [Bridge daemon](devagotchi/02-bridge.md): design, sandbox, and how it improves on Desktop Commander
-3. [Bridge protocol](devagotchi/03-bridge-protocol.md): enrollment, the wire, exec, edits, and presence
-4. [Access flow](devagotchi/04-access-flow.md): explain, approve or narrow, remind, revoke, expire, audit
+1. [Data model](devagotchi/01-data-model.md): tables, data-vs-code rules, presets
+2. [Bridge daemon](devagotchi/02-bridge.md): design, sandbox, Windows + WSL, improvements over Desktop Commander
+3. [Bridge protocol](devagotchi/03-bridge-protocol.md): enrollment, the wire, exec, edits, GUI ops, presence
+4. [Access flow](devagotchi/04-access-flow.md): explain, approve or narrow, presets, unsandboxed policy, remind, revoke, audit
 5. [Subscriptions and roles](devagotchi/05-subscriptions.md): the two editions and provider terms
 6. [MCP tools and REST](devagotchi/06-mcp-tools.md)
 7. [UI screens](devagotchi/07-ui.md): desktop and phone
 8. [Threat model](devagotchi/08-threat-model.md)
-9. [Phased plan](devagotchi/09-phases.md): what each phase touches
-10. [Open decisions for Jesse](devagotchi/10-decisions.md)
+9. [Phased plan](devagotchi/09-phases.md): each phase opens with what it touches
+10. [Decisions](devagotchi/10-decisions.md): resolved and open
+11. [Desktop GUI control](devagotchi/11-gui-control.md): per-OS APIs, permissions, grant scopes, risks, audit, screenshots
+12. [Guides](devagotchi/12-guides.md): Shippin-authored versioned content, the AI as SME, editor, updates
+13. [Docker setup](devagotchi/13-docker-setup.md): Docker Desktop vs Engine, WSL2, Podman preset
 
 ## Rules that apply everywhere
-- Every source, host, policy, role, capability, risk, provider, shell profile, and setting is **editable data**, seeded as presets and never hardcoded. Code holds only the safety invariants (listed in 01).
+- Every source, host, policy, role, capability, risk, grant preset, guide, provider, shell profile, and setting is **editable data** in the UI, seeded as presets and never hardcoded. Code holds only the safety invariants (listed in 01).
 - UI uses React Aria Components only. No shadcn and no Radix.
 - None of our own names contain `core`. No Authentik (human auth stays as in spec.md: tailscale-whois / proxy-header with Zitadel / token / dev).
-- Secrets are never printed: not in logs, events, MCP results, the UI, or the CLI. Tokens are shown once, keys are write-only, and events carry only a prefix or fingerprint.
+- Secrets are never printed: not in logs, events, MCP results, the UI, the CLI, guides, or screenshots we store. Tokens are shown once, keys are write-only, and events carry only a prefix or fingerprint.
 - Source files stay ≤150 lines, with no barrel files.

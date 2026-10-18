@@ -4,7 +4,9 @@
 ## Enrollment
 1. A human clicks **Machines → Add machine** and picks a label, OS, and shell profiles. The hub creates principal `machine:<id>` and a one-time **enrollment code** (10 min, single use, stored hashed).
 2. The user runs `devagotchi-bridge enroll --hub HUB` on the machine and pastes the code at the prompt (not as an argv flag, so it stays out of shell history). The bridge sends the code plus OS/arch/version/sandbox self-test results, and receives a long-lived machine token that it writes to `token` (0600). The token is never echoed.
-3. The hub records `machine.enrolled` (code prefix only). If the sandbox self-test fails, the machine is enrolled with `sandbox_kind=none` and every grant on it is capped at decision D1.
+3. The hub records `machine.enrolled` (code prefix only). If the sandbox self-test fails, the machine is enrolled with `sandbox_kind=none`: sandboxed grants are refused (`sandbox_unavailable`), and only an `unsandboxed` grant is possible, and only if the unsandboxed policy allows it for this machine (D1).
+4. Enrollment is normally driven by the `enroll-machine` guide ([12](12-guides.md)): the AI explains each step, the operator runs the commands, and the AI verifies with `probe`. On Windows the guide offers enrolling WSL as a separate machine next (D2).
+5. GUI is enabled later, per machine, by the `enable-gui-<os>` guide. The GUI helper reports `gui_ready` (per-permission state, e.g. `{"accessibility":"granted","screen_recording":"needs_relaunch"}`), shown on the machine page.
 
 ## Frames
 Hub → bridge `call`:
@@ -14,7 +16,7 @@ Hub → bridge `call`:
  "deadline":"2026-10-17T23:10:00Z"}
 ```
 Bridge → hub: `ack` (call accepted, sandbox built), then `chunk` (`stream: stdout|stderr`, seq, ≤64 KiB, capped at `exec_output_cap_bytes`), then `result` `{call_id, ok, exit_code|error, duration_ms, out_sha256, truncated}`.
-Control: `heartbeat` (proc leases), `cancel{call_id}`, `revoke{grant_id}` (pushed on revoke; the bridge kills running calls under that grant), and `ping`/`pong` (sets `connected` only).
+Control: `heartbeat` (proc and GUI leases), `cancel{call_id}`, `revoke{grant_id}` (pushed on revoke; the bridge kills running calls and ends GUI sessions under that grant), `gui_stop` (sent by the bridge when the operator presses the stop hotkey or the overlay Stop button), and `ping`/`pong` (sets `connected` only).
 
 ## Per-call checks (in this order, fail closed)
 1. Hub: is the caller's token valid, does policy allow (`exec`, `fs.*`), and is there a live grant matching machine + capability + selector + sandbox level (not revoked, not expired, uses < max, task lease still held if `duration=task`)? A check that fails returns `grant_required` with a prefilled `request_access` draft.
@@ -29,6 +31,7 @@ Control: `heartbeat` (proc leases), `cancel{call_id}`, `revoke{grant_id}` (pushe
 - `fs_write{path, content, expect_sha256|expect_absent}` → `{sha256}`; mismatch → `hash_mismatch` with the current hash.
 - `fs_edit{path, expect_sha256, edits:[{old, new, count?}]}`: every `old` must match exactly `count` (default 1) times, or nothing is written (`edit_no_match` / `edit_ambiguous`).
 - `fs_move`, `fs_delete`: `fs.write` capability, delete only with `expect_sha256`.
+- `gui_session_start{monitors?, ttl_s}` → `{gui_session_id, fence, display, scale}`; `gui_screenshot{gui_session_id, region?, max_edge?}` → image (to the caller only) + `sha256`; `gui_input{gui_session_id, fence, actions:[…]}`; `gui_tree{gui_session_id, window?}` (accessibility tree); `gui_window{…}`; `gui_app{…}`; `gui_session_end`. The service relays these to the GUI helper; details and per-action checks in [11](11-gui-control.md#ops). A GUI session is a lease with a fence like `proc_lease`, so a stale holder cannot send input.
 
 ## Presence
 - `connected`: socket up / poll seen in the last `2×bridge_poll_seconds`.
@@ -36,4 +39,4 @@ Control: `heartbeat` (proc leases), `cancel{call_id}`, `revoke{grant_id}` (pushe
 - `last_error` shows the last failure in plain text.
 
 ## Errors (MCP `isError`, same envelope as REST)
-`grant_required`, `grant_revoked`, `grant_expired`, `machine_offline`, `machine_busy`, `sandbox_unavailable`, `hash_mismatch`, `edit_no_match`, `edit_ambiguous`, `timeout`, `output_truncated` (not an error, a flag), `stale_fence`, `policy_denied`.
+`grant_required`, `grant_revoked`, `grant_expired`, `machine_offline`, `machine_busy`, `sandbox_unavailable`, `hash_mismatch`, `edit_no_match`, `edit_ambiguous`, `timeout`, `output_truncated` (not an error, a flag), `stale_fence`, `policy_denied`, `gui_not_ready` (an OS permission is missing; carries which one and the guide id that fixes it), `gui_target_not_allowed`, `gui_secure_desktop`, `gui_stopped_by_operator`.
