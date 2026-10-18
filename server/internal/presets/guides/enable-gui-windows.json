@@ -1,0 +1,9 @@
+{"id": "enable-gui-windows", "slug": "enable-gui-windows", "title": "Enable screen help on Windows", "goal": "The per-user GUI helper runs at logon and reports ready", "tags": ["gui", "windows"],
+ "applies_to": {"os": ["windows"]}, "channel": "stable",
+ "version": {"semver": "1.0.0", "change_notes": "First Shippin version.", "risk_ids": ["gui-observe-sees-all", "gui-input-acts-as-you"], "steps": [
+  {"id": "intro", "kind": "explain", "actor": "ai", "title": "Why a separate helper", "text": "Windows services cannot see your desktop, so a small helper runs as you at logon. It never asks for uiAccess, so it cannot click into admin windows; those steps stay with you.", "risk_ids": ["gui-observe-sees-all", "gui-input-acts-as-you"]},
+  {"id": "task", "kind": "operator_action", "actor": "operator", "title": "Register the logon helper", "text": "Run this in a normal (not admin) PowerShell.", "command_by_os": {"windows": "devagotchi-bridge.exe gui-agent --autostart"}, "changes": "A per-user logon task", "check": "The helper is running"},
+  {"id": "border", "kind": "explain", "actor": "ai", "title": "About capture", "text": "While I capture the screen, an overlay names the apps I may control and offers Stop; Ctrl+Alt+End also stops me."},
+  {"id": "ready", "kind": "check", "actor": "agent", "title": "Check the helper", "op": "gui_ready", "args": {"permission": "capture", "want": "granted"}, "max_retries": 3},
+  {"id": "done", "kind": "explain", "actor": "ai", "title": "Ready", "text": "Screen help is ready.", "end": true}
+ ]}}

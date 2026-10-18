@@ -110,3 +110,5 @@ func (s *Store) Can(ctx context.Context, p *Principal, action string, res policy
 	}
 	return policy.Decide(rules, subjectOf(p), action, res), nil
 }
+
+func jsonUnmarshal(raw []byte, v any) error { return json.Unmarshal(raw, v) }

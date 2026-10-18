@@ -1,0 +1,10 @@
+{"id": "approve-access", "slug": "approve-access", "title": "How access cards work", "goal": "You know how to approve, narrow, deny and revoke", "tags": ["access", "grants"],
+ "applies_to": {}, "channel": "stable",
+ "version": {"semver": "1.0.0", "change_notes": "First Shippin version.", "risk_ids": [], "steps": [
+  {"id": "card", "kind": "explain", "actor": "ai", "title": "What a card shows", "text": "Each card shows who asks, for which task, what in plain words, why (in the agent's own words), the risks from the catalog, and the technical detail."},
+  {"id": "narrow", "kind": "explain", "actor": "ai", "title": "Approve narrower", "text": "You can always grant less than asked: a subfolder, fewer commands or hosts, a lower sandbox level, a shorter time. You can never grant more than asked."},
+  {"id": "chip", "kind": "explain", "actor": "ai", "title": "The live grants chip", "text": "While any access is live, the header shows a chip with a Revoke button for each grant and Revoke all. Revoking stops running commands at once."},
+  {"id": "try", "kind": "confirm", "actor": "operator", "title": "Ready to try?", "question": "Shall I send a small read-only request so you can see a card?", "options": [{"id": "yes", "label": "Yes"}, {"id": "no", "label": "No thanks"}], "cases": [{"when": {"outcome": "no"}, "goto": "done"}]},
+  {"id": "demo", "kind": "request_access", "actor": "agent", "title": "Send a demo request", "preset": "read-only-look", "duration": "once", "reason": "Demo request so you can see how an access card looks; deny it or approve it, either is fine."},
+  {"id": "done", "kind": "explain", "actor": "ai", "title": "That is all", "text": "You are in control of every grant.", "end": true}
+ ]}}

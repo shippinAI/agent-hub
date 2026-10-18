@@ -1,0 +1,9 @@
+{"id": "enroll-wsl", "slug": "enroll-wsl", "title": "Enroll a WSL distro as its own machine", "goal": "The WSL distro is a separate machine with its own grants", "tags": ["wsl", "windows", "machine"],
+ "applies_to": {"os": ["windows", "linux"], "kind": ["native", "wsl"]}, "channel": "stable",
+ "version": {"semver": "1.0.0", "change_notes": "First Shippin version.", "risk_ids": ["wsl-windows-drive"], "steps": [
+  {"id": "intro", "kind": "explain", "actor": "ai", "title": "WSL is a separate machine", "text": "The Linux bridge runs inside the distro. Grants never carry over between Windows and WSL. Paths under /mnt reach your Windows drive, so they are never included unless you name them.", "risk_ids": ["wsl-windows-drive"]},
+  {"id": "code", "kind": "operator_action", "actor": "operator", "title": "Create a code for the WSL machine", "text": "In Machines → Add machine choose OS Linux, kind WSL, and pick the Windows machine as its host.", "check": "You have a code"},
+  {"id": "enroll", "kind": "operator_action", "actor": "operator", "title": "Enroll inside the distro", "text": "Open your WSL terminal, download the Linux bridge, and run this. Paste the code at the prompt.", "command_by_os": {"linux": "devagotchi-bridge enroll --hub {{hub_url}}", "windows": "wsl -- devagotchi-bridge enroll --hub {{hub_url}}"}, "check": "The WSL machine shows enrolled"},
+  {"id": "test", "kind": "check", "actor": "agent", "title": "Test the WSL machine", "op": "probe", "expect_exit": 0, "max_retries": 3},
+  {"id": "done", "kind": "explain", "actor": "ai", "title": "Done", "text": "WSL is enrolled as its own machine.", "end": true}
+ ]}}

@@ -1,0 +1,13 @@
+{"id": "podman-setup", "slug": "podman-setup", "title": "Set up Podman", "goal": "Podman installed and passing its hello container", "tags": ["podman", "containers", "setup"],
+ "applies_to": {"os": ["linux", "macos", "windows"]}, "channel": "stable",
+ "version": {"semver": "1.0.0", "change_notes": "First Shippin version.", "risk_ids": ["runtime-vm-resources", "docker-runtime-exec"], "steps": [
+  {"id": "intro", "kind": "explain", "actor": "ai", "title": "What Podman is", "text": "Podman runs containers without a root daemon. On macOS and Windows it uses a small VM called a Podman machine.", "risk_ids": ["docker-runtime-exec"]},
+  {"id": "access", "kind": "request_access", "actor": "agent", "title": "Ask for setup access", "preset": "docker-setup", "duration": "task", "reason": "To check for and verify Podman, I need to run only podman and reach quay.io until this setup task ends."},
+  {"id": "present", "kind": "check", "actor": "agent", "title": "Is Podman already installed?", "op": "exec", "args": {"argv": ["podman", "version"]}, "expect_exit": 0, "cases": [{"when": {"outcome": "ok"}, "goto": "verify"}], "default": "install"},
+  {"id": "install", "kind": "operator_action", "actor": "operator", "title": "Install Podman", "text_by_os": {"linux": "Run this with sudo in your own terminal.", "macos": "Run this in Terminal (Homebrew).", "windows": "Run this in PowerShell, then reopen it."}, "command_by_os": {"linux": "sudo apt-get install -y podman", "macos": "brew install podman", "windows": "winget install -e --id RedHat.Podman"}, "check": "podman --version works"},
+  {"id": "vm", "kind": "branch", "actor": "none", "title": "Does this OS need a Podman machine?", "cases": [{"when": {"os": "linux"}, "goto": "verify"}], "default": "init"},
+  {"id": "init", "kind": "agent_action", "actor": "agent", "title": "Create the Podman machine", "op": "exec", "args": {"argv": ["podman", "machine", "init"], "timeout_s": 900}, "expect_exit": 0},
+  {"id": "start", "kind": "agent_action", "actor": "agent", "title": "Start the Podman machine", "op": "exec", "args": {"argv": ["podman", "machine", "start"], "timeout_s": 600}, "expect_exit": 0},
+  {"id": "verify", "kind": "verify", "actor": "agent", "title": "Run Podman's hello container", "op": "exec", "args": {"argv": ["podman", "run", "--rm", "quay.io/podman/hello"], "timeout_s": 600}, "expect_exit": 0, "max_retries": 2},
+  {"id": "done", "kind": "explain", "actor": "ai", "title": "Done", "text": "Podman works. Stop the machine with podman machine stop when you do not need it.", "end": true}
+ ]}}

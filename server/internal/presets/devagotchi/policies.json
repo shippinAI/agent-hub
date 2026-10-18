@@ -1,0 +1,32 @@
+{"roles": [
+  {"id": "builder", "description": "Builds features (role bindings route it to a subscription)"},
+  {"id": "researcher", "description": "Researches and writes notes"}
+],
+"policies": [
+  {"name": "admins manage machines", "subject": "role:admin", "action": "machine.*", "effect": "allow", "priority": 10},
+  {"name": "admins approve and revoke grants", "subject": "role:admin", "action": "grant.*", "effect": "allow", "priority": 10},
+  {"name": "admins edit grant presets", "subject": "role:admin", "action": "preset.*", "effect": "allow", "priority": 10},
+  {"name": "admins set the unsandboxed policy", "subject": "role:admin", "action": "policy.unsandboxed.*", "effect": "allow", "priority": 10},
+  {"name": "admins edit and publish guides", "subject": "role:admin", "action": "guide.*", "effect": "allow", "priority": 10},
+  {"name": "admins manage secrets", "subject": "role:admin", "action": "secret.*", "effect": "allow", "priority": 10},
+  {"name": "admins manage subscriptions", "subject": "role:admin", "action": "subscription.*", "effect": "allow", "priority": 10},
+  {"name": "admins edit the catalog", "subject": "role:admin", "action": "catalog.*", "effect": "allow", "priority": 10},
+  {"name": "admins edit tenants", "subject": "role:admin", "action": "tenant.*", "effect": "allow", "priority": 10},
+  {"name": "admins view retained GUI images", "subject": "role:admin", "action": "gui.view", "effect": "allow", "priority": 10},
+  {"name": "humans answer resume alerts", "subject": "human", "action": "resume.*", "effect": "allow", "priority": 10},
+  {"name": "agents ask for access", "subject": "agent", "action": "access.request", "effect": "allow", "priority": 10},
+  {"name": "agents use granted exec", "subject": "agent", "action": "exec", "effect": "allow", "priority": 10},
+  {"name": "agents use granted fs.*", "subject": "agent", "action": "fs.*", "effect": "allow", "priority": 10},
+  {"name": "agents use granted proc.*", "subject": "agent", "action": "proc.*", "effect": "allow", "priority": 10},
+  {"name": "agents use granted net.*", "subject": "agent", "action": "net.*", "effect": "allow", "priority": 10},
+  {"name": "agents use granted gui.observe", "subject": "agent", "action": "gui.observe", "effect": "allow", "priority": 10},
+  {"name": "agents use granted gui.input", "subject": "agent", "action": "gui.input", "effect": "allow", "priority": 10},
+  {"name": "agents use granted gui.window", "subject": "agent", "action": "gui.window", "effect": "allow", "priority": 10},
+  {"name": "agents use granted gui.app", "subject": "agent", "action": "gui.app", "effect": "allow", "priority": 10},
+  {"name": "agents use granted machine.list", "subject": "agent", "action": "machine.list", "effect": "allow", "priority": 10},
+  {"name": "agents run guides", "subject": "agent", "action": "guide.run", "effect": "allow", "priority": 10},
+  {"name": "humans run guides", "subject": "human", "action": "guide.run", "effect": "allow", "priority": 10},
+  {"name": "agents may ask for until-revoked", "subject": "agent", "action": "grant.indefinite", "effect": "allow", "priority": 10},
+  {"name": "no until-revoked for cli agents", "subject": "kind:cli", "action": "grant.indefinite", "effect": "deny", "priority": 50},
+  {"name": "no until-revoked for service agents", "subject": "kind:service", "action": "grant.indefinite", "effect": "deny", "priority": 50}
+]}

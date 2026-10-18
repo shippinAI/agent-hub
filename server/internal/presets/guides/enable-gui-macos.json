@@ -1,0 +1,12 @@
+{"id": "enable-gui-macos", "slug": "enable-gui-macos", "title": "Enable screen help on macOS", "goal": "Accessibility and Screen Recording are granted to Devagotchi Helper", "tags": ["gui", "macos", "tcc"],
+ "applies_to": {"os": ["macos"]}, "channel": "stable",
+ "version": {"semver": "1.0.0", "change_notes": "First Shippin version.", "risk_ids": ["gui-observe-sees-all", "gui-input-acts-as-you"], "steps": [
+  {"id": "intro", "kind": "explain", "actor": "ai", "title": "Two macOS permissions", "text": "macOS needs Accessibility (to click and type) and Screen Recording (to see the screen) for Devagotchi Helper. You approve both in System Settings; nobody can grant them silently.", "risk_ids": ["gui-observe-sees-all", "gui-input-acts-as-you"]},
+  {"id": "helper", "kind": "operator_action", "actor": "operator", "title": "Install the helper app", "text": "Open the Devagotchi bridge package and move Devagotchi Helper.app to Applications, then start it once. It adds itself as a login item.", "check": "The helper icon appears"},
+  {"id": "ax", "kind": "operator_action", "actor": "operator", "title": "Allow Accessibility", "text": "Open System Settings → Privacy & Security → Accessibility and turn on Devagotchi Helper.", "check": "gui_ready.accessibility is granted"},
+  {"id": "ax-check", "kind": "check", "actor": "agent", "title": "Check Accessibility", "op": "gui_ready", "args": {"permission": "accessibility", "want": "granted"}, "on_fail": "ax", "max_retries": 3},
+  {"id": "sr", "kind": "operator_action", "actor": "operator", "title": "Allow Screen Recording", "text": "Open System Settings → Privacy & Security → Screen & System Audio Recording and turn on Devagotchi Helper.", "check": "gui_ready.screen_recording is granted or needs_relaunch"},
+  {"id": "relaunch", "kind": "operator_action", "actor": "operator", "title": "Relaunch the helper", "text": "Screen Recording takes effect after the helper restarts. Quit Devagotchi Helper from its menu and open it again.", "check": "gui_ready.screen_recording is granted"},
+  {"id": "sr-check", "kind": "check", "actor": "agent", "title": "Check Screen Recording", "op": "gui_ready", "args": {"permission": "screen_recording", "want": "granted"}, "on_fail": "relaunch", "max_retries": 3},
+  {"id": "done", "kind": "explain", "actor": "ai", "title": "Ready", "text": "Screen help is ready. macOS may re-ask about Screen Recording from time to time; that is a useful reminder.", "end": true}
+ ]}}

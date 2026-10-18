@@ -1,0 +1,8 @@
+{"id": "enable-unsandboxed", "slug": "enable-unsandboxed", "title": "Allow unsandboxed access (risk walk-through)", "goal": "You decided, with the risks in front of you, whether to allow unsandboxed grants", "tags": ["access", "unsandboxed", "risk"],
+ "applies_to": {}, "channel": "stable",
+ "version": {"semver": "1.0.0", "change_notes": "First Shippin version.", "risk_ids": ["unsandboxed-any-file", "unsandboxed-network", "unsandboxed-persist"], "steps": [
+  {"id": "what", "kind": "explain", "actor": "ai", "title": "What unsandboxed means", "text": "Commands would run as your own account without the OS sandbox. They still never run as root or Administrator.", "risk_ids": ["unsandboxed-any-file", "unsandboxed-network", "unsandboxed-persist"]},
+  {"id": "decide", "kind": "confirm", "actor": "operator", "title": "Do you want to allow it?", "question": "It stays off unless you turn it on. You can scope it to one machine and give it an expiry.", "options": [{"id": "yes", "label": "Show me where"}, {"id": "no", "label": "Keep it off"}], "cases": [{"when": {"outcome": "no"}, "goto": "done"}]},
+  {"id": "settings", "kind": "operator_action", "actor": "operator", "title": "Turn it on in Settings", "text": "Open Settings → Access → Unsandboxed access, tick each risk, choose tenant or one machine, optionally an expiry, and save. Each unsandboxed grant still needs its own card, and every session resume shows an alert while one is live."},
+  {"id": "done", "kind": "explain", "actor": "ai", "title": "Done", "text": "Your choice is recorded in the audit log.", "end": true}
+ ]}}

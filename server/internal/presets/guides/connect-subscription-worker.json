@@ -1,0 +1,10 @@
+{"id": "connect-subscription-worker", "slug": "connect-subscription-worker", "title": "Run a subscription CLI as a hub worker", "goal": "Your logged-in official CLI claims tasks for its role binding", "tags": ["subscription", "worker", "cli"],
+ "applies_to": {}, "channel": "stable",
+ "version": {"semver": "1.0.0", "change_notes": "First Shippin version.", "risk_ids": [], "steps": [
+  {"id": "terms", "kind": "explain", "actor": "ai", "title": "Your login stays on your device", "text": "Subscriptions such as Claude Pro/Max or ChatGPT Plus/Pro work only inside the vendor's own CLI on your machine. The hub never stores, copies or proxies that login. Whether a non-interactive worker counts as ordinary use is unverified for each vendor."},
+  {"id": "sub", "kind": "operator_action", "actor": "operator", "title": "Add the subscription", "text": "Open Subscriptions → Add, choose the provider, kind CLI login, and the machine where the CLI is logged in. No secret is entered for CLI logins."},
+  {"id": "token", "kind": "operator_action", "actor": "operator", "title": "Create a worker token", "text": "In Agents, create a token for the worker principal and save it to a 0600 file on that machine; it is shown once."},
+  {"id": "connect", "kind": "operator_action", "actor": "operator", "title": "Connect the CLI to the hub", "text": "Open Connect and copy the 'Run as a subscription worker' command for your chat app, then run it on that machine."},
+  {"id": "bind", "kind": "operator_action", "actor": "operator", "title": "Bind a role to it", "text": "In Role bindings choose the role and chat app, pick this subscription and an optional fallback."},
+  {"id": "done", "kind": "explain", "actor": "ai", "title": "Done", "text": "Tasks labelled with that role now route to your CLI worker while its machine is online.", "end": true}
+ ]}}

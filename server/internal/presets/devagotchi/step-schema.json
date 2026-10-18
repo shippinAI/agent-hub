@@ -1,0 +1,40 @@
+{"settings": [{"key": "guide_step_schema", "description": "JSON Schema (2020-12) every guide version's steps must pass", "value": {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array", "minItems": 1,
+  "items": {
+    "type": "object", "required": ["id", "kind", "title"], "additionalProperties": false,
+    "properties": {
+      "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,40}$"},
+      "kind": {"enum": ["explain", "check", "request_access", "agent_action", "operator_action", "confirm", "branch", "verify", "link_guide"]},
+      "actor": {"enum": ["ai", "agent", "operator", "none"]},
+      "title": {"type": "string", "minLength": 3, "maxLength": 120},
+      "text": {"type": "string"},
+      "text_by_os": {"type": "object", "additionalProperties": {"type": "string"}},
+      "command_by_os": {"type": "object", "additionalProperties": {"type": "string"}},
+      "command_ref": {"type": "object", "properties": {"runtime": {"type": "string"}, "key": {"type": "string"}}, "required": ["runtime", "key"], "additionalProperties": false},
+      "changes": {"type": "string"},
+      "check": {"type": "string"},
+      "risk_ids": {"type": "array", "items": {"type": "string"}},
+      "op": {"enum": ["exec", "fs_read", "fs_list", "fs_stat", "fs_write", "probe", "gui_ready"]},
+      "args": {"type": "object"},
+      "expect_exit": {"type": "integer"},
+      "preset": {"type": "string"},
+      "capability": {"type": "string"},
+      "selector": {"type": "object"},
+      "sandbox_level": {"type": "string"},
+      "duration": {"type": "string"},
+      "reason": {"type": "string", "minLength": 20},
+      "question": {"type": "string"},
+      "options": {"type": "array", "items": {"type": "object", "required": ["id", "label"], "properties": {"id": {"type": "string"}, "label": {"type": "string"}}}},
+      "guide": {"type": "string"},
+      "cases": {"type": "array", "items": {"type": "object", "required": ["when", "goto"], "properties": {"when": {"type": "object"}, "goto": {"type": "string"}}}},
+      "default": {"type": "string"},
+      "next": {"type": "string"},
+      "on_fail": {"type": "string"},
+      "max_retries": {"type": "integer", "minimum": 0, "maximum": 10},
+      "save_as": {"type": "string"},
+      "skippable": {"type": "boolean"},
+      "end": {"type": "boolean"}
+    }
+  }
+}}]}
