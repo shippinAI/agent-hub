@@ -14,6 +14,7 @@ import (
 	"devagotchi/bridge/hubclient"
 	"devagotchi/bridge/redact"
 	"devagotchi/bridge/sandbox"
+	"devagotchi/bridge/tools"
 	"devagotchi/bridge/wire"
 )
 
@@ -29,6 +30,8 @@ type Runner struct {
 	mu        sync.Mutex
 	running   map[string]context.CancelFunc
 	cache     map[string]cacheEntry
+	toolsOnce sync.Once
+	env       *tools.Env
 }
 
 type cacheEntry struct {
@@ -98,6 +101,10 @@ func (r *Runner) runCall(ctx context.Context, f wire.Frame) {
 		res = r.exec(cctx, f)
 	case strings.HasPrefix(f.Op, "fs."):
 		res = r.fs(cctx, f)
+	case strings.HasPrefix(f.Op, "proc."):
+		res = r.proc(cctx, f)
+	case f.Op == "tool":
+		res = r.tool(cctx, f)
 	case strings.HasPrefix(f.Op, "gui."):
 		res = r.guiOp(cctx, f)
 	default:
