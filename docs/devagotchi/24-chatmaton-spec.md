@@ -74,3 +74,6 @@ reusing the Requests inbox pattern. Agent-generated widgets in a room render as 
 Per room and per seat: token budget, max turns, max parallel seats, timeout; router spend caps per virtual key
 ([05](05-subscriptions.md)); OpenAI per-app weekly limits are set by the user in ChatGPT, and we show them as
 read-only hints when the API exposes them (**unverified** whether it does).
+
+## Decision (Jesse, 2026-10-18)
+Local edition is free, non-profit, personal use in the user's own devspace. The user signs in to each official client (Claude Code, Codex, Grok, Antigravity, Cursor) themselves; Chatmaton drives those clients and pulls/combines their state. No "unverified" badge; not a blocker.
