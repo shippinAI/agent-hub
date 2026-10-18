@@ -1,0 +1,11 @@
+PASS desktop machines renders (Machines)
+PASS desktop requests renders (Access requests)
+PASS desktop grants renders (Grants)
+PASS desktop subscriptions renders (Subscriptions)
+PASS header shows the live grants chip
+PASS requests inbox shows an access card
+PASS phone machines has no horizontal overflow
+PASS phone requests has no horizontal overflow
+PASS phone grants has no horizontal overflow
+PASS phone subscriptions has no horizontal overflow
+PASS no console/page errors

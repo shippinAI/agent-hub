@@ -1,0 +1,37 @@
+/* Devagotchi screens. Reuses the token palette from tokens.css. */
+.page { display: flex; flex-direction: column; gap: 16px; padding: 20px; max-width: 1100px; margin: 0 auto; width: 100%; }
+.page-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.page-head h1 { font-size: 20px; margin: 0; }
+.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th { text-align: left; padding: 8px 10px; color: var(--fg-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+.table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.table-card { padding: 4px 8px; overflow-x: auto; }
+.row-risk { background: color-mix(in srgb, var(--red) 7%, transparent); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
+.dot-green { background: #30a46c; } .dot-grey { background: #9aa; }
+.selector { font-size: 12px; color: var(--fg-muted); word-break: break-word; }
+.code-box, .code-box code { font-family: ui-monospace, monospace; background: var(--muted); padding: 6px 10px; border-radius: 8px; }
+.kv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 0; }
+.split { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+.req-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.req-row { width: 100%; text-align: left; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); cursor: pointer; }
+.req-row.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.access-card { display: flex; flex-direction: column; gap: 14px; border: 1px solid var(--border); border-radius: 14px; padding: 18px; background: var(--card); }
+.access-card h2 { margin: 0; font-size: 18px; } .access-card h3 { margin: 0 0 4px; font-size: 13px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: .03em; }
+.reason { margin: 0; padding: 10px 14px; border-left: 3px solid var(--accent); background: var(--bg-subtle); border-radius: 0 8px 8px 0; }
+.risk-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.risk-item { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.risk-item p { margin: 6px 0 0; font-size: 13px; }
+.actions { margin-top: 4px; flex-wrap: wrap; }
+.narrow { border-top: 1px solid var(--border); padding-top: 12px; }
+.gui-perms { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.stack-0 { display: flex; flex-direction: column; } .stack-1 { display: flex; flex-direction: column; gap: 6px; }
+.stack-2 { display: flex; flex-direction: column; gap: 10px; } .stack-3 { display: flex; flex-direction: column; gap: 14px; }
+.row { display: flex; align-items: center; } .row.gap-1 { gap: 6px; } .row.gap-2 { gap: 10px; }
+.row.between, .row.end { justify-content: flex-end; } .row.between { justify-content: space-between; }
+.end { justify-content: flex-end; } .muted { color: var(--fg-muted); } .hint { color: var(--fg-muted); font-size: 12px; }
+.chip { border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px; font-size: 13px; background: var(--card); cursor: pointer; }
+.menu .option-danger { color: var(--red); font-weight: 600; }
+@media (max-width: 640px) {
+  .split { grid-template-columns: 1fr; } .page { padding: 14px; } .table-card { font-size: 13px; }
+}

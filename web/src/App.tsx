@@ -11,6 +11,22 @@ import { TaskDetail } from './pages/TaskDetail';
 import { Agents } from './pages/Agents';
 import { Settings } from './pages/Settings';
 import { Audit } from './pages/Audit';
+import { Machines } from './pages/dev/Machines';
+import { MachineDetail } from './pages/dev/MachineDetail';
+import { Requests } from './pages/dev/Requests';
+import { Grants } from './pages/dev/Grants';
+import { Subscriptions } from './pages/dev/Subscriptions';
+import { ResumeAlert } from './pages/dev/ResumeAlert';
+
+function devPage(a: string | undefined, b: string | undefined) {
+  switch (a) {
+    case 'machine': return <MachineDetail id={String(b)} />;
+    case 'requests': return <Requests />;
+    case 'grants': return <Grants />;
+    case 'subscriptions': return <Subscriptions />;
+    default: return <Machines />;
+  }
+}
 
 export function App() {
   const me = useData(() => get<Me>('/me'), [], false);
@@ -33,8 +49,9 @@ function Routes() {
       case 'agents': return <Agents />;
       case 'settings': return <Settings tab={a ?? 'policies'} />;
       case 'audit': return <Audit />;
+      case 'dev': return devPage(a, b);
       default: return <Board project={a} state={b} />;
     }
   })();
-  return <Shell page={page}>{body}</Shell>;
+  return <Shell page={page} sub={page === 'dev' ? (a ?? 'machines') : undefined}><ResumeAlert />{body}</Shell>;
 }
