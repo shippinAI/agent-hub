@@ -1,0 +1,28 @@
+/* Change policy + reviews (pages/gate) */
+.rule-list, .decision-log, .version-list, .review-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.rule { display: flex; flex-direction: column; gap: 8px; }
+.rule.is-off { opacity: .6; }
+.rule-prio { max-width: 140px; }
+.wrap { flex-wrap: wrap; }
+.stack-2 { display: flex; flex-direction: column; gap: 8px; } .stack-3 { display: flex; flex-direction: column; gap: 14px; }
+.grid-2 { display: grid; gap: 10px; grid-template-columns: 1fr; }
+@media (min-width: 720px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+.save-bar { display: flex; flex-direction: column; gap: 10px; position: sticky; bottom: calc(var(--tabbar-h) + 8px); z-index: 5; }
+@media (min-width: 1024px) { .save-bar { bottom: 12px; } }
+.json-edit textarea { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; min-height: 360px; }
+.decision { display: flex; flex-direction: column; gap: 8px; border-left: 4px solid var(--border); }
+.decision.is-allow { border-left-color: #16a34a; } .decision.is-deny { border-left-color: #dc2626; }
+.failure { font-size: 14px; } .failure ul { margin: 4px 0 0 18px; color: var(--fg-muted); }
+.decision-row { border-bottom: 1px solid var(--border); padding-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
+.decision-row:last-child { border-bottom: 0; }
+.version-row { border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+.ticket-title { font-size: 16px; font-weight: 600; margin: 0 0 8px; overflow-wrap: anywhere; }
+.kv { display: grid; grid-template-columns: minmax(90px, max-content) minmax(0, 1fr); gap: 6px 14px; margin: 0; }
+.kv dt { color: var(--fg-muted); font-size: 13px; } .kv dd { margin: 0; overflow-wrap: anywhere; } .kv ul { margin: 0; padding-left: 16px; }
+.evidence summary { cursor: pointer; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 4px 0; }
+.evidence pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--muted); padding: 8px; border-radius: var(--radius-sm); font-size: 12px; }
+.review { display: flex; flex-direction: column; gap: 4px; } .review.is-stale { opacity: .55; } .review p { margin: 0; }
+.radio-row .row { flex-wrap: wrap; }
+.radio { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px; cursor: pointer; font-weight: 500; }
+.radio[data-selected] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.radio[data-focus-visible] { outline: 2px solid var(--ring, #2563eb); outline-offset: 2px; }

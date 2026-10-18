@@ -14,6 +14,8 @@ const NAV = [
   { id: 'grants', href: 'dev/grants', label: 'Grants', icon: 'M12 2 4 6v6c0 5 8 8 8 8s8-3 8-8V6z' },
   { id: 'subs', href: 'dev/subscriptions', label: 'Subscriptions', icon: 'M3 7h18v10H3zM3 11h18' },
   { id: 'role-bindings', href: 'dev/role-bindings', label: 'Bindings', icon: 'M7 7h4v4H7zM13 13h4v4h-4zM11 9h2v6' },
+  { id: 'policy', href: 'dev/policy', label: 'Policy', icon: 'M12 2 4 6v6c0 5 8 8 8 8s8-3 8-8V6zM9 12l2 2 4-4' },
+  { id: 'changes', href: 'dev/changes', label: 'Changes', icon: 'M5 4h14v16H5zM8 9l2 2 4-4M8 15h8' },
   { id: 'guides', href: 'dev/guides', label: 'Guides', icon: 'M5 4h11l3 3v13H5zM9 9h6M9 13h6' },
   { id: 'gui', href: 'dev/gui-sessions', label: 'GUI', icon: 'M3 5h18v11H3zM8 20h8M12 16v4' },
   { id: 'audit', href: 'audit', label: 'Audit', icon: 'M5 4h14v16H5zM8 8h8M8 12h8M8 16h5' },

@@ -23,6 +23,8 @@ import { GuiSessions } from './pages/dev/GuiSessions';
 import { GuiSession } from './pages/dev/GuiSession';
 import { RoleBindings } from './pages/dev/RoleBindings';
 import { ResumeAlert } from './pages/dev/ResumeAlert';
+import { Policy } from './pages/gate/Policy';
+import { Changes } from './pages/gate/Changes';
 
 function devPage(a: string | undefined, b: string | undefined) {
   switch (a) {
@@ -36,6 +38,8 @@ function devPage(a: string | undefined, b: string | undefined) {
     case 'gui-sessions': return <GuiSessions />;
     case 'gui-session': return <GuiSession id={String(b)} />;
     case 'role-bindings': return <RoleBindings />;
+    case 'policy': return <Policy tab={b ?? 'rules'} />;
+    case 'changes': return <Changes id={b} />;
     default: return <Machines />;
   }
 }
