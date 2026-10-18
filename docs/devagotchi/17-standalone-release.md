@@ -65,8 +65,8 @@ Run `scripts/release.sh`. It sets `CGO_ENABLED=0`, `-trimpath`, and `-ldflags "-
 and writes `dist/release/` with `SHA256SUMS` and `sizes.txt`. Targets are data (`TARGETS=...`).
 
 Sizes for 0.2.0, in bytes (gzip -9 in brackets): linux/amd64 16,969,852 (6.6 MB); linux/arm64 15,597,692 (5.9 MB);
-darwin/amd64 16,946,864 (6.6 MB); darwin/arm64 15,629,970 (6.0 MB); windows/amd64 17,057,792 (6.7 MB);
-windows/arm64 15,439,360 (5.9 MB). Most of the size comes from the MCP SDK and pdfcpu (PDF page edits). For
+darwin/amd64 16,946,864 (6.6 MB); darwin/arm64 15,629,970 (6.0 MB); windows/amd64 17,058,304 (6.7 MB);
+windows/arm64 15,439,872 (5.9 MB). Most of the size comes from the MCP SDK and pdfcpu (PDF page edits). For
 comparison, DC 0.3.0 installs 672 npm packages totalling 259 MB of node_modules and needs Node.js.
 
 ## Benchmarks (2026-10-18 at about 02:05 EDT, 8-vCPU Xeon box, Linux)
