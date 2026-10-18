@@ -3,7 +3,7 @@ package access
 import (
 	"fmt"
 
-	"agenthub/internal/scope"
+	"devagotchi/bridge/scope"
 )
 
 func firstOr(a, b string) string {

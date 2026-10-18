@@ -2,9 +2,9 @@ package machines
 
 import (
 	"context"
-	"crypto/hmac"
 	"crypto/sha256"
 	"crypto/subtle"
+	"devagotchi/bridge/wire"
 	"strings"
 
 	"agenthub/internal/store"
@@ -30,11 +30,7 @@ type Enrolled struct {
 
 // SignKey derives the per-machine HMAC key for signed calls from the machine token (03 "Per-call checks").
 // The hub computes it once at enrollment and keeps it sealed; the bridge derives it from its token file.
-func SignKey(token string) []byte {
-	m := hmac.New(sha256.New, []byte(token))
-	m.Write([]byte("devagotchi call signing v1"))
-	return m.Sum(nil)
-}
+func SignKey(token string) []byte { return wire.SignKey(token) }
 
 // Enroll trades a valid code for a machine token. Wrong secrets count against the code (enroll_code_tries).
 func (s *Service) Enroll(ctx context.Context, in EnrollIn) (Enrolled, error) {

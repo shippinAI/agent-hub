@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"agenthub/internal/scope"
+	"devagotchi/bridge/scope"
 	"agenthub/internal/store"
 )
 

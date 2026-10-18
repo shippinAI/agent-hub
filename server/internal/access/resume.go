@@ -27,7 +27,9 @@ type Alert struct {
 }
 
 // IdleMinutes is resume_alert_idle_minutes with its code clamp (1-60).
-func IdleMinutes(set store.Settings) int { return min(60, max(1, set.Int("resume_alert_idle_minutes", 15))) }
+func IdleMinutes(set store.Settings) int {
+	return min(60, max(1, set.Int("resume_alert_idle_minutes", 15)))
+}
 
 // Check is called on every UI resume (sign-in, load, reload, return after idle): it records an alert for
 // each risky live grant that the human has not already got an open alert for, and returns all open ones.
