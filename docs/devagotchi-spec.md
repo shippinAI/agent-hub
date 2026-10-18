@@ -37,6 +37,7 @@ Nothing in this spec is built yet. Writing it touched only `docs/` in this repo,
 12. [Guides](devagotchi/12-guides.md): Shippin-authored versioned content, the AI as SME, editor, updates
 13. [Docker setup](devagotchi/13-docker-setup.md): Docker Desktop vs Engine, WSL2, Podman preset
 14. [Policy gate and reviewers](devagotchi/14-policy-and-review.md): versioned tenant policies, decision log, change tickets, reviewer agents
+15. [Live ops](devagotchi/15-live-ops.md): supervisor, reachability, Online semantics, gold-policy hub mode, install bundles
 
 ## Rules that apply everywhere
 - Every source, host, policy, role, capability, risk, grant preset, guide, provider, shell profile, and setting is **editable data** in the UI, seeded as presets and never hardcoded. Code holds only the safety invariants (listed in 01).
