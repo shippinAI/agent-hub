@@ -1,15 +1,12 @@
 package subs
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"strings"
-	"time"
 
+	"agenthub/internal/providers"
 	"agenthub/internal/secretbox"
 	"agenthub/internal/store"
 )
@@ -60,29 +57,38 @@ func (s *Service) PutSecret(ctx context.Context, p *store.Principal, reqID, subI
 	})
 }
 
-// Test makes a one-token call through the provider's router with the stored key; ok or a redacted error.
+// Test makes a one-token call to the provider (direct or through its router) with the stored key; ok or a
+// redacted error. The target comes from the provider row's adapter (providers.Resolve).
 func (s *Service) Test(ctx context.Context, p *store.Principal, reqID, subID string) (any, error) {
 	if !p.IsHuman {
 		return nil, store.Fail(403, "humans_only", "only humans test subscriptions")
 	}
-	var kind, url string
-	var models []string
+	var kind string
+	var adapter []byte
+	var model *string
 	var ct []byte
 	var secretID *string
-	err := s.St.DB.QueryRow(ctx, `SELECT s.kind, coalesce(r.url,''), coalesce((SELECT array_agg(x) FROM jsonb_array_elements_text(pr.models) x),'{}'),
-		x.ciphertext, x.id::text FROM subscriptions s JOIN providers pr ON pr.id=s.provider_id LEFT JOIN router_endpoints r ON r.id=pr.router_endpoint_id
-		LEFT JOIN secrets x ON x.id=s.secret_id AND x.revoked_at IS NULL WHERE s.id::text=$1`, subID).Scan(&kind, &url, &models, &ct, &secretID)
+	err := s.St.DB.QueryRow(ctx, `SELECT s.kind, pr.adapter, (SELECT model FROM provider_models m WHERE m.provider_id=pr.id ORDER BY position, model LIMIT 1),
+		x.ciphertext, x.id::text FROM subscriptions s JOIN providers pr ON pr.id=s.provider_id
+		LEFT JOIN secrets x ON x.id=s.secret_id AND x.revoked_at IS NULL WHERE s.id::text=$1`, subID).Scan(&kind, &adapter, &model, &ct, &secretID)
 	if err != nil {
 		return nil, store.ErrNotFound("subscription " + subID)
 	}
-	if kind != "api_key" || secretID == nil || url == "" || len(models) == 0 {
-		return nil, store.Fail(422, "not_testable", "only an api_key subscription with a key, a router and a model can be tested here")
+	var a *providers.Adapter
+	_ = json.Unmarshal(adapter, &a)
+	target, ok := providers.Resolve(a, func(id string) string {
+		var u string
+		_ = s.St.DB.QueryRow(ctx, `SELECT url FROM router_endpoints WHERE id=$1`, id).Scan(&u)
+		return u
+	})
+	if kind != "api_key" || secretID == nil || !ok || model == nil {
+		return nil, store.Fail(422, "not_testable", "only an api_key subscription with a key, an API adapter and a cached model can be tested here")
 	}
 	key, err := s.Box.OpenBytes(ct, []byte("secret:"+*secretID))
 	if err != nil {
 		return nil, store.Fail(500, "secret_unreadable", "the stored key could not be opened (key file changed?)")
 	}
-	errText := s.call(ctx, url, models[0], string(key))
+	errText := s.call(ctx, target, *model, string(key))
 	if errText != "" {
 		errText = strings.ReplaceAll(errText, string(key), "[redacted]")
 	}
@@ -90,30 +96,7 @@ func (s *Service) Test(ctx context.Context, p *store.Principal, reqID, subID str
 		if _, err := w.Exec(`UPDATE subscriptions SET last_test_ok_at=CASE WHEN $2='' THEN now() ELSE last_test_ok_at END, last_test_error=nullif($2,'') WHERE id::text=$1`, subID, errText); err != nil {
 			return nil, err
 		}
-		return nil, w.Event("subscription.tested", nil, nil, map[string]any{"subscription": subID, "ok": errText == ""})
+		return nil, w.Event("subscription.tested", nil, nil, map[string]any{"subscription": subID, "ok": errText == "", "router": target.Router})
 	})
 	return map[string]any{"ok": errText == "", "error": errText}, err
-}
-
-func (s *Service) call(ctx context.Context, base, model, key string) string {
-	body, _ := json.Marshal(map[string]any{"model": model, "max_tokens": 1, "messages": []map[string]string{{"role": "user", "content": "ping"}}})
-	ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
-	defer cancel()
-	req, _ := http.NewRequestWithContext(ctx, "POST", strings.TrimRight(base, "/")+"/v1/chat/completions", bytes.NewReader(body))
-	req.Header.Set("Authorization", "Bearer "+key)
-	req.Header.Set("Content-Type", "application/json")
-	d := s.HTTP
-	if d == nil {
-		d = http.DefaultClient
-	}
-	resp, err := d.Do(req)
-	if err != nil {
-		return "router unreachable: " + err.Error()
-	}
-	defer resp.Body.Close()
-	b, _ := io.ReadAll(io.LimitReader(resp.Body, 400))
-	if resp.StatusCode/100 != 2 {
-		return fmt.Sprintf("router said %d: %s", resp.StatusCode, strings.TrimSpace(string(b)))
-	}
-	return ""
 }

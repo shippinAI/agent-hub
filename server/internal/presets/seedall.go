@@ -6,6 +6,7 @@ import (
 	"agenthub/internal/catalog"
 	"agenthub/internal/changepolicy"
 	"agenthub/internal/guides"
+	"agenthub/internal/providers"
 	"agenthub/internal/store"
 )
 
@@ -37,7 +38,12 @@ func SeedAll(ctx context.Context, st *store.Store, adminLogin string) (map[strin
 			}
 			n["catalog"] += c
 		}
-		c, err := catalog.SeedPolicies(w, "devagotchi/policies.v1", d.Policies)
+		c, err := providers.Seed(w, "devagotchi/provider-rows.v1", d.Providers, d.ProviderModels)
+		if err != nil {
+			return nil, err
+		}
+		n["providers"] = c
+		c, err = catalog.SeedPolicies(w, "devagotchi/policies.v1", d.Policies)
 		if err != nil {
 			return nil, err
 		}

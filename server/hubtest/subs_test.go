@@ -28,6 +28,12 @@ func TestSubscriptionsSecretsRouting(t *testing.T) {
 	if r := e.call("jesse", "PUT", "/router-endpoints/litellm-local", map[string]any{"label": "local", "url": router.URL, "kind": "litellm", "version": ver}); r.Status != 200 {
 		t.Fatalf("router url: %v", r.Body)
 	}
+	// Seeds use direct keys (D13); route this row through the local LiteLLM endpoint for the test.
+	pv := e.call("jesse", "GET", "/providers/anthropic-api", nil).Body["version"]
+	if r := e.call("jesse", "PATCH", "/providers/anthropic-api", map[string]any{"version": pv, "adapter": map[string]any{"kind": "anthropic_compatible",
+		"config": map[string]any{"router": map[string]any{"mode": "litellm", "endpoint_id": "litellm-local"}}}}); r.Status != 200 {
+		t.Fatalf("route provider via litellm: %v", r.Body)
+	}
 	if r := e.call("claude-code", "POST", "/subscriptions", map[string]any{"provider_id": "anthropic-api", "label": "x", "kind": "api_key"}); r.code() != "humans_only" {
 		t.Fatalf("agent created a subscription: %v", r.Body)
 	}
@@ -52,7 +58,7 @@ func TestSubscriptionsSecretsRouting(t *testing.T) {
 	if leaked != 0 {
 		t.Fatal("secret in the event log")
 	}
-	if r := e.call("jesse", "POST", "/subscriptions", map[string]any{"provider_id": "claude-subscription", "label": "Max", "kind": "cli_login"}); r.code() != "cli_login_rule" {
+	if r := e.call("jesse", "POST", "/subscriptions", map[string]any{"provider_id": "anthropic-claude-code", "label": "Max", "kind": "cli_login"}); r.code() != "cli_login_rule" {
 		t.Fatalf("cli_login without machine/worker: %v", r.Body)
 	}
 	b := e.call("jesse", "POST", "/role-bindings", map[string]any{"role_id": "builder", "chat_app": "claude", "subscription_id": sub, "priority": 1})

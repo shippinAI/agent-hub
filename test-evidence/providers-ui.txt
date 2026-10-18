@@ -1,0 +1,47 @@
+# providers UI on http://127.0.0.1:8088 2026-10-18T16:36:02.570Z
+PASS 1280: Providers tab is a selected ARIA tab
+PASS 1280: table lists 25 provider rows
+PASS 1280: column headers Provider, Vendor, Product, Adapter, Editions
+PASS 1280: no verified/unverified terms badge anywhere
+PASS 1280: list has no horizontal page overflow
+PASS 1280: list -> test-evidence/screenshots/providers-list-1280.png
+PASS 1280: keyboard (Enter) opens the row in a dialog named "Grok"
+PASS 1280: detail shows adapter acp and headless_json fallback
+PASS 1280: detail has no horizontal page overflow
+PASS 1280: detail -> test-evidence/screenshots/providers-detail-1280.png
+PASS 1280: edit form locks the id
+PASS 1280: sign-in kinds is a labelled checkbox group
+PASS 1280: edit form has no horizontal page overflow
+PASS 1280: edit -> test-evidence/screenshots/providers-edit-1280.png
+PASS 1280: Escape closes the dialog and focus returns to the row
+PASS 1280: add form is a labelled dialog -> test-evidence/screenshots/providers-add-1280.png
+PASS 1280: client check marks ID aria-invalid
+PASS 1280: focus moves to the error summary
+PASS 1280: client validation -> test-evidence/screenshots/providers-validation-client-1280.png
+PASS 1280: hub 422 error lands on the detect field
+PASS 1280: server validation -> test-evidence/screenshots/providers-validation-server-1280.png
+PASS 1280: Grok saves unchanged through the form (schema v1 · row v1 -> schema v1 · row v2)
+PASS 1280: DeepSeek saves unchanged through the form (schema v1 · row v1 -> schema v1 · row v2)
+PASS 1280: Claude Desktop saves unchanged through the form (schema v1 · row v1 -> schema v1 · row v2)
+PASS 390: Providers tab is a selected ARIA tab
+PASS 390: table lists 25 provider rows
+PASS 390: column headers Provider, Adapter
+PASS 390: no verified/unverified terms badge anywhere
+PASS 390: list has no horizontal page overflow
+PASS 390: list -> test-evidence/screenshots/providers-list-390.png
+PASS 390: tap opens the row in a dialog named "Grok"
+PASS 390: detail shows adapter acp and headless_json fallback
+PASS 390: detail has no horizontal page overflow
+PASS 390: detail -> test-evidence/screenshots/providers-detail-390.png
+PASS 390: edit form locks the id
+PASS 390: sign-in kinds is a labelled checkbox group
+PASS 390: edit form has no horizontal page overflow
+PASS 390: edit -> test-evidence/screenshots/providers-edit-390.png
+PASS 390: Escape closes the dialog and focus returns to the row
+PASS 390: add form is a labelled dialog -> test-evidence/screenshots/providers-add-390.png
+PASS 390: client check marks ID aria-invalid
+PASS 390: focus moves to the error summary
+PASS 390: client validation -> test-evidence/screenshots/providers-validation-client-390.png
+PASS 390: hub 422 error lands on the detect field
+PASS 390: server validation -> test-evidence/screenshots/providers-validation-server-390.png
+PASS no page errors

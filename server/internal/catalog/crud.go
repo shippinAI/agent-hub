@@ -107,6 +107,14 @@ func (s *Service) Delete(ctx context.Context, p *store.Principal, reqID, name, i
 				return nil, store.Fail(409, "in_use", "the default preset cannot be deleted; pick another default first")
 			}
 		}
+		if name == "router-endpoints" {
+			var users int
+			_ = w.Row(`SELECT count(*) FROM providers p, jsonb_array_elements(coalesce(jsonb_build_array(p.adapter), '[]') || p.fallback_adapters) a
+				WHERE a->'config'->'router'->>'endpoint_id' = $1`, id).Scan(&users)
+			if users > 0 {
+				return nil, store.Fail(409, "in_use", "%d provider adapter(s) route through %s; switch them to another router first", users, id)
+			}
+		}
 		if name == "tenants" && id == "local" {
 			return nil, store.Fail(409, "in_use", "the local tenant is required")
 		}

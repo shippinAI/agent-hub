@@ -1,0 +1,18 @@
+# Provider schema (doc 34) evidence 2026-10-18 09:37 PDT
+go: vet ok; 42 passed, 0 failed, 1 skipped (TestPolicyGateRealPDP, pre-existing) -> test-evidence/go-tests.txt
+web: tsc --noEmit + vite build ok
+live UI (http://127.0.0.1:8088, after hubctl.sh restart): 46 passed, 0 failed -> test-evidence/providers-ui.txt
+live rows: 25 (20 seeded from doc 34 + 5 migrated); all 25 pass POST /providers/validate
+screenshots:
+  test-evidence/screenshots/providers-add-1280.png
+  test-evidence/screenshots/providers-add-390.png
+  test-evidence/screenshots/providers-detail-1280.png
+  test-evidence/screenshots/providers-detail-390.png
+  test-evidence/screenshots/providers-edit-1280.png
+  test-evidence/screenshots/providers-edit-390.png
+  test-evidence/screenshots/providers-list-1280.png
+  test-evidence/screenshots/providers-list-390.png
+  test-evidence/screenshots/providers-validation-client-1280.png
+  test-evidence/screenshots/providers-validation-client-390.png
+  test-evidence/screenshots/providers-validation-server-1280.png
+  test-evidence/screenshots/providers-validation-server-390.png

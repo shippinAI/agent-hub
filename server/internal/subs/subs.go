@@ -5,6 +5,7 @@ package subs
 import (
 	"context"
 	"encoding/json"
+	"slices"
 
 	"agenthub/internal/secretbox"
 	"agenthub/internal/store"
@@ -76,17 +77,22 @@ type Input struct {
 }
 
 // Put creates or updates a subscription with the code rule: cli_login needs a machine and an agent worker
-// principal (it runs on that machine), and the provider must be a subscription CLI; api_key needs an api provider.
+// principal (it runs on that machine) and a provider whose auth_kinds offer a client sign-in; api_key needs a
+// provider that takes an API or plan key. Disabled providers cannot be picked.
 func (s *Service) Put(ctx context.Context, p *store.Principal, reqID string, in Input) (any, error) {
 	return s.St.Write(ctx, p, reqID, "subscription_put", in, func(w *store.W) (any, error) {
 		if err := w.Human("subscription.put"); err != nil {
 			return nil, err
 		}
-		var pkind string
-		if err := w.Row(`SELECT kind FROM providers WHERE id=$1`, in.ProviderID).Scan(&pkind); err != nil {
+		var auth []string
+		var disabled bool
+		if err := w.Row(`SELECT auth_kinds, disabled_at IS NOT NULL FROM providers WHERE id=$1`, in.ProviderID).Scan(&auth, &disabled); err != nil {
 			return nil, store.ErrNotFound("provider " + in.ProviderID)
 		}
-		if err := rule(w, in, pkind); err != nil {
+		if disabled {
+			return nil, store.Fail(422, "provider_disabled", "provider %s is disabled; enable it under Catalog > Providers first", in.ProviderID)
+		}
+		if err := rule(w, in, auth); err != nil {
 			return nil, err
 		}
 		en := in.Enabled == nil || *in.Enabled
@@ -109,11 +115,11 @@ func (s *Service) Put(ctx context.Context, p *store.Principal, reqID string, in 
 	})
 }
 
-func rule(w *store.W, in Input, pkind string) error {
+func rule(w *store.W, in Input, auth []string) error {
 	switch in.Kind {
 	case "cli_login":
-		if pkind != "subscription_cli" {
-			return store.Fail(422, "provider_kind", "cli_login needs a subscription CLI provider")
+		if !slices.Contains(auth, "client_login") && !slices.Contains(auth, "signin_oauth") {
+			return store.Fail(422, "provider_kind", "cli_login needs a provider with client_login or signin_oauth in auth_kinds")
 		}
 		if in.MachineID == "" || in.Worker == "" {
 			return store.Fail(422, "cli_login_rule", "a cli_login subscription names the machine and the worker principal that runs the official CLI there")
@@ -124,8 +130,8 @@ func rule(w *store.W, in Input, pkind string) error {
 			return store.Fail(422, "cli_login_rule", "the worker must be an agent principal")
 		}
 	case "api_key":
-		if pkind != "api" {
-			return store.Fail(422, "provider_kind", "api_key needs an API provider")
+		if !slices.Contains(auth, "api_key") && !slices.Contains(auth, "plan_key") {
+			return store.Fail(422, "provider_kind", "api_key needs a provider with api_key or plan_key in auth_kinds")
 		}
 	default:
 		return store.ErrInvalid("kind must be api_key or cli_login")

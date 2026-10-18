@@ -12,22 +12,24 @@ import (
 	"agenthub/internal/httpapi"
 	"agenthub/internal/machineops"
 	"agenthub/internal/machines"
+	"agenthub/internal/providers"
 	"agenthub/internal/store"
 	"agenthub/internal/subs"
 )
 
 // API holds the domain services.
 type API struct {
-	Srv      *httpapi.Server
-	St       *store.Store
-	Machines *machines.Service
-	Access   *access.Service
-	Guides   *guides.Service
-	Subs     *subs.Service
-	Catalog  *catalog.Service
-	Ops      *machineops.Ops
-	Hub      *bridgehub.Hub
-	Policy   *changepolicy.Service
+	Srv       *httpapi.Server
+	St        *store.Store
+	Machines  *machines.Service
+	Access    *access.Service
+	Guides    *guides.Service
+	Subs      *subs.Service
+	Catalog   *catalog.Service
+	Ops       *machineops.Ops
+	Hub       *bridgehub.Hub
+	Policy    *changepolicy.Service
+	Providers *providers.Service
 }
 
 type h = httpapi.Handler
@@ -40,6 +42,7 @@ func (a *API) Mount(mux *http.ServeMux) {
 	a.guideRoutes(reg)
 	a.subRoutes(reg)
 	a.catalogRoutes(reg)
+	a.providerRoutes(reg)
 	a.policyRoutes(reg)
 	a.bridgeRoutes(mux)
 }

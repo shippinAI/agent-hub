@@ -40,7 +40,7 @@ Approving, narrowing, denying, or revoking grants; enabling the unsandboxed poli
 - `GET /resume-alerts` (alerts due for this UI session), `POST /resume-alerts/{id}/{continue|revoke|pause}`.
 - `GET /gui-sessions?live=true`, `POST /gui-sessions/{id}/end`, `GET /gui-artifacts/{id}` (only while retained; human principals only).
 - `GET|POST /guides`, `GET|PATCH /guides/{id}`, `GET|POST /guides/{id}/versions`, `POST /guides/{id}/versions/{v}/{publish|retire}`, `GET /guides/{id}/diff?from=&to=`, `POST /guides/import` (signed bundle), `GET /guide-updates` (pending Shippin versions), `POST /guide-updates/{id}/{accept|skip}`, `GET /guide-runs?machine=&guide=`.
-- `GET|PUT|DELETE /{capabilities|risks|shell-profiles|providers|router-endpoints|chat-apps}[/{id}]`.
+- `GET|PUT|DELETE /{capabilities|risks|shell-profiles|router-endpoints|chat-apps}[/{id}]`. Providers have their own routes and MCP tools ([34](34-provider-schema.md) "As built"; no delete, disable instead).
 - `GET|POST /subscriptions`, `PATCH|DELETE /subscriptions/{id}`, `PUT /subscriptions/{id}/secret` (write-only body; the response is `{fp}` only), `POST /subscriptions/{id}/test` (a one-token router call; returns ok/error, never the key).
 - `GET|POST /role-bindings`, `PATCH|DELETE /role-bindings/{id}`.
 - `GET /tenants/me` (cloud), plan limits.

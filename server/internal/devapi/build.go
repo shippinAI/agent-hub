@@ -18,6 +18,7 @@ import (
 	"agenthub/internal/machines"
 	"agenthub/internal/mcptools"
 	"agenthub/internal/policygate"
+	"agenthub/internal/providers"
 	"agenthub/internal/secretbox"
 	"agenthub/internal/store"
 	"agenthub/internal/stream"
@@ -38,7 +39,8 @@ func Build(ctx context.Context, st *store.Store, res *auth.Resolver, br *stream.
 	ops := &machineops.Ops{St: st, Access: acc, Machines: ms, Hub: hub}
 	acc.Notify = ops
 	a := &API{St: st, Machines: ms, Access: acc, Ops: ops, Hub: hub, Catalog: &catalog.Service{St: st}, Policy: pol,
-		Guides: &guides.Service{St: st, HubURL: cfg.PublicURL}, Subs: &subs.Service{St: st, Box: box}}
+		Providers: &providers.Service{St: st},
+		Guides:    &guides.Service{St: st, HubURL: cfg.PublicURL}, Subs: &subs.Service{St: st, Box: box}}
 	a.Guides.Hooks = guideHooks{a}
 	ext := mcptools.Ext{Instructions: Instructions, Register: func(s *mcp.Server) {
 		a.accessTools(s)
@@ -47,6 +49,7 @@ func Build(ctx context.Context, st *store.Store, res *auth.Resolver, br *stream.
 		a.guideTools(s)
 		a.guideResources(ctx, s)
 		a.policyTools(s)
+		a.providerTools(s)
 	}, OnInit: func(c context.Context, p *store.Principal) { _ = acc.AgentResumed(c, p.ID, "mcp_session") }}
 	srv := &httpapi.Server{St: st, Auth: res, Broker: br, Cfg: cfg, MCP: mcptools.Handler(st, br, res, ext)}
 	a.Srv = srv

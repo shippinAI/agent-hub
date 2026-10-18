@@ -1,13 +1,15 @@
-import { Button, Key, Label, ListBox, ListBoxItem, Popover, Select as RACSelect, SelectValue, Text } from 'react-aria-components';
+import { Button, FieldError, Key, Label, ListBox, ListBoxItem, Popover, Select as RACSelect, SelectValue, Text } from 'react-aria-components';
 
 export type Option = { id: string; label: string; hint?: string };
 
 // Single-select dropdown (React Aria Select + Popover + ListBox).
-export function Select({ label, options, value, onChange, hideLabel, isDisabled, className = '' }: {
+export function Select({ label, options, value, onChange, hideLabel, isDisabled, className = '', errorMessage }: {
   label: string; options: Option[]; value: string | null; onChange: (v: string) => void; hideLabel?: boolean; isDisabled?: boolean; className?: string;
+  errorMessage?: string;
 }) {
   return (
     <RACSelect selectedKey={value} onSelectionChange={(k: Key | null) => k != null && onChange(String(k))}
+      isInvalid={errorMessage ? true : undefined} validationBehavior="aria"
       isDisabled={isDisabled} className={`field select ${className}`} aria-label={hideLabel ? label : undefined}>
       {!hideLabel && <Label className="label">{label}</Label>}
       <Button className="input select-trigger">
@@ -23,6 +25,7 @@ export function Select({ label, options, value, onChange, hideLabel, isDisabled,
           )}
         </ListBox>
       </Popover>
+      <FieldError className="field-error">{errorMessage}</FieldError>
     </RACSelect>
   );
 }

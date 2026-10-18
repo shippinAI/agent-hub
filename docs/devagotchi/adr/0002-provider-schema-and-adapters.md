@@ -9,8 +9,8 @@
   1. Every provider is a data row of one schema ([34](../34-provider-schema.md)): id, vendor, product, label, icon,
      auth kinds, runner, editions, adapter + config, fallback adapters, model-list source, usage and quota source,
      state read path, detection rules per OS, capabilities. The provider count does not matter.
-  2. Code exists only for five adapters: `acp`, `codex_app_server`, `headless_json`, `openai_api`,
-     `anthropic_api`, plus a router option on the API adapters. Adapters carry best-practice defaults that rows
+  2. Code exists only for five adapters: `acp`, `codex_app_server`, `headless_json`, `openai_compatible`,
+     `anthropic_compatible`, plus a router option on the API adapters. Adapters carry best-practice defaults that rows
      can override; a row can name fallbacks.
   3. Router default is `direct` keys; LiteLLM is optional and configurable per tenant or row; OpenRouter is a
      provider row.

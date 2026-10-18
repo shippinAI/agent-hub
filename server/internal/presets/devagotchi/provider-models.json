@@ -1,0 +1,6 @@
+{"kind": "provider-models", "rows": [
+  {"provider_id": "anthropic-api", "model": "claude-sonnet", "label": "Claude Sonnet"},
+  {"provider_id": "anthropic-api", "model": "claude-opus", "label": "Claude Opus"},
+  {"provider_id": "openai-api", "model": "gpt-5", "label": "GPT-5"},
+  {"provider_id": "xai-api", "model": "grok-4", "label": "Grok 4"}
+]}

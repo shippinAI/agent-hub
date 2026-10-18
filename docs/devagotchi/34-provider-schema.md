@@ -24,8 +24,8 @@ of this shape, and code exists only for the five adapters plus the router option
 | `acp` | Any ACP agent over stdio ([ACP](https://agentclientprotocol.com/get-started/agents)) | `argv`, `env`, `session_load` |
 | `codex_app_server` | Codex JSON-RPC app-server ([docs](https://learn.chatgpt.com/docs/app-server)) | `argv`, `env`, `rate_limits` (bool) |
 | `headless_json` | One process per turn, JSON or JSONL out | `argv`, `prompt_arg`, `resume_arg`, `output`, `session_id_path`, `text_path`, `usage_path`, `event_map` |
-| `openai_api` | OpenAI-compatible HTTP (Chat Completions / Responses) | `base_url`, `api`, `secret_ref`, `router` |
-| `anthropic_api` | Anthropic-compatible Messages HTTP | `base_url`, `secret_ref`, `router` |
+| `openai_compatible` | OpenAI-compatible HTTP (Chat Completions / Responses) | `base_url`, `api`, `secret_ref`, `router` |
+| `anthropic_compatible` | Anthropic-compatible Messages HTTP | `base_url`, `secret_ref`, `router` |
 `router` (API adapters only): `{ mode: "direct" | "litellm" | "openrouter" | "custom", endpoint_id }`.
 **Default `direct`**; LiteLLM is optional and set per tenant or per row ([30](30-cost-tracking.md)).
 
@@ -45,7 +45,7 @@ const Provider = type({
   auth_kinds: "('client_login' | 'signin_oauth' | 'api_key' | 'plan_key')[]",
   runner: "('user_device' | 'hosted_workspace' | 'hub')[]",   // hub = API adapters only
   editions: "('local' | 'hosted')[]",
-  adapter: { kind: "'acp' | 'codex_app_server' | 'headless_json' | 'openai_api' | 'anthropic_api'",
+  adapter: { kind: "'acp' | 'codex_app_server' | 'headless_json' | 'openai_compatible' | 'anthropic_compatible'",
              config: "Record<string, unknown>" },             // validated per kind
   "fallback_adapters?": "Adapter[]",
   "host_for?": "'harness'",       // plan keys (Z.ai, MiniMax) run inside another row's client
@@ -100,12 +100,31 @@ Sources for this row: [CLI](https://docs.x.ai/build/cli/reference), [sessions](h
 | `meta-muse-code` | client_login, api_key | headless_json | static (plan docs) | observed | command `--session-id` |
 | `moonshot-kimi-code` | client_login | acp (headless_json) | adapter session config | observed | adapter `session/load` |
 | `alibaba-qwen-code` | client_login, api_key | acp (headless_json) | adapter session config | observed | adapter `session/load` |
-| `zai-glm-plan` | plan_key | `host_for: harness` + anthropic_api | static (plan docs) | http usage-query | host row |
-| `minimax-m-plan` | plan_key | `host_for: harness` + anthropic_api | static (plan docs) | observed | host row |
-| `deepseek-api` | api_key | anthropic_api (openai_api) | http `/models` | http `/user/balance` | live_only |
-| `perplexity-api` | api_key | openai_api | static (pricing docs) | none | live_only |
-| `opencode` | client_login, api_key | acp (`opencode serve` http) | adapter session config | per backing provider | http `GET /session` |
-| `goose` | api_key | acp | adapter session config | per backing provider | command `goose session list` |
+| `zai-glm-plan` | plan_key | `host_for: harness` + anthropic_compatible | static (plan docs) | http usage-query | host row |
+| `minimax-m-plan` | plan_key | `host_for: harness` + anthropic_compatible | static (plan docs) | observed | host row |
+| `deepseek-api` | api_key | anthropic_compatible (openai_compatible) | http `/models` | http `/user/balance` | live_only |
+| `perplexity-api` | api_key | openai_compatible | static (pricing docs) | none | live_only |
+| `opencode-cli` | client_login, api_key | acp (`opencode serve` http) | adapter session config | per backing provider | http `GET /session` |
+| `block-goose` | api_key | acp | adapter session config | per backing provider | command `goose session list` |
 | `cline-cli` | api_key, client_login | acp (headless_json) | adapter session config | per backing provider | live_only |
 Claude Desktop (29 row 1) and Goose (row 17) get their own rows, so 20 rows cover the 18 entries of 29.
 "observed" means quota is learned from limit-reached events, since no read surface was found ([30](30-cost-tracking.md)).
+
+## As built (2026-10-18; G-17 done, G-21 schema part)
+- Adapter kinds renamed `openai_api` → `openai_compatible`, `anthropic_api` → `anthropic_compatible` (Jesse's task
+  wording); the five kinds are the only ones the validator accepts. Ids `opencode`/`goose` became `opencode-cli` and
+  `block-goose` so every id matches the `vendor-product` rule.
+- Code: `server/internal/providers` (Go validator, per-kind config types, converter, seed); migration `007` (old
+  values kept in `providers_legacy_007`, old `models` lists moved to `provider_models`, which adds `position`).
+  Seed data: `presets/devagotchi/provider-rows.json` (these 20 rows plus `anthropic-api`, `openai-api`, `xai-api`,
+  direct keys) and `provider-models.json`. Web types: `web/src/lib/providerTypes.ts` (enum lists tested against Go).
+- Rules the validator adds: `adapter` may be `null` only for an MCP-host-only row (`capabilities.mcp_host`); a
+  fallback may not repeat an adapter kind; runner `hub` needs an API adapter; config keys are strict per kind (plus
+  overrides `timeout_ms`, `max_retries`, `backoff_ms`; headless adds `framing` json|jsonl); env names that look
+  secret must hold a `{{secret:name}}` reference; detect dirs and state paths may not name credential stores;
+  `secret_ref` names a stored secret, never a key. Router endpoint existence and kind = mode are checked against
+  `router_endpoints`. `disabled_at` turns a row off; rows are not deleted through the API.
+- API: `GET/POST /api/v1/providers`, `GET/PUT/PATCH /api/v1/providers/{id}`, `POST …/{id}/disable|enable`,
+  `PUT …/{id}/models`, `POST /api/v1/providers/validate`, `GET /api/v1/provider-schema`; MCP `provider_schema`,
+  `provider_list`, `provider_get`, `provider_validate`, `provider_create`, `provider_update`, `provider_disable`.
+  Errors: 422 `validation_failed`, `current.errors = [{path, message}]`. Writes are human-only plus policy.

@@ -5,27 +5,29 @@ import {
 
 type Common = { label: string; description?: string; className?: string };
 
-export function TextField({ label, description, className = '', multiline, rows = 3, ...p }: Common & {
+export function TextField({ label, description, className = '', multiline, rows = 3, errorMessage, ...p }: Common & {
   value?: string; onChange?: (v: string) => void; isRequired?: boolean; autoFocus?: boolean; placeholder?: string;
   multiline?: boolean; rows?: number; validate?: (v: string) => string | null; type?: string; name?: string; isDisabled?: boolean;
+  errorMessage?: string;
 }) {
   const { placeholder, ...rest } = p;
   return (
-    <RACTextField {...rest} className={`field ${className}`}>
+    <RACTextField {...rest} isInvalid={errorMessage ? true : undefined} validationBehavior="aria" className={`field ${className}`}>
       <Label className="label">{label}</Label>
       {multiline ? <RACTextArea className="input textarea" rows={rows} placeholder={placeholder} /> : <Input className="input" placeholder={placeholder} />}
       {description && <Text slot="description" className="hint">{description}</Text>}
-      <FieldError className="field-error" />
+      <FieldError className="field-error">{errorMessage}</FieldError>
     </RACTextField>
   );
 }
 
-export function NumberField({ label, description, ...p }: Common & { value?: number; onChange?: (v: number) => void; minValue?: number; maxValue?: number }) {
+export function NumberField({ label, description, errorMessage, ...p }: Common & { value?: number; onChange?: (v: number) => void; minValue?: number; maxValue?: number; errorMessage?: string }) {
   return (
-    <RACNumber {...p} className="field">
+    <RACNumber {...p} isInvalid={errorMessage ? true : undefined} validationBehavior="aria" className="field">
       <Label className="label">{label}</Label>
       <Input className="input" />
       {description && <Text slot="description" className="hint">{description}</Text>}
+      <FieldError className="field-error">{errorMessage}</FieldError>
     </RACNumber>
   );
 }
@@ -39,9 +41,11 @@ export function Switch({ children, ...p }: { children: string; isSelected?: bool
   );
 }
 
-export function CheckboxGroup({ label, options, value, onChange }: { label: string; options: { id: string; label: string }[]; value: string[]; onChange: (v: string[]) => void }) {
+export function CheckboxGroup({ label, options, value, onChange, errorMessage, description }: {
+  label: string; options: { id: string; label: string }[]; value: string[]; onChange: (v: string[]) => void; errorMessage?: string; description?: string;
+}) {
   return (
-    <RACCheckboxGroup value={value} onChange={onChange} className="field">
+    <RACCheckboxGroup value={value} onChange={onChange} isInvalid={errorMessage ? true : undefined} validationBehavior="aria" className="field">
       <Label className="label">{label}</Label>
       <div className="check-grid">
         {options.map((o) => (
@@ -53,6 +57,8 @@ export function CheckboxGroup({ label, options, value, onChange }: { label: stri
           </Checkbox>
         ))}
       </div>
+      {description && <Text slot="description" className="hint">{description}</Text>}
+      <FieldError className="field-error">{errorMessage}</FieldError>
     </RACCheckboxGroup>
   );
 }

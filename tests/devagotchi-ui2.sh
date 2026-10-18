@@ -21,7 +21,7 @@ h=(-H 'X-Hub-Client: ui' -H 'Content-Type: application/json')
 # machine, subscriptions, role bindings
 curl -s "${h[@]}" -X POST "$url/api/v1/machines" -d '{"id":"laptop","label":"Jesse Laptop","os":"linux","display_server":"x11"}' >/dev/null
 curl -s "${h[@]}" -X POST "$url/api/v1/subscriptions" -d '{"label":"Anthropic (main)","provider_id":"anthropic-api","kind":"api_key"}' >/dev/null
-curl -s "${h[@]}" -X POST "$url/api/v1/subscriptions" -d '{"label":"Claude on laptop","provider_id":"claude-subscription","kind":"cli_login","machine_id":"laptop","worker_principal_id":"claude-code"}' >/dev/null
+curl -s "${h[@]}" -X POST "$url/api/v1/subscriptions" -d '{"label":"Claude on laptop","provider_id":"anthropic-claude-code","kind":"cli_login","machine_id":"laptop","worker_principal_id":"claude-code"}' >/dev/null
 subs=$(curl -s "$url/api/v1/subscriptions")
 s1=$(echo "$subs" | python3 -c "import sys,json;print(json.load(sys.stdin)[0]['id'])")
 s2=$(echo "$subs" | python3 -c "import sys,json;print(json.load(sys.stdin)[1]['id'])")

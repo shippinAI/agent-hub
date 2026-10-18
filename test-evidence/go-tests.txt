@@ -1,53 +1,59 @@
-# go test 2026-10-18 01:21 EDT
+# go test 2026-10-18 12:37 EDT
 go vet: ok
 === RUN   TestAccessFlowExecRevoke
---- PASS: TestAccessFlowExecRevoke (2.00s)
+--- PASS: TestAccessFlowExecRevoke (2.04s)
 === RUN   TestAuthTokensAndCSRF
---- PASS: TestAuthTokensAndCSRF (0.16s)
+--- PASS: TestAuthTokensAndCSRF (0.21s)
 === RUN   TestHashChainVerifyAndAppendOnly
     chain_test.go:37: tamper detected: row content does not match its hash
---- PASS: TestHashChainVerifyAndAppendOnly (0.16s)
+--- PASS: TestHashChainVerifyAndAppendOnly (0.20s)
 === RUN   TestExpiredLeaseReclaimedAndStaleFenceRejected
---- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.48s)
+--- PASS: TestExpiredLeaseReclaimedAndStaleFenceRejected (1.51s)
 === RUN   TestReaperExpiresAndEscalates
---- PASS: TestReaperExpiresAndEscalates (2.58s)
+--- PASS: TestReaperExpiresAndEscalates (2.61s)
 === RUN   TestGuidesEditPublishImportRun
---- PASS: TestGuidesEditPublishImportRun (0.19s)
+--- PASS: TestGuidesEditPublishImportRun (0.21s)
 === RUN   TestIdempotencyKeys
---- PASS: TestIdempotencyKeys (0.18s)
+--- PASS: TestIdempotencyKeys (0.20s)
 === RUN   TestOptimisticConcurrency
---- PASS: TestOptimisticConcurrency (0.17s)
+--- PASS: TestOptimisticConcurrency (0.23s)
 === RUN   TestMCPToolsOverHTTP
---- PASS: TestMCPToolsOverHTTP (0.20s)
+--- PASS: TestMCPToolsOverHTTP (0.24s)
+=== RUN   TestMigration007KeepsData
+--- PASS: TestMigration007KeepsData (0.12s)
 === RUN   TestPolicyAndSafetyRules
---- PASS: TestPolicyAndSafetyRules (0.19s)
+--- PASS: TestPolicyAndSafetyRules (0.23s)
 === RUN   TestPolicyDocEditAndFailClosed
     policydoc_test.go:70: agent edit refused; invalid doc refused; v2 disable took effect; stale base 409; rollback v3 denies again; WI geo block; tenant without policy -> policy_unavailable
---- PASS: TestPolicyDocEditAndFailClosed (1.29s)
+--- PASS: TestPolicyDocEditAndFailClosed (1.33s)
 === RUN   TestPolicyGateBlocksBridgeCalls
     policygate_test.go:103: allow passed, deny blocked without consuming a use, 500 and unreachable failed closed, 3 policy.denied events
---- PASS: TestPolicyGateBlocksBridgeCalls (1.29s)
+--- PASS: TestPolicyGateBlocksBridgeCalls (1.32s)
 === RUN   TestPolicyGateRealPDP
     policygate_test.go:110: HUB_TEST_POLICY_URL not set
 --- SKIP: TestPolicyGateRealPDP (0.00s)
+=== RUN   TestProvidersMCP
+--- PASS: TestProvidersMCP (0.21s)
+=== RUN   TestProvidersREST
+--- PASS: TestProvidersREST (0.22s)
 === RUN   TestClaimNextRaceNeverDoubleClaims
     race_test.go:70: 20 agents claimed 60 tasks: no task given twice, 60 unique fences
---- PASS: TestClaimNextRaceNeverDoubleClaims (0.77s)
+--- PASS: TestClaimNextRaceNeverDoubleClaims (0.51s)
 === RUN   TestRealBridgeExecRevoke
---- PASS: TestRealBridgeExecRevoke (2.68s)
+--- PASS: TestRealBridgeExecRevoke (3.08s)
 === RUN   TestRealBridgeGUI
---- PASS: TestRealBridgeGUI (2.32s)
+--- PASS: TestRealBridgeGUI (2.65s)
 === RUN   TestReviewerPassUnlocksChange
     review_test.go:116: plain allowed; rm -rf / denied; no ticket denied; self-review and non-reviewer refused; stale hash refused; PASS unlocked; other command denied; edit made the PASS stale; 2 allow/5 deny logged
---- PASS: TestReviewerPassUnlocksChange (1.33s)
+--- PASS: TestReviewerPassUnlocksChange (1.25s)
 === RUN   TestSSEStreamsEventsAndResumes
---- PASS: TestSSEStreamsEventsAndResumes (0.53s)
+--- PASS: TestSSEStreamsEventsAndResumes (0.55s)
 === RUN   TestSubscriptionsSecretsRouting
---- PASS: TestSubscriptionsSecretsRouting (0.20s)
+--- PASS: TestSubscriptionsSecretsRouting (0.22s)
 === RUN   TestUnsandboxedPolicyResumeAlertsDefaultPreset
---- PASS: TestUnsandboxedPolicyResumeAlertsDefaultPreset (1.44s)
+--- PASS: TestUnsandboxedPolicyResumeAlertsDefaultPreset (1.52s)
 PASS
-ok  	agenthub/hubtest	19.176s
+ok  	agenthub/hubtest	20.680s
 === RUN   TestSeedGuidesValidateAndLint
 --- PASS: TestSeedGuidesValidateAndLint (0.01s)
 === RUN   TestDockerDryRunPaths
@@ -62,7 +68,7 @@ ok  	agenthub/hubtest	19.176s
 === RUN   TestSignVerifyDiff
 --- PASS: TestSignVerifyDiff (0.00s)
 PASS
-ok  	agenthub/internal/guidekit	0.015s
+ok  	agenthub/internal/guidekit	0.016s
 === RUN   TestDecide
 --- PASS: TestDecide (0.00s)
 PASS
@@ -73,6 +79,30 @@ ok  	agenthub/internal/policy	0.002s
 --- PASS: TestApprovalNeedsHuman (0.00s)
 PASS
 ok  	agenthub/internal/policyrules	0.004s
+=== RUN   TestAdapterKindsAreExactlyFive
+--- PASS: TestAdapterKindsAreExactlyFive (0.00s)
+=== RUN   TestRouterOption
+--- PASS: TestRouterOption (0.00s)
+=== RUN   TestResolveTargets
+--- PASS: TestResolveTargets (0.00s)
+=== RUN   TestSchemaVersion
+--- PASS: TestSchemaVersion (0.00s)
+=== RUN   TestOlderRowsAreConverted
+--- PASS: TestOlderRowsAreConverted (0.00s)
+=== RUN   TestSeedRowsValidate
+--- PASS: TestSeedRowsValidate (0.00s)
+=== RUN   TestEnumsMatchWebTypes
+--- PASS: TestEnumsMatchWebTypes (0.00s)
+=== RUN   TestDocExampleRowIsValid
+--- PASS: TestDocExampleRowIsValid (0.00s)
+=== RUN   TestFieldErrors
+--- PASS: TestFieldErrors (0.00s)
+=== RUN   TestDuplicateFallbackKind
+--- PASS: TestDuplicateFallbackKind (0.00s)
+=== RUN   TestMCPHostOnlyRowNeedsNoAdapter
+--- PASS: TestMCPHostOnlyRowNeedsNoAdapter (0.00s)
+PASS
+ok  	agenthub/internal/providers	0.009s
 === RUN   TestSealOpenAndKeyFile
 --- PASS: TestSealOpenAndKeyFile (0.00s)
 PASS

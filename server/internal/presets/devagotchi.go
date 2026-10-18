@@ -29,10 +29,14 @@ type Devagotchi struct {
 	Policies []policy.Rule
 	Catalog  []CatalogFile
 	Guides   []json.RawMessage
+	// Providers are schema v1 rows (doc 34), seeded and validated by internal/providers, not the generic catalog.
+	Providers      []json.RawMessage
+	ProviderModels []json.RawMessage
 }
 
-// catalogOrder respects foreign keys (capabilities before links and presets, routers before providers).
-var catalogOrder = []string{"capabilities", "risks", "capability-risks", "shell-profiles", "grant-presets", "runtimes", "routers", "providers", "chat-apps"}
+// catalogOrder respects foreign keys (capabilities before links and presets). Providers seed after this
+// loop, so router endpoints exist when their rows are validated.
+var catalogOrder = []string{"capabilities", "risks", "capability-risks", "shell-profiles", "grant-presets", "runtimes", "routers", "chat-apps"}
 
 // LoadDevagotchi parses the embedded bundle.
 func LoadDevagotchi() (Devagotchi, error) {
@@ -63,6 +67,15 @@ func LoadDevagotchi() (Devagotchi, error) {
 			return d, err
 		}
 		d.Catalog = append(d.Catalog, cf)
+	}
+	for name, dst := range map[string]*[]json.RawMessage{"provider-rows": &d.Providers, "provider-models": &d.ProviderModels} {
+		var f struct {
+			Rows []json.RawMessage `json:"rows"`
+		}
+		if err := readJSON(devFS, "devagotchi/"+name+".json", &f); err != nil {
+			return d, err
+		}
+		*dst = f.Rows
 	}
 	ents, err := guideFS.ReadDir("guides")
 	if err != nil {

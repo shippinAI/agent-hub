@@ -4,6 +4,7 @@ import { useData } from '../../lib/useData';
 import { Tab, TabList, TabPanel, Tabs } from 'react-aria-components';
 import { SPECS } from './catalogSpec';
 import { CatalogKind } from './CatalogKind';
+import { ProvidersTab } from './providers/ProvidersTab';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/Field';
 import { Card, Notice } from '../../ui/Notice';
@@ -14,9 +15,11 @@ export function Catalog() {
   return (
     <Tabs className="tabs">
       <TabList aria-label="Catalog" className="tablist">
+        <Tab id="providers" className="tab">Providers</Tab>
         {SPECS.map((s) => <Tab key={s.kind} id={s.kind} className="tab">{s.label}</Tab>)}
         <Tab id="settings" className="tab">Settings</Tab>
       </TabList>
+      <TabPanel id="providers" className="tabpanel"><ProvidersTab /></TabPanel>
       {SPECS.map((s) => (
         <TabPanel key={s.kind} id={s.kind} className="tabpanel"><CatalogKind spec={s} /></TabPanel>
       ))}

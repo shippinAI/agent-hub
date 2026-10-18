@@ -1,5 +1,6 @@
 // Package catalog is generic, versioned CRUD for the Devagotchi data tables (capabilities, risks, presets, ...).
 // The column lists below describe table shapes only; every value in them is data edited in the UI.
+// Providers are not here: they have their own schema and validator (internal/providers, doc 34).
 package catalog
 
 type colType int
@@ -42,9 +43,6 @@ var kinds = map[string]Kind{
 		{"verify_argv", tJSON}, {"hosts", tTextArr}, {"risk_ids", tTextArr}, {"licence_confirm", tBool}}},
 	"router-endpoints": {Table: "router_endpoints", Action: "catalog.router_endpoints", Tenanted: true, Cols: []col{
 		{"label", tText}, {"url", tText}, {"kind", tText}}},
-	"providers": {Table: "providers", Action: "catalog.providers", Tenanted: true, Cols: []col{
-		{"kind", tText}, {"label", tText}, {"models", tJSON}, {"router_endpoint_id", tTextNull}, {"cli_name", tTextNull},
-		{"terms_url", tText}, {"terms_status", tText}, {"terms_note", tText}}},
 	"chat-apps": {Table: "chat_apps", Action: "catalog.chat_apps", Cols: []col{
 		{"label", tText}, {"provider_ids", tTextArr}, {"connect_template", tText}}, Tenanted: true},
 	"tenants": {Table: "tenants", Action: "tenant", Cols: []col{{"name", tText}, {"edition", tText}, {"plan", tText}}},

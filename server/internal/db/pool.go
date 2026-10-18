@@ -33,7 +33,11 @@ func Open(ctx context.Context, url string) (*pgxpool.Pool, error) {
 }
 
 // Migrate applies migrations/NNN_*.sql in order, each in its own transaction.
-func Migrate(ctx context.Context, pool *pgxpool.Pool) error {
+func Migrate(ctx context.Context, pool *pgxpool.Pool) error { return MigrateUntil(ctx, pool, "") }
+
+// MigrateUntil applies migrations up to and including the named file ("" = all). Tests use it to load
+// old-shape data before a forward migration runs.
+func MigrateUntil(ctx context.Context, pool *pgxpool.Pool, last string) error {
 	if _, err := pool.Exec(ctx, `CREATE TABLE IF NOT EXISTS schema_migrations (name text PRIMARY KEY, at timestamptz NOT NULL DEFAULT now())`); err != nil {
 		return err
 	}
@@ -47,6 +51,9 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool) error {
 	}
 	sort.Strings(names)
 	for _, n := range names {
+		if last != "" && n > last {
+			break
+		}
 		var done bool
 		if err := pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM schema_migrations WHERE name=$1)`, n).Scan(&done); err != nil {
 			return err
