@@ -21,7 +21,9 @@ func TestParityFiles(t *testing.T) {
 		id string
 		fn func(t *testing.T)
 	}{
-		{"R01 get_config", func(t *testing.T) { want(t, callTool(t, cs, "get_config", nil), "", root, "telemetry: false", "bubblewrap") }},
+		{"R01 get_config", func(t *testing.T) {
+			want(t, callTool(t, cs, "get_config", nil), "", root, "telemetry: false", "bubblewrap")
+		}},
 		{"R02 set_config_value", func(t *testing.T) {
 			want(t, callTool(t, cs, "set_config_value", map[string]any{"key": "roots", "value": []string{"/"}}), "policy_denied", "devagotchi config set")
 		}},
@@ -59,7 +61,9 @@ func TestParityFiles(t *testing.T) {
 				"content": []map[string]any{{"type": "insert", "pageIndex": 0, "markdown": "# Cover"}}}), "", "2 pages")
 			want(t, callTool(t, cs, "read_file", map[string]any{"path": p("r2.pdf")}), "", "Cover", "Report")
 		}},
-		{"R11 create_directory", func(t *testing.T) { want(t, callTool(t, cs, "create_directory", map[string]any{"path": p("a/b/c")}), "") }},
+		{"R11 create_directory", func(t *testing.T) {
+			want(t, callTool(t, cs, "create_directory", map[string]any{"path": p("a/b/c")}), "")
+		}},
 		{"R12 list_directory", func(t *testing.T) {
 			want(t, callTool(t, cs, "list_directory", map[string]any{"path": root, "depth": 2}), "", "[DIR] sub", "[FILE] notes.txt")
 		}},

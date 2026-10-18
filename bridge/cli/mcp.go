@@ -61,4 +61,3 @@ func cmdMCP(args []string) error {
 		logf(fmt.Sprintf("streamable HTTP on http://%s/mcp (bearer token in %s)", a, filepath.Join(pf.dir, mcpserve.TokenFile)))
 	})
 }
-
