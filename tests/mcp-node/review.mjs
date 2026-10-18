@@ -55,7 +55,7 @@ check((q.body.tickets ?? []).some((x) => x.id === id), 'ticket in Clyffy-Infra-A
 const view = await rev.call('review_ticket', { ticket: id });
 check(view.body.evidence?.length === 1 && view.body.preview?.allow === false, 'reviewer sees evidence and the pending decision');
 const pass = await rev.call('review_submit', { ticket: id, verdict: 'PASS', ticket_sha256: view.body.ticket.sha256,
-  summary: 'Simulated install only (-s); snapshot attached; blast radius is this box.', findings: [] });
+  summary: 'Read-only copy of one /etc file into the sandbox /tmp; snapshot attached; blast radius is this box.', findings: [] });
 check(!pass.isError && pass.body.status === 'passed', 'Clyffy-Infra-Auditor PASS', pass.body.error?.message);
 const run = await agent.call('exec', { machine, argv: cmd.split(' '), ticket: id });
 check(!run.isError && run.body.exit_code === 0, 'PASS unlocked the change; it ran on the real bridge', `exit ${run.body.exit_code}: ${(run.body.stdout ?? '').split('\n').length} lines ${(run.body.stderr ?? '').trim().slice(-200)}`);
