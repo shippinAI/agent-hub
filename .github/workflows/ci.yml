@@ -1,0 +1,79 @@
+# Build, vet and test on every push and PR: Go (server + bridge against a Postgres service), web build,
+# and workflow lint. Docs: docs/devagotchi/38-ci-containers.md. Actions are pinned to full commit SHAs.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: hub
+          POSTGRES_PASSWORD: hub-ci-only
+          POSTGRES_DB: agenthub_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U hub" --health-interval 5s --health-timeout 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: |
+            server/go.sum
+            bridge/go.sum
+      - name: bubblewrap for the real-bridge tests
+        run: sudo apt-get update -q && sudo apt-get install -yq bubblewrap
+      - name: vet + test bridge
+        working-directory: bridge
+        run: go vet ./... && go test -count=1 ./...
+      - name: vet + test server (integration tests use the service DB)
+        working-directory: server
+        env:
+          HUB_TEST_DATABASE_URL_FILE: ${{ runner.temp }}/db-url
+        run: |
+          printf 'postgres://hub:hub-ci-only@127.0.0.1:5432/agenthub_test?sslmode=disable' > "$HUB_TEST_DATABASE_URL_FILE"
+          go vet ./...
+          go test -count=1 -p 1 ./...
+      - name: gofmt
+        run: test -z "$(gofmt -l server bridge)"
+  web:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - working-directory: web
+        run: npm ci --no-audit --no-fund && npx tsc --noEmit -p . && npx vite build --outDir "$RUNNER_TEMP/static"
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: server/go.mod
+          cache: false
+      - name: actionlint
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12 -color

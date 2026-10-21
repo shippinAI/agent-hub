@@ -1,0 +1,15 @@
+# Keep the build context small and secret-free (docs/devagotchi/38-ci-containers.md).
+**/node_modules
+**/.git
+.run
+dist
+test-evidence
+tests
+docs
+server/bin
+web/dist
+# The image builds the UI fresh; the committed embed copy must not leak stale hashed assets into it.
+server/internal/httpapi/static
+**/*.log
+**/*.token
+**/*.key

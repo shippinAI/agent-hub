@@ -1,0 +1,26 @@
+# Dependency updates (docs/devagotchi/38-ci-containers.md). Dependabot was chosen over Renovate: it is built
+# into GitHub, needs no app install, and covers every ecosystem here. Weekly, grouped, with a cooldown.
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directories: ["/server", "/bridge"]
+    schedule: { interval: weekly, day: monday }
+    groups:
+      go-deps: { patterns: ["*"] }
+    cooldown: { default-days: 3 }
+  - package-ecosystem: npm
+    directories: ["/web", "/tests/ui", "/tests/mcp-node"]
+    schedule: { interval: weekly, day: monday }
+    groups:
+      npm-minor-patch: { update-types: ["minor", "patch"] }
+    cooldown: { default-days: 3 }
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule: { interval: weekly, day: monday }
+    groups:
+      actions: { patterns: ["*"] }
+  - package-ecosystem: docker
+    directory: "/deploy/docker"
+    schedule: { interval: weekly, day: monday }
+    groups:
+      base-images: { patterns: ["*"] }
