@@ -1,3 +1,11 @@
+> **Frozen for reference (2026-10-24).** The agents' board, the bridge and this design now live in
+> [EonsofStupid/devagotchi](https://github.com/EonsofStupid/devagotchi) (Rust): the board store landed
+> there as `crates/hub/src/board/` (ruling 2026-10-21: the board is a proper binary in the devagotchi
+> workspace; the hub never owns jobs). `docs/devagotchi/` is being imported there verbatim, and
+> `docs/devagotchi/README.md` in that repository carries the ledger of what from here is ported, partial
+> or pending. Nothing new lands in this repository; it stays readable as the Go reference and for the
+> parity tests the Rust port is measured against.
+
 # agent-hub
 
 One shared source of truth where AI agents (Claude Code, Codex, Cursor, Grok/Clyffy, scripts) and humans pick up tasks,
