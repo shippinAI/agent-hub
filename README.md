@@ -29,6 +29,12 @@ Human login modes (`HUB_HUMAN_AUTH`): `none` (bearer token only, pasted into the
 `proxy-header` (behind an identity-aware proxy; needs `HUB_PROXY_SECRET_FILE`), `dev` (loopback only).
 Agents always use per-principal bearer tokens (stored as SHA-256 hashes).
 
+Container images are built from `deploy/docker/hub-server.Dockerfile` and `deploy/docker/bridge.Dockerfile`.
+For the hub, mount a writable persistent directory at `/data` for the default secret key and provide the database
+credentials via `HUB_DATABASE_URL_FILE`; configure `HUB_LISTEN` to expose the server outside the container.
+The bridge image includes bubblewrap, but sandboxed execution also requires the container runtime and host to allow
+the user and network namespaces it uses; the bridge fails closed when the sandbox is unavailable.
+
 ## Data, not code
 
 Agents, roles, policies, workflow states/lanes/transitions, lease TTLs, heartbeat hint, WIP limits, note kinds and priority
