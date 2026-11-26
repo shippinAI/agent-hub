@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"devagotchi/bridge/sandbox/sandboxtest"
 	"time"
 )
 
@@ -27,6 +29,7 @@ func TestSearch(t *testing.T) {
 }
 
 func TestProcessSession(t *testing.T) {
+	sandboxtest.Require(t)
 	e, root := newEnv(t)
 	o := must(t, call(t, e, "start_process", map[string]any{"command": "echo hi; read x; echo got $x; sleep 30", "timeout_ms": 1500, "cwd": root}), "hi")
 	pid := int(data(o)["pid"].(float64))
@@ -38,6 +41,7 @@ func TestProcessSession(t *testing.T) {
 }
 
 func TestPTYPrompt(t *testing.T) {
+	sandboxtest.Require(t)
 	e, _ := newEnv(t)
 	o := must(t, call(t, e, "start_process", map[string]any{"argv": []string{"python3", "-i", "-q"}, "pty": true, "timeout_ms": 8000}))
 	if data(o)["state"] != "waiting_for_input" {
@@ -48,6 +52,7 @@ func TestPTYPrompt(t *testing.T) {
 }
 
 func TestHonestTimeouts(t *testing.T) {
+	sandboxtest.Require(t)
 	e, _ := newEnv(t)
 	start := time.Now()
 	o := call(t, e, "run_command", map[string]any{"argv": []string{"sleep", "10"}, "timeout_ms": 500})
@@ -64,6 +69,7 @@ func TestHonestTimeouts(t *testing.T) {
 }
 
 func TestSandboxConfinesProcess(t *testing.T) {
+	sandboxtest.Require(t)
 	e, root := newEnv(t)
 	o := call(t, e, "run_command", map[string]any{"command": "touch " + root + "/ok && touch /tmp/dg-escape-$$ ; ls /home 2>&1 | head -1"})
 	must(t, o)

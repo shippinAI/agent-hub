@@ -112,7 +112,11 @@ func rows(r *http.Request, st *store.Store, sql string, args ...any) ([]map[stri
 	return out, rs.Err()
 }
 
-func scanJSON(rs interface{ Next() bool; Scan(...any) error; Close() }) (map[string]any, error) {
+func scanJSON(rs interface {
+	Next() bool
+	Scan(...any) error
+	Close()
+}) (map[string]any, error) {
 	defer rs.Close()
 	if !rs.Next() {
 		return nil, nil
