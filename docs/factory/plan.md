@@ -76,7 +76,11 @@ Keep what is already right and build the missing factory pillars around it.
    `route_min_runs` above 0, `claim_next` skips lanes where the caller's success rate is under
    `route_min_success_pct` (assigned work is never skipped) and says which tasks it routed away. Not yet:
    scores by label, decay of old runs, cost-aware routing, a scores page in the UI.
-9. **Conformance suite.** Extract hubtest into a black-box suite a Rust build can run.
+9. **Conformance suite.** Done (first cut). `server/conformance` checks the protocol over REST and MCP only, in
+   isolated projects; the Go server runs it in hubtest, and any other build runs it with a URL and three tokens
+   (`docs/conformance.md`). Twelve cases cover errors, leases, fencing, claim_next, idempotency, versions, the
+   review lane, evidence, runs, usage, the event chain and MCP. Not yet: lease expiry, SSE, the webhook, budgets
+   and routing, the evidence gate on a lane, admin surfaces.
 
 ## Open decisions (parked, the owner decides)
 

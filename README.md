@@ -74,6 +74,7 @@ Proof: `server/hubtest/policygate_test.go`, `test-evidence/policy-gate.txt`.
 
 ```sh
 tests/run-go-tests.sh    # protocol: race, lease expiry + fencing, idempotency, chain verify, policy, auth, MCP (Go SDK), SSE
+HUB_CONFORMANCE_URL=... HUB_CONFORMANCE_TOKENS=tokens.json go test ./server/conformance  # black-box protocol suite, any build (docs/conformance.md)
 tests/ui-test.sh         # headless Chrome 1280px + 390px, MCP via TypeScript SDK, HTTP safety checks, screenshots
 ```
 
