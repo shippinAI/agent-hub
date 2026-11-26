@@ -89,6 +89,14 @@ func (s *Server) taskOp(w http.ResponseWriter, r *http.Request, p *store.Princip
 		}
 		return s.St.AddEvidence(ctx, p, rid, id, in)
 	}
+	if r.PathValue("op") == "runs" {
+		var in store.RunStart
+		rid, err := decode(r, &in)
+		if err != nil {
+			return nil, err
+		}
+		return s.St.StartRun(ctx, p, rid, id, in)
+	}
 	if r.PathValue("op") == "links" {
 		var in store.LinkInput
 		rid, err := decode(r, &in)
@@ -150,6 +158,10 @@ func (s *Server) taskDetail(w http.ResponseWriter, r *http.Request, p *store.Pri
 	if err != nil {
 		return nil, err
 	}
+	runs, err := s.St.Runs(r.Context(), id)
+	if err != nil {
+		return nil, err
+	}
 	ev, err := s.St.Events(r.Context(), store.EventFilter{TaskID: id, Limit: 200})
-	return map[string]any{"task": t, "notes": notes, "evidence": evidence, "links": links, "usage": usage, "depends_on": deps, "events": ev, "server_now": nowUTC()}, err
+	return map[string]any{"task": t, "notes": notes, "evidence": evidence, "links": links, "usage": usage, "runs": runs, "depends_on": deps, "events": ev, "server_now": nowUTC()}, err
 }

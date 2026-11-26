@@ -57,10 +57,14 @@ Keep what is already right and build the missing factory pillars around it.
    `--ci-wait`) or hand off to a human. Tested end to end with a scripted agent, both unsandboxed and inside
    bwrap. Found and fixed on the way: the sandbox's egress forwarder died when `sandbox-init` exec'd the
    command, so allowlisted network never worked inside bwrap (bridge and seat now share `sandbox.Init`,
-   with a regression test). Not yet: no real model run in CI (no API key there), the transcript stays on
-   the seat's disk (increment 7 stores runs), budgets are checked at claim time, not mid-run.
+   with a regression test). Not yet: no real model run in CI (no API key there), budgets are checked at claim time, not mid-run.
 6. **Second adapter.** Codex exec, same contract.
-7. **Run records and traces.** `runs` table, transcript viewer in the UI, OTel export.
+7. **Run records and traces.** Done (transcript storage). Each seat run is a `runs` row opened under the
+   lease; the seat streams the agent's JSONL to the hub in ordered, retry-safe chunks while it works, and
+   finishing hashes the transcript into the event chain (`run.finished`). Finished runs and chunks are
+   frozen in the database. A new run on the task marks a still-open older one lost. Task detail and
+   `get_task` list runs; `GET /runs/{id}` pages the transcript. Not yet: a transcript viewer in the UI,
+   OTel export.
 8. **Outcome loop.** Run scores, routing weights from outcomes.
 9. **Conformance suite.** Extract hubtest into a black-box suite a Rust build can run.
 

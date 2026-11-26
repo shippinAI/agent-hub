@@ -41,6 +41,7 @@ func (s *Server) Handler() http.Handler {
 	s.adminRoutes(mux)
 	s.eventRoutes(mux)
 	s.usageRoutes(mux)
+	s.runRoutes(mux)
 	mux.HandleFunc("POST /api/v1/integrations/github", s.githubWebhook)
 	if s.Extra != nil {
 		s.Extra(mux)

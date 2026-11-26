@@ -2,6 +2,8 @@ package hubtest
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -147,6 +149,24 @@ func seatFlow(t *testing.T, level, self string) {
 	if fi, err := os.Stat(filepath.Join(workRoot, "logs", itoa(id)+"-1.jsonl")); err != nil || fi.Size() == 0 {
 		t.Errorf("transcript: %v", err)
 	}
+	run := e.call("jesse", "GET", "/runs/"+itoa(o.RunID), nil).Body
+	rec := run["run"].(map[string]any)
+	var joined strings.Builder
+	for _, c := range run["chunks"].([]any) {
+		joined.WriteString(c.(map[string]any)["body"].(string))
+	}
+	local, _ := os.ReadFile(filepath.Join(workRoot, "logs", itoa(id)+"-1.jsonl"))
+	sum := sha256.Sum256(local)
+	if rec["status"] != "completed" || rec["head_sha"] != o.Head || num(rec["turns"]) != 2 || rec["model"] != "claude-test" ||
+		rec["adapter"] != "claude-code" || rec["seat"] != "seat-1" || !strings.HasPrefix(rec["session_id"].(string), "s-") {
+		t.Errorf("run record: %v", rec)
+	}
+	if joined.String() != string(local) || rec["transcript_sha256"] != hex.EncodeToString(sum[:]) || rec["truncated"] != false {
+		t.Errorf("transcript on the hub (%d bytes) differs from the seat's copy (%d bytes): %v", joined.Len(), len(local), rec)
+	}
+	if rs := det["runs"].([]any); len(rs) != 1 {
+		t.Errorf("task runs: %v", rs)
+	}
 	var beats int
 	_ = e.pool.QueryRow(ctx, `SELECT count(*) FROM events WHERE action='task.heartbeat' AND task_id=$1`, id).Scan(&beats)
 	if beats < 1 {
@@ -180,6 +200,10 @@ func seatFlow(t *testing.T, level, self string) {
 	o, err = seat.RunOnce(ctx, cfg("error"))
 	if err != nil || o.State != "handed_off" || o.TaskID != crash || !strings.Contains(o.Reason, "did not finish") {
 		t.Fatalf("agent error run: %+v %v", o, err)
+	}
+	if r := e.call("jesse", "GET", "/runs/"+itoa(o.RunID), nil).Body["run"].(map[string]any); r["status"] != "handed_off" ||
+		!strings.Contains(r["reason"].(string), "did not finish") {
+		t.Errorf("failed run record: %v", r)
 	}
 	if u := e.call("jesse", "GET", "/tasks/"+itoa(crash), nil).Body["usage"].(map[string]any); num(u["estimate_micros"]) != 10_000 {
 		t.Errorf("usage of a failed run: %v", u)

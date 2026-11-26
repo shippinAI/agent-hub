@@ -77,6 +77,7 @@ type lease struct {
 type Outcome struct {
 	TaskID  int64
 	Fence   int64
+	RunID   int64
 	Branch  string
 	Head    string
 	State   string // completed | handed_off | lost | no_task
@@ -262,10 +263,18 @@ func runOnce(ctx context.Context, c *Config) (Outcome, error) {
 	}
 	c.link(work, t.ID, l.Fence, "branch", o.Branch, "", "")
 
+	// The run record and its transcript live on the hub; the local file is a copy.
+	var st Stream
+	up := c.startRun(ctx, t.ID, l.Fence, o.Branch)
+	if up != nil {
+		o.RunID = up.runID
+	}
+	defer func() { up.finish(ctx, &o, &st) }()
+
 	// Run the agent.
 	setPhase("phase", "agent")
 	st, runErr := c.runAgent(work, dir, prompt(t.ID, t.Title, t.Description, t.Acceptance, o.Branch),
-		filepath.Join(c.LogDir, fmt.Sprintf("%d-%d.jsonl", t.ID, l.Fence)), func(turns int) { setPhase("turns", turns) })
+		filepath.Join(c.LogDir, fmt.Sprintf("%d-%d.jsonl", t.ID, l.Fence)), up, func(turns int) { setPhase("turns", turns) })
 	o.Turns, o.CostUSD = st.Turns, st.CostUSD
 	c.recordUsage(ctx, t.ID, l.Fence, &st)
 	if isLost() {
@@ -369,7 +378,7 @@ func firstLine(s string, n int) string {
 }
 
 // runAgent runs the agent confined to the worktree, writes its stdout to the transcript and parses it.
-func (c *Config) runAgent(ctx context.Context, dir, prompt, transcript string, onTurn func(int)) (Stream, error) {
+func (c *Config) runAgent(ctx context.Context, dir, prompt, transcript string, up *uploader, onTurn func(int)) (Stream, error) {
 	var st Stream
 	ctx, cancel := context.WithTimeout(ctx, c.Timeout)
 	defer cancel()
@@ -405,6 +414,7 @@ func (c *Config) runAgent(ctx context.Context, dir, prompt, transcript string, o
 	sc.Buffer(make([]byte, 64<<10), 16<<20)
 	turns := 0
 	for sc.Scan() {
+		up.line(sc.Bytes())
 		st.Add(sc.Bytes())
 		if st.Turns != turns {
 			turns = st.Turns
