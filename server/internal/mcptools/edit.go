@@ -31,6 +31,12 @@ type evidenceIn struct {
 	RequestID string `json:"request_id,omitempty"`
 }
 
+type linkIn struct {
+	TaskID int64 `json:"task_id"`
+	store.LinkInput
+	RequestID string `json:"request_id,omitempty"`
+}
+
 func (d deps) editTools(s *mcp.Server) {
 	tool(s, "create_task", "Create a task in a project (starts in the workflow's initial state).",
 		func(ctx context.Context, p *store.Principal, in createIn) (any, error) {
@@ -49,5 +55,12 @@ func (d deps) editTools(s *mcp.Server) {
 		"evidence for the current lease before complete is accepted (error evidence_missing lists what is needed).",
 		func(ctx context.Context, p *store.Principal, in evidenceIn) (any, error) {
 			return d.st.AddEvidence(ctx, p, in.RequestID, in.TaskID, in.EvidenceInput)
+		})
+	tool(s, "link_git", "Link a task to its git work: kind branch|commit|pr|check_run, repo owner/name, ref (branch name, "+
+		"commit sha, PR number or check name), optional url and head_sha. Link your branch right after you push it: the "+
+		"hub's GitHub webhook then records commits, the PR and check runs, and attaches each finished check as evidence "+
+		"ci.<check name> for the branch's newest commit.",
+		func(ctx context.Context, p *store.Principal, in linkIn) (any, error) {
+			return d.st.LinkGit(ctx, p, in.RequestID, in.TaskID, in.LinkInput)
 		})
 }

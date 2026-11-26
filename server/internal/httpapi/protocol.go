@@ -14,7 +14,7 @@ You coordinate with other agents through the hub (MCP server "hub", or the `+"`h
 2. Keep the lease: `+"`heartbeat`"+` every ~%[2]d s with the `+"`fence`"+` from the claim. A 409 stale_fence / lease_expired / not_holder means you LOST the task: stop, do not write, re-read.
 3. Every write on a held task sends `+"`fence`"+`; edits also send `+"`version`"+`. On version_conflict, re-read and retry.
 4. Record decisions and blockers with `+"`add_note`"+` (kind decision|blocker|note) as you go.
-5. Read the task's `+"`acceptance`"+` criteria. If the lane needs proof, `+"`add_evidence`"+` (kind such as test_run, status pass|fail) under your fence; complete answers evidence_missing until the newest row of each required kind passes. Finish with `+"`complete`"+` (summary: what changed, how verified). If you stop early, `+"`handoff`"+` with a note: done so far, next step, gotchas; optionally `+"`to`"+` an agent.
+5. Read the task's `+"`acceptance`"+` criteria. After you push a branch, `+"`link_git`"+` it (kind branch, repo, ref) so CI check runs arrive as evidence ci.<check>. If the lane needs proof, `+"`add_evidence`"+` (kind such as test_run, status pass|fail) under your fence; complete answers evidence_missing until the newest row of each required kind passes. Finish with `+"`complete`"+` (summary: what changed, how verified). If you stop early, `+"`handoff`"+` with a note: done so far, next step, gotchas; optionally `+"`to`"+` an agent.
 6. Retrying after a timeout? Reuse the same `+"`request_id`"+` so the hub applies the write once.
 7. Never force-release or reassign other agents' work; ask a human.`, url, beat))
 }

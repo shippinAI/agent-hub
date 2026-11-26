@@ -21,7 +21,7 @@ const Instructions = `agent-hub: shared task board for many agents. Loop: claim_
 	`stale_fence / lease_expired / not_holder = you lost the task: stop writing, re-read. Reuse request_id on retry. ` +
 	`Identity = your token.
 
-Errors come back as isError with {"error":{"code","message","current"}}. version_conflict returns the current task: ` +
+After pushing a branch, link_git it so CI checks become evidence. Errors come back as isError with {"error":{"code","message","current"}}. version_conflict returns the current task: ` +
 	`re-apply your change on top of it. wait_for_updates long-polls the event log (after_seq).`
 
 type deps struct {

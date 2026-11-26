@@ -32,8 +32,13 @@ Keep what is already right and build the missing factory pillars around it.
    fence, and the newest row per kind decides. REST (`POST /tasks/{id}/evidence`), MCP (`add_evidence`)
    and CLI (`hub evidence`, `hub new --accept`). The default preset requires nothing yet; turning on
    `requires_evidence: ["ci_check"]` for the build lane waits for increment 3, when CI attaches it.
-3. **Git provenance.** `task_links` (branch, commit, PR, check run); GitHub ingest (webhook with a
-   shared secret, or poll); a green required check run attaches `ci_check` evidence.
+3. **Git provenance.** Done. `task_links` (branch, commit, PR, check run; `link_git` over REST, MCP and
+   `hub link`); signed GitHub webhook ingest at `/api/v1/integrations/github` (push, pull_request,
+   check_run; deduplicated by delivery id). Each finished check attaches evidence `ci.<check name>` for
+   the branch's head commit, so a lane can require e.g. `["ci.go", "ci.web"]`, and a push makes older
+   results stale. Evidence only flows through links a hub principal made; a branch that merely names a
+   task (`hub-12`) is linked for provenance but cannot satisfy its gate. Lane requirements stay
+   per-project data, since check names differ per repo; the default preset still requires none.
 4. **Usage ledger.** `usage_events`, `prices`, spend roll-up into `subscriptions.spend`, budget trip,
    per-task and per-agent cost views.
 5. **Seat runtime v1.** One adapter end to end: headless Claude Code in the sandbox on a worktree,
@@ -52,5 +57,8 @@ Keep what is already right and build the missing factory pillars around it.
   becomes the board Devagotchi embeds is open.
 - **Freeze banner.** README still says the repo is frozen and superseded by Devagotchi. It stays until
   the owner says to lift it.
+- **Gate on by default?** The default build lane requires no evidence. Turning it on for agent-hub's own
+  project (`requires_evidence: ["ci.go", "ci.web", "ci.lint"]`) is a one-line workflow edit once the
+  webhook is installed on the repo, which needs the owner's yes (it is a repo setting).
 - **Release and images.** `release.yml` and `images.yml` still trigger on `main`, so merging to
   `master` does not start release PRs or GHCR pushes. Flip them when a real release is wanted.

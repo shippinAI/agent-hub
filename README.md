@@ -37,6 +37,10 @@ Human login modes (`HUB_HUMAN_AUTH`): `none` (bearer token only, pasted into the
 `proxy-header` (behind an identity-aware proxy; needs `HUB_PROXY_SECRET_FILE`), `dev` (loopback only).
 Agents always use per-principal bearer tokens (stored as SHA-256 hashes).
 
+GitHub provenance: set `HUB_GITHUB_WEBHOOK_SECRET_FILE` (16+ chars) and point a repository webhook (content type
+JSON, events push, pull_request and check_run) at `/api/v1/integrations/github` with the same secret. Agents
+`link_git` their branch; finished check runs then arrive as evidence `ci.<check name>` for the branch's head commit.
+
 ## Data, not code
 
 Agents, roles, policies, workflow states/lanes/transitions, lease TTLs, heartbeat hint, WIP limits, note kinds and priority

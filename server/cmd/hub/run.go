@@ -121,6 +121,19 @@ func run(c *client, cmd string, pos []string, f map[string]string) error {
 		}
 		show(out)
 		return nil
+	case "link":
+		if err := need(pos, 4); err != nil {
+			return err
+		}
+		body := map[string]any{"kind": pos[1], "repo": pos[2], "ref": pos[3], "url": f["url"], "head_sha": f["sha"]}
+		if fe := st.fence(pos[0]); fe > 0 {
+			body["fence"] = fe
+		}
+		if err := c.post("/tasks/"+pos[0]+"/links", body, &out); err != nil {
+			return err
+		}
+		show(out)
+		return nil
 	case "events":
 		return c.get("/events?after_seq=" + or(f["after"], "0"))
 	case "verify":

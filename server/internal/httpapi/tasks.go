@@ -89,6 +89,14 @@ func (s *Server) taskOp(w http.ResponseWriter, r *http.Request, p *store.Princip
 		}
 		return s.St.AddEvidence(ctx, p, rid, id, in)
 	}
+	if r.PathValue("op") == "links" {
+		var in store.LinkInput
+		rid, err := decode(r, &in)
+		if err != nil {
+			return nil, err
+		}
+		return s.St.LinkGit(ctx, p, rid, id, in)
+	}
 	var b leaseBody
 	rid, err := decode(r, &b)
 	if err != nil {
@@ -134,6 +142,10 @@ func (s *Server) taskDetail(w http.ResponseWriter, r *http.Request, p *store.Pri
 	if err != nil {
 		return nil, err
 	}
+	links, err := s.St.Links(r.Context(), id)
+	if err != nil {
+		return nil, err
+	}
 	ev, err := s.St.Events(r.Context(), store.EventFilter{TaskID: id, Limit: 200})
-	return map[string]any{"task": t, "notes": notes, "evidence": evidence, "depends_on": deps, "events": ev, "server_now": nowUTC()}, err
+	return map[string]any{"task": t, "notes": notes, "evidence": evidence, "links": links, "depends_on": deps, "events": ev, "server_now": nowUTC()}, err
 }
