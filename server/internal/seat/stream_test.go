@@ -31,3 +31,28 @@ not json
 		t.Fatalf("model usage: %+v %+v", u[0], u[1])
 	}
 }
+
+func TestStreamParsesCodexOutput(t *testing.T) {
+	s := Stream{Adapter: "codex", Model: "gpt-x"}
+	for _, l := range []string{
+		`{"type":"thread.started","thread_id":"th"}`,
+		`{"type":"item.completed","item":{"id":"i0","type":"reasoning","text":"thinking"}}`,
+		`{"type":"item.completed","item":{"id":"i1","type":"command_execution","command":"ls","status":"completed"}}`,
+		`{"type":"item.completed","item":{"id":"i2","type":"agent_message","text":"done"}}`,
+		`{"type":"turn.completed","usage":{"input_tokens":10,"cached_input_tokens":4,"output_tokens":6,"reasoning_output_tokens":2}}`,
+		`{"type":"turn.completed","usage":{"input_tokens":1,"cached_input_tokens":0,"output_tokens":1,"reasoning_output_tokens":0}}`,
+	} {
+		s.Add([]byte(l))
+	}
+	u := s.FinalUsage()
+	if !s.Done || s.IsError || s.SessionID != "th" || s.Result != "done" || s.Turns != 2 || len(u) != 1 {
+		t.Fatalf("codex stream: %+v", s)
+	}
+	if u[0].Model != "gpt-x" || u[0].Input != 11 || u[0].CacheRead != 4 || u[0].Output != 7 || u[0].Reasoning != 2 || u[0].CostMicros != nil {
+		t.Fatalf("codex usage: %+v", u[0])
+	}
+	s.Add([]byte(`{"type":"turn.failed","error":{"message":"quota"}}`))
+	if !s.IsError || s.Subtype != "turn_failed" || s.Result != "quota" {
+		t.Fatalf("failed turn: %+v", s)
+	}
+}

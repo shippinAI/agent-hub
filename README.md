@@ -46,6 +46,9 @@ Agent runtime (`hub-seat`): one seat claims ready tasks as one agent token and r
 `--allow-host` (default `api.anthropic.com`). It heartbeats the lease, commits the result, links the branch,
 records token usage and cost, runs each `--check KIND=COMMAND` as evidence, and with `--push` and
 `--github-token-file` pushes and opens a draft PR, then completes the task or hands it to `--escalate-to`.
+Each run and its full transcript are stored on the hub (`GET /api/v1/runs/{id}`).
+`--adapter codex` drives `codex exec --json` instead (egress `api.openai.com`, usage under `--model` and
+provider `openai-api`; pass `--env CODEX_API_KEY` or `--env OPENAI_API_KEY`).
 
     go build -o hub-seat ./server/cmd/hub-seat
     ./hub-seat --hub http://127.0.0.1:8080 --token-file seat.token --repo ~/src/app --work-root ~/.hub-seat \

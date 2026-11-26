@@ -45,11 +45,18 @@ func readSecret(path string) (string, error) {
 	return strings.TrimSpace(string(b)), err
 }
 
+// adapterDefaults: each agent runs headless with its own approvals off, because the seat's sandbox is the
+// boundary (worktree writable, repo .git read-only, egress only to the allowlist).
+var adapterDefaults = map[string]struct{ agent, host string }{
+	"claude-code": {"claude -p --output-format stream-json --verbose --dangerously-skip-permissions", "api.anthropic.com"},
+	"codex":       {"codex exec --json --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox -", "api.openai.com"},
+}
+
 func run() error {
 	var (
 		hub, tokenFile, repo, repoName, base, workRoot, logDir, name = "", "", "", "", "", "", "", ""
 		sandboxLevel, provider, billing, push, ghTokenFile, prBase   = "", "", "", "", "", ""
-		escalate, project, agent                                     string
+		escalate, project, agent, adapter, model                     string
 		envs, hosts, checks, labels                                  multi
 		timeout, ciWait, idle                                        time.Duration
 		once                                                         bool
@@ -63,13 +70,14 @@ func run() error {
 	fs.StringVar(&base, "base", "HEAD", "ref new task branches start from")
 	fs.StringVar(&workRoot, "work-root", "", "directory for worktrees (outside the repo)")
 	fs.StringVar(&logDir, "log-dir", "", "transcript directory (default WORK_ROOT/logs)")
-	fs.StringVar(&agent, "agent", "claude -p --output-format stream-json --verbose --dangerously-skip-permissions",
-		"agent command (space-separated); the prompt goes to stdin")
+	fs.StringVar(&adapter, "adapter", "claude-code", "claude-code or codex: which agent CLI this seat drives")
+	fs.StringVar(&agent, "agent", "", "agent command (space-separated; default per adapter); the prompt goes to stdin")
+	fs.StringVar(&model, "model", "", "model to record usage under when the agent's output does not name it (Codex)")
 	fs.Var(&envs, "env", "NAME to pass from this environment into the sandbox (repeatable), e.g. ANTHROPIC_API_KEY")
-	fs.Var(&hosts, "allow-host", "egress host the agent may reach (repeatable; default api.anthropic.com)")
+	fs.Var(&hosts, "allow-host", "egress host the agent may reach (repeatable; default api.anthropic.com, or api.openai.com for codex)")
 	fs.StringVar(&sandboxLevel, "sandbox", "workspace-write", "workspace-write or unsandboxed")
 	fs.DurationVar(&timeout, "timeout", 60*time.Minute, "per-task agent time limit")
-	fs.StringVar(&provider, "provider", "anthropic-api", "usage provider_id")
+	fs.StringVar(&provider, "provider", "", "usage provider_id (default anthropic-api, or openai-api for codex)")
 	fs.StringVar(&billing, "billing", "api_key", "api_key, subscription or router")
 	fs.Var(&checks, "check", "KIND=COMMAND run in the worktree after the agent, recorded as evidence (repeatable)")
 	fs.StringVar(&push, "push", "", "remote to push task branches to (empty = no push)")
@@ -91,14 +99,21 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	c := seat.Config{Name: name, Hub: &seat.Client{URL: hub, Token: token}, Repo: repo, RepoName: repoName, Base: base,
+	defaults, ok := adapterDefaults[adapter]
+	if !ok {
+		return fmt.Errorf("--adapter must be claude-code or codex")
+	}
+	if agent == "" {
+		agent = defaults.agent
+	}
+	if len(hosts) == 0 {
+		hosts = multi{defaults.host}
+	}
+	c := seat.Config{Adapter: adapter, Model: model, Name: name, Hub: &seat.Client{URL: hub, Token: token}, Repo: repo, RepoName: repoName, Base: base,
 		WorkRoot: workRoot, LogDir: logDir, Agent: strings.Fields(agent), Env: map[string]string{}, Sandbox: sandboxLevel,
 		Self: self, AllowHosts: hosts, Timeout: timeout, Provider: provider, BillingKind: billing, Push: push, CIWait: ciWait,
 		EscalateTo: escalate, Project: project, Labels: labels,
 		Log: func(s string) { fmt.Fprintln(os.Stderr, time.Now().Format(time.TimeOnly), s) }}
-	if len(c.AllowHosts) == 0 {
-		c.AllowHosts = []string{"api.anthropic.com"}
-	}
 	for _, k := range envs {
 		if v, ok := os.LookupEnv(k); ok {
 			c.Env[k] = v

@@ -36,7 +36,9 @@ type Config struct {
 	WorkRoot string // where worktrees go (must be outside Repo)
 	LogDir   string // transcripts (<task>-<fence>.jsonl); "" = WorkRoot/logs
 
+	Adapter     string            // claude-code (default) | codex: how the agent's stdout is read
 	Agent       []string          // argv; the prompt goes to stdin
+	Model       string            // recorded for usage when the stream does not name it (Codex never does)
 	Env         map[string]string // passed into the sandbox (e.g. ANTHROPIC_API_KEY)
 	Sandbox     string            // workspace-write (default) | unsandboxed
 	Self        string            // binary that handles `sandbox-init` (the seat binary)
@@ -123,8 +125,15 @@ func (c *Config) defaults() error {
 	if c.CIPoll <= 0 {
 		c.CIPoll = 15 * time.Second
 	}
+	switch c.Adapter {
+	case "":
+		c.Adapter = "claude-code"
+	case "claude-code", "codex":
+	default:
+		return fmt.Errorf("seat: adapter must be claude-code or codex")
+	}
 	if c.Provider == "" {
-		c.Provider = "anthropic-api"
+		c.Provider = map[string]string{"claude-code": "anthropic-api", "codex": "openai-api"}[c.Adapter]
 	}
 	if c.BillingKind == "" {
 		c.BillingKind = "api_key"
@@ -264,7 +273,7 @@ func runOnce(ctx context.Context, c *Config) (Outcome, error) {
 	c.link(work, t.ID, l.Fence, "branch", o.Branch, "", "")
 
 	// The run record and its transcript live on the hub; the local file is a copy.
-	var st Stream
+	st := Stream{Adapter: c.Adapter, Model: c.Model}
 	up := c.startRun(ctx, t.ID, l.Fence, o.Branch)
 	if up != nil {
 		o.RunID = up.runID
@@ -379,7 +388,7 @@ func firstLine(s string, n int) string {
 
 // runAgent runs the agent confined to the worktree, writes its stdout to the transcript and parses it.
 func (c *Config) runAgent(ctx context.Context, dir, prompt, transcript string, up *uploader, onTurn func(int)) (Stream, error) {
-	var st Stream
+	st := Stream{Adapter: c.Adapter, Model: c.Model}
 	ctx, cancel := context.WithTimeout(ctx, c.Timeout)
 	defer cancel()
 	cmd, stop, err := c.command(ctx, dir, c.Agent, c.AllowHosts)
@@ -436,7 +445,7 @@ func (c *Config) recordUsage(ctx context.Context, id, fence int64, st *Stream) {
 	for i, u := range st.FinalUsage() {
 		in := map[string]any{"task_id": id, "fence": fence, "provider_id": c.Provider, "model": u.Model, "billing_kind": c.BillingKind,
 			"source": "stream", "input_tokens": u.Input, "cache_read_tokens": u.CacheRead, "cache_write_tokens": u.CacheWrite,
-			"output_tokens": u.Output}
+			"output_tokens": u.Output, "reasoning_tokens": u.Reasoning}
 		if u.CostMicros != nil {
 			in["cost_micros"], in["cost_basis"] = *u.CostMicros, "client_estimate"
 		}

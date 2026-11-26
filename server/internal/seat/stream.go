@@ -6,9 +6,11 @@ import (
 	"sort"
 )
 
-// Stream reads Claude Code's `--output-format stream-json` lines. It keeps what the seat needs: the session,
-// the model, the turn count, the final result and token usage per model.
+// Stream reads an agent's JSONL output: Claude Code's `--output-format stream-json` (Adapter "claude-code",
+// the default) or `codex exec --json` (Adapter "codex"). It keeps what the seat needs: the session, the model,
+// the turn count, the final result and token usage per model.
 type Stream struct {
+	Adapter   string
 	SessionID string
 	Model     string
 	Turns     int
@@ -29,6 +31,7 @@ type ModelUsage struct {
 	CacheRead  int64
 	CacheWrite int64
 	Output     int64
+	Reasoning  int64  // part of Output
 	CostMicros *int64 // nil = not reported
 }
 
@@ -69,6 +72,10 @@ func micros(usd float64) *int64 { v := int64(math.Round(usd * 1e6)); return &v }
 
 // Add parses one line; lines that are not JSON or not understood are ignored.
 func (s *Stream) Add(line []byte) {
+	if s.Adapter == "codex" {
+		s.addCodex(line)
+		return
+	}
 	var l streamLine
 	if json.Unmarshal(line, &l) != nil {
 		return
@@ -138,7 +145,7 @@ func (s *Stream) Add(line []byte) {
 // FinalUsage is the usage to record: the result's per-model figures, or, when the run died before its result
 // line, the tokens summed from the assistant messages seen (cost unknown).
 func (s *Stream) FinalUsage() []ModelUsage {
-	if s.Done {
+	if s.Done || s.Adapter == "codex" {
 		return s.Usage
 	}
 	if s.sumByMsgs == (ModelUsage{}) {

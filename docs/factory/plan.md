@@ -58,7 +58,11 @@ Keep what is already right and build the missing factory pillars around it.
    bwrap. Found and fixed on the way: the sandbox's egress forwarder died when `sandbox-init` exec'd the
    command, so allowlisted network never worked inside bwrap (bridge and seat now share `sandbox.Init`,
    with a regression test). Not yet: no real model run in CI (no API key there), budgets are checked at claim time, not mid-run.
-6. **Second adapter.** Codex exec, same contract.
+6. **Second adapter.** Done. `hub-seat --adapter codex` runs `codex exec --json` under the same contract
+   (sandbox, worktree, commit, checks, usage, run record). The event format was read from Codex's source
+   (`codex-rs/exec/src/exec_events.rs`); usage is summed from `turn.completed` (cached input is part of input,
+   reasoning part of output) and recorded under `--model`, since the stream names no model. A failed turn or
+   stream error hands the task off. Tested with a scripted Codex; no real Codex run yet (no key here).
 7. **Run records and traces.** Done (transcript storage). Each seat run is a `runs` row opened under the
    lease; the seat streams the agent's JSONL to the hub in ordered, retry-safe chunks while it works, and
    finishing hashes the transcript into the event chain (`run.finished`). Finished runs and chunks are

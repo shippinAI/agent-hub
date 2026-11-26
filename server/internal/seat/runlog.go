@@ -25,7 +25,7 @@ func (c *Config) startRun(ctx context.Context, taskID, fence int64, branch strin
 		ID int64 `json:"id"`
 	}
 	err := c.Hub.do(ctx, "POST", fmt.Sprintf("/tasks/%d/runs", taskID),
-		map[string]any{"fence": fence, "adapter": "claude-code", "seat": c.Name, "branch": branch}, &r)
+		map[string]any{"fence": fence, "adapter": c.Adapter, "seat": c.Name, "model": c.Model, "branch": branch}, &r)
 	if err != nil {
 		c.logf("seat: could not open a run for #%d: %v", taskID, err)
 		return nil
