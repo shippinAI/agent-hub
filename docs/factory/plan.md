@@ -69,7 +69,13 @@ Keep what is already right and build the missing factory pillars around it.
    frozen in the database. A new run on the task marks a still-open older one lost. Task detail and
    `get_task` list runs; `GET /runs/{id}` pages the transcript. Not yet: a transcript viewer in the UI,
    OTel export.
-8. **Outcome loop.** Run scores, routing weights from outcomes.
+8. **Outcome loop.** Done (first cut). Each run records its lane. A completed run is *accepted* when a later
+   lane (review) finishes the task, *reworked* when the same lane has to run again, *pending* until one of
+   those happens; runs that did not complete count against. `GET /scores` and `run_scores` give success rate
+   and cost per accepted run by principal, adapter, model, lane or project. Routing is opt-in: with
+   `route_min_runs` above 0, `claim_next` skips lanes where the caller's success rate is under
+   `route_min_success_pct` (assigned work is never skipped) and says which tasks it routed away. Not yet:
+   scores by label, decay of old runs, cost-aware routing, a scores page in the UI.
 9. **Conformance suite.** Extract hubtest into a black-box suite a Rust build can run.
 
 ## Open decisions (parked, the owner decides)

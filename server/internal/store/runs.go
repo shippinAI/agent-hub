@@ -19,6 +19,7 @@ type Run struct {
 	Principal        string     `json:"principal_id"`
 	Seat             string     `json:"seat"`
 	Adapter          string     `json:"adapter"`
+	Lane             string     `json:"lane"` // the task's active state when the run started
 	Model            string     `json:"model"`
 	SessionID        string     `json:"session_id"`
 	Branch           string     `json:"branch"`
@@ -63,7 +64,7 @@ type RunChunk struct {
 }
 
 const (
-	runCols           = `id,task_id,fence,principal_id,seat,adapter,model,session_id,branch,head_sha,status,reason,turns,transcript_bytes,transcript_chunks,transcript_sha256,truncated,started_at,ended_at`
+	runCols           = `id,task_id,fence,principal_id,seat,adapter,model,session_id,branch,head_sha,status,reason,turns,transcript_bytes,transcript_chunks,transcript_sha256,truncated,started_at,ended_at,lane`
 	maxChunk          = 256 << 10
 	maxTranscriptSize = 64 << 20
 )
@@ -76,7 +77,7 @@ var (
 func scanRun(r interface{ Scan(...any) error }) (Run, error) {
 	var x Run
 	err := r.Scan(&x.ID, &x.TaskID, &x.Fence, &x.Principal, &x.Seat, &x.Adapter, &x.Model, &x.SessionID, &x.Branch, &x.HeadSHA,
-		&x.Status, &x.Reason, &x.Turns, &x.TranscriptBytes, &x.TranscriptChunks, &x.TranscriptSHA256, &x.Truncated, &x.StartedAt, &x.EndedAt)
+		&x.Status, &x.Reason, &x.Turns, &x.TranscriptBytes, &x.TranscriptChunks, &x.TranscriptSHA256, &x.Truncated, &x.StartedAt, &x.EndedAt, &x.Lane)
 	return x, err
 }
 
@@ -132,8 +133,8 @@ func (s *Store) StartRun(ctx context.Context, p *Principal, reqID string, taskID
 				return nil, err
 			}
 		}
-		r, err := scanRun(w.row(`INSERT INTO runs(task_id,fence,principal_id,seat,adapter,model,session_id,branch)
-			VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING `+runCols, t.ID, t.Fence, p.ID, in.Seat, in.Adapter, in.Model, in.SessionID, in.Branch))
+		r, err := scanRun(w.row(`INSERT INTO runs(task_id,fence,principal_id,seat,adapter,model,session_id,branch,lane)
+			VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING `+runCols, t.ID, t.Fence, p.ID, in.Seat, in.Adapter, in.Model, in.SessionID, in.Branch, t.State))
 		if err != nil {
 			return nil, err
 		}

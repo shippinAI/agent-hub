@@ -48,6 +48,14 @@ type usageSumIn struct {
 	Mine    bool   `json:"mine,omitempty" jsonschema:"only your own usage"`
 }
 
+type scoresIn struct {
+	GroupBy string   `json:"group_by,omitempty" jsonschema:"principal (default), adapter, model, lane or project"`
+	Project string   `json:"project,omitempty"`
+	Lane    string   `json:"lane,omitempty" jsonschema:"active state, e.g. in_progress or reviewing"`
+	Labels  []string `json:"labels,omitempty"`
+	Mine    bool     `json:"mine,omitempty" jsonschema:"only your own runs"`
+}
+
 func (d deps) editTools(s *mcp.Server) {
 	tool(s, "create_task", "Create a task in a project (starts in the workflow's initial state).",
 		func(ctx context.Context, p *store.Principal, in createIn) (any, error) {
@@ -88,6 +96,17 @@ func (d deps) editTools(s *mcp.Server) {
 			}
 			b, err := d.st.Budgets(ctx)
 			return map[string]any{"totals": totals, "budgets": b}, err
+		})
+	tool(s, "run_scores", "How agent runs turned out, grouped by principal, adapter, model, lane or project: accepted (a later "+
+		"lane such as review finished the task), reworked (the same lane had to run again), pending, handed off, failed or lost, "+
+		"with success rate and cost per accepted run. When routing is on, claim_next skips lanes where your success rate is low.",
+		func(ctx context.Context, p *store.Principal, in scoresIn) (any, error) {
+			f := store.ScoreFilter{GroupBy: in.GroupBy, Project: in.Project, Lane: in.Lane, Labels: in.Labels}
+			if in.Mine {
+				f.Principal = p.ID
+			}
+			sc, err := d.st.Scores(ctx, f)
+			return map[string]any{"scores": sc}, err
 		})
 	tool(s, "link_git", "Link a task to its git work: kind branch|commit|pr|check_run, repo owner/name, ref (branch name, "+
 		"commit sha, PR number or check name), optional url and head_sha. Link your branch right after you push it: the "+

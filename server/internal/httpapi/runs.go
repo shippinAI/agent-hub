@@ -3,12 +3,30 @@ package httpapi
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"agenthub/internal/store"
 )
 
 // runRoutes: POST /tasks/{id}/runs (in tasks.go) opens a run; these append to, finish and read it.
 func (s *Server) runRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/v1/scores", s.authed(func(w http.ResponseWriter, r *http.Request, p *store.Principal) (any, error) {
+		q := r.URL.Query()
+		f := store.ScoreFilter{GroupBy: q.Get("group_by"), Principal: q.Get("principal"), Project: q.Get("project"), Lane: q.Get("lane"),
+			Labels: q["label"]}
+		if f.Principal == "me" {
+			f.Principal = p.ID
+		}
+		if v := q.Get("since"); v != "" {
+			t, err := time.Parse(time.RFC3339, v)
+			if err != nil {
+				return nil, &store.Error{Code: "invalid", Status: 400, Message: "since must be RFC 3339"}
+			}
+			f.Since = t
+		}
+		sc, err := s.St.Scores(r.Context(), f)
+		return map[string]any{"scores": sc, "group_by": f.GroupBy}, err
+	}))
 	runID := func(r *http.Request) (int64, error) {
 		id, err := strconv.ParseInt(r.PathValue("run"), 10, 64)
 		if err != nil {

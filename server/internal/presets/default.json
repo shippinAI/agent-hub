@@ -11,6 +11,8 @@
     {"key": "default_priority", "value": 2, "description": "Priority for new tasks (lower = sooner)"},
     {"key": "priority_labels", "value": ["P0 urgent", "P1 high", "P2 normal", "P3 low", "P4 someday"], "description": "Display names by priority number"},
     {"key": "note_kinds", "value": ["note", "handoff", "blocker", "decision", "summary"], "description": "Allowed note kinds"},
+    {"key": "route_min_runs", "value": 0, "description": "claim_next skips tasks in a project and lane where the caller has at least this many scored runs and a success rate below route_min_success_pct (0 = routing off)"},
+    {"key": "route_min_success_pct", "value": 50, "description": "Success rate (accepted runs out of scored runs, percent) below which claim_next routes a lane's work away from a principal"},
     {"key": "principal_kinds", "value": ["human", "claude-code", "codex", "cursor", "grok", "cli", "service"], "description": "Allowed principal kinds"}
   ],
   "roles": [
