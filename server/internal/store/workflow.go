@@ -26,6 +26,8 @@ type Lane struct {
 	CompleteTo           string `json:"complete_to"`
 	ReleaseTo            string `json:"release_to"`
 	DistinctFromPrevious bool   `json:"distinct_from_previous"`
+	// RequiresEvidence lists evidence kinds that must pass, for the current lease, before complete moves on.
+	RequiresEvidence []string `json:"requires_evidence,omitempty"`
 }
 
 // Workflow is a row of the workflows table.
@@ -113,6 +115,11 @@ func (wf *Workflow) Validate() error {
 		}
 		if s, _ := wf.state(l.Active); s.Kind != "active" {
 			return errInvalid("lane %d: active state %q must have kind active", i, l.Active)
+		}
+		for _, k := range l.RequiresEvidence {
+			if !evidenceKind.MatchString(k) {
+				return errInvalid("lane %d: evidence kind %q must match %s", i, k, evidenceKind)
+			}
 		}
 	}
 	return nil

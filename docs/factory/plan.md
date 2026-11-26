@@ -23,12 +23,15 @@ Keep what is already right and build the missing factory pillars around it.
 
 ## Increments, in order
 
-1. **CI that gates.** `ci` and `codeql` trigger on `master`; the runner allows unprivileged user
+1. **CI that gates.** Done. `ci` and `codeql` trigger on `master`; the runner allows unprivileged user
    namespaces so bwrap works; sandbox tests skip honestly on machines without a sandbox and fail in CI
    (`DEVAGOTCHI_REQUIRE_SANDBOX=1`). Fixes the gofmt drift and two order-dependent tests.
-2. **Acceptance criteria and evidence.** `tasks.acceptance` field, `task_evidence` table (append-only,
-   hash in the event chain), lane `requires_evidence` in workflow data, `complete` refuses with
-   `evidence_missing`. REST, MCP and CLI.
+2. **Acceptance criteria and evidence.** Done. `tasks.acceptance` field, `task_evidence` table
+   (append-only, each row logged as `evidence.added` in the hash chain), lane `requires_evidence` in
+   workflow data, `complete` refuses with `evidence_missing`. Evidence counts only under the current
+   fence, and the newest row per kind decides. REST (`POST /tasks/{id}/evidence`), MCP (`add_evidence`)
+   and CLI (`hub evidence`, `hub new --accept`). The default preset requires nothing yet; turning on
+   `requires_evidence: ["ci_check"]` for the build lane waits for increment 3, when CI attaches it.
 3. **Git provenance.** `task_links` (branch, commit, PR, check run); GitHub ingest (webhook with a
    shared secret, or poll); a green required check run attaches `ci_check` evidence.
 4. **Usage ledger.** `usage_events`, `prices`, spend roll-up into `subscriptions.spend`, budget trip,

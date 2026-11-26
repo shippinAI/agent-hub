@@ -63,7 +63,7 @@ func (d deps) leaseTools(s *mcp.Server) {
 		func(ctx context.Context, p *store.Principal, in endIn) (any, error) {
 			return d.st.Release(ctx, p, in.RequestID, in.TaskID, in.Fence, in.Text)
 		})
-	tool(s, "complete", "Finish your step (text = summary: what changed, how verified). Moves to the lane's next state.",
+	tool(s, "complete", "Finish your step (text = summary: what changed, how verified). Moves to the lane's next state; if the lane requires evidence, add_evidence first.",
 		func(ctx context.Context, p *store.Principal, in endIn) (any, error) {
 			return d.st.Complete(ctx, p, in.RequestID, in.TaskID, in.Fence, in.Text)
 		})

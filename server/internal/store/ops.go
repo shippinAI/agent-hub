@@ -60,6 +60,9 @@ func (s *Store) Complete(ctx context.Context, p *Principal, reqID string, taskID
 		if err := w.can("task.complete:"+lane.Active, resOf(t)); err != nil {
 			return nil, err
 		}
+		if err := w.evidenceGate(t, lane); err != nil {
+			return nil, err
+		}
 		if strings.TrimSpace(summary) != "" {
 			if err := w.note(t, "summary", summary, nil, &fence); err != nil {
 				return nil, err

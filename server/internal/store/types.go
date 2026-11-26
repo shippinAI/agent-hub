@@ -29,6 +29,7 @@ type Task struct {
 	State          string          `json:"state"`
 	Priority       int             `json:"priority"`
 	Labels         []string        `json:"labels"`
+	Acceptance     []string        `json:"acceptance"`
 	Assignee       *string         `json:"assignee"`
 	Holder         *string         `json:"holder"`
 	LeaseID        *string         `json:"lease_id"`

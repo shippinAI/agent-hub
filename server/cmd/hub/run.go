@@ -55,6 +55,9 @@ func run(c *client, cmd string, pos []string, f map[string]string) error {
 		if p, err := strconv.Atoi(f["priority"]); err == nil {
 			body["priority"] = p
 		}
+		if f["accept"] != "" {
+			body["acceptance"] = strings.Split(f["accept"], ";")
+		}
 		return c.post("/tasks", body, nil)
 	case "claim":
 		ttl, _ := strconv.Atoi(f["ttl"])
@@ -99,6 +102,22 @@ func run(c *client, cmd string, pos []string, f map[string]string) error {
 		}
 		if cmd == "release" || cmd == "done" || cmd == "handoff" {
 			st.drop(id)
+		}
+		show(out)
+		return nil
+	case "evidence":
+		if err := need(pos, 3); err != nil {
+			return err
+		}
+		if pos[2] != "pass" && pos[2] != "fail" {
+			return fmt.Errorf("evidence status must be pass or fail\n%s", usage)
+		}
+		body := map[string]any{"kind": pos[1], "status": pos[2], "summary": strings.Join(pos[3:], " "), "ref": f["ref"]}
+		if fe := st.fence(pos[0]); fe > 0 {
+			body["fence"] = fe
+		}
+		if err := c.post("/tasks/"+pos[0]+"/evidence", body, &out); err != nil {
+			return err
 		}
 		show(out)
 		return nil

@@ -25,6 +25,12 @@ type noteIn struct {
 	RequestID string `json:"request_id,omitempty"`
 }
 
+type evidenceIn struct {
+	TaskID int64 `json:"task_id"`
+	store.EvidenceInput
+	RequestID string `json:"request_id,omitempty"`
+}
+
 func (d deps) editTools(s *mcp.Server) {
 	tool(s, "create_task", "Create a task in a project (starts in the workflow's initial state).",
 		func(ctx context.Context, p *store.Principal, in createIn) (any, error) {
@@ -37,5 +43,11 @@ func (d deps) editTools(s *mcp.Server) {
 	tool(s, "add_note", "Append a note (kind note|decision|blocker|...) to a task; include fence if you hold it.",
 		func(ctx context.Context, p *store.Principal, in noteIn) (any, error) {
 			return d.st.AddNote(ctx, p, in.RequestID, in.TaskID, in.NoteInput)
+		})
+	tool(s, "add_evidence", "Attach proof to a task: kind (test_run, ci_check, eval, review, ...), status pass|fail, "+
+		"summary, ref (URL or id), optional sha256 and data. Include fence while you hold it. Lanes may require passing "+
+		"evidence for the current lease before complete is accepted (error evidence_missing lists what is needed).",
+		func(ctx context.Context, p *store.Principal, in evidenceIn) (any, error) {
+			return d.st.AddEvidence(ctx, p, in.RequestID, in.TaskID, in.EvidenceInput)
 		})
 }
