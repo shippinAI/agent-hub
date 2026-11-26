@@ -146,6 +146,10 @@ func (s *Server) taskDetail(w http.ResponseWriter, r *http.Request, p *store.Pri
 	if err != nil {
 		return nil, err
 	}
+	usage, err := s.St.TaskUsage(r.Context(), id)
+	if err != nil {
+		return nil, err
+	}
 	ev, err := s.St.Events(r.Context(), store.EventFilter{TaskID: id, Limit: 200})
-	return map[string]any{"task": t, "notes": notes, "evidence": evidence, "links": links, "depends_on": deps, "events": ev, "server_now": nowUTC()}, err
+	return map[string]any{"task": t, "notes": notes, "evidence": evidence, "links": links, "usage": usage, "depends_on": deps, "events": ev, "server_now": nowUTC()}, err
 }

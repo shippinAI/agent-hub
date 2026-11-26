@@ -134,6 +134,17 @@ func run(c *client, cmd string, pos []string, f map[string]string) error {
 		}
 		show(out)
 		return nil
+	case "usage":
+		q := url.Values{"group_by": {or(f["by"], "task")}}
+		if f["task"] != "" {
+			q.Set("task", f["task"])
+		}
+		if f["mine"] == "true" {
+			q.Set("principal", "me")
+		}
+		return c.get("/usage?" + q.Encode())
+	case "budgets":
+		return c.get("/budgets")
 	case "events":
 		return c.get("/events?after_seq=" + or(f["after"], "0"))
 	case "verify":

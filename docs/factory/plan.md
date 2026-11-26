@@ -39,8 +39,16 @@ Keep what is already right and build the missing factory pillars around it.
    results stale. Evidence only flows through links a hub principal made; a branch that merely names a
    task (`hub-12`) is linked for provenance but cannot satisfy its gate. Lane requirements stay
    per-project data, since check names differ per repo; the default preset still requires none.
-4. **Usage ledger.** `usage_events`, `prices`, spend roll-up into `subscriptions.spend`, budget trip,
-   per-task and per-agent cost views.
+4. **Usage ledger and budgets.** Done. `usage_events` (append-only, one row per model call or turn,
+   with input, cache read, cache write, output and reasoning tokens, provider, model, billing kind,
+   task and lease). Cost is micro-USD: as the provider charged it, computed from `price_catalog`, or
+   the client's estimate, and the basis is stored. Retries are deduplicated by `external_ref` or
+   `dedupe_key`. `budgets` (scope all, principal, project or task; cost or tokens; per day, week, month
+   or total; humans only) stop new claims with `budget_exceeded` and log `budget.exceeded` once per
+   period. REST (`POST/GET /usage`, `/budgets`, `/prices`), MCP (`record_usage`, `usage_summary`), CLI
+   (`hub usage`, `hub budgets`), and task detail shows its spend. Not yet: the price catalog ships
+   empty (prices are dated data with a source, not code), no monthly partitions or rollups, and
+   `subscriptions.spend` is not written.
 5. **Seat runtime v1.** One adapter end to end: headless Claude Code in the sandbox on a worktree,
    lease heartbeats, transcript capture, usage events from the stream, PR opened, evidence attached.
 6. **Second adapter.** Codex exec, same contract.

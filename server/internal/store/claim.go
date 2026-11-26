@@ -56,6 +56,9 @@ func (s *Store) Claim(ctx context.Context, p *Principal, reqID string, taskID in
 		if err := w.checkWIP(st); err != nil {
 			return nil, err
 		}
+		if err := w.budgetGate(&t); err != nil {
+			return nil, err
+		}
 		return w.takeLease(t, lane, st, ttl)
 	})
 }
@@ -76,6 +79,9 @@ func (s *Store) ClaimNext(ctx context.Context, p *Principal, reqID string, f Nex
 			return nil, err
 		}
 		if err := w.checkWIP(st); err != nil {
+			return nil, err
+		}
+		if err := w.budgetGate(nil); err != nil {
 			return nil, err
 		}
 		rows, err := w.tx.Query(ctx, `SELECT t.id FROM tasks t WHERE
@@ -123,6 +129,9 @@ func (s *Store) ClaimNext(ctx context.Context, p *Principal, reqID string, f Nex
 				continue
 			}
 			if !policy.Decide(rules, subjectOf(p), "task.claim:"+lane.Queue, resOf(t)).Allowed {
+				continue
+			}
+			if w.budgetGate(&t) != nil {
 				continue
 			}
 			return w.takeLease(t, lane, st, f.TTLSeconds)

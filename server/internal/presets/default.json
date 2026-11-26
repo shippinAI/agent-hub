@@ -64,6 +64,7 @@
     {"name": "holders complete", "subject": "*", "action": "task.complete:*", "effect": "allow", "priority": 0},
     {"name": "anyone attaches evidence", "subject": "*", "action": "task.evidence:*", "effect": "allow", "priority": 0},
     {"name": "anyone links git work", "subject": "*", "action": "task.link", "effect": "allow", "priority": 0},
+    {"name": "anyone records own usage", "subject": "*", "action": "usage.record", "effect": "allow", "priority": 0},
     {"name": "holders hand off", "subject": "*", "action": "task.handoff", "effect": "allow", "priority": 0},
     {"name": "workflow transitions", "subject": "*", "action": "task.transition:*", "effect": "allow", "priority": 0},
     {"name": "only humans approve review directly", "subject": "agent", "action": "task.transition:review->done", "effect": "deny", "priority": 50},

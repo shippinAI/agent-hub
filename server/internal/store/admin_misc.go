@@ -58,7 +58,8 @@ func (s *Store) PutSetting(ctx context.Context, p *Principal, reqID string, in S
 
 // DeleteConfig removes a role, policy, workflow or project when nothing still refers to it.
 func (s *Store) DeleteConfig(ctx context.Context, p *Principal, reqID, kind, id string) (any, error) {
-	table := map[string]string{"roles": "roles", "policies": "policies", "workflows": "workflows", "projects": "projects"}[kind]
+	table := map[string]string{"roles": "roles", "policies": "policies", "workflows": "workflows", "projects": "projects",
+		"budgets": "budgets", "prices": "price_catalog"}[kind]
 	return s.write(ctx, p, reqID, "delete_"+kind, id, func(w *W) (any, error) {
 		if table == "" {
 			return nil, errNotFound(kind)

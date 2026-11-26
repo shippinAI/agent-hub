@@ -37,6 +37,17 @@ type linkIn struct {
 	RequestID string `json:"request_id,omitempty"`
 }
 
+type usageIn struct {
+	store.UsageInput
+	RequestID string `json:"request_id,omitempty"`
+}
+
+type usageSumIn struct {
+	GroupBy string `json:"group_by,omitempty" jsonschema:"task, principal, project, model, provider or day"`
+	TaskID  int64  `json:"task_id,omitempty"`
+	Mine    bool   `json:"mine,omitempty" jsonschema:"only your own usage"`
+}
+
 func (d deps) editTools(s *mcp.Server) {
 	tool(s, "create_task", "Create a task in a project (starts in the workflow's initial state).",
 		func(ctx context.Context, p *store.Principal, in createIn) (any, error) {
@@ -55,6 +66,28 @@ func (d deps) editTools(s *mcp.Server) {
 		"evidence for the current lease before complete is accepted (error evidence_missing lists what is needed).",
 		func(ctx context.Context, p *store.Principal, in evidenceIn) (any, error) {
 			return d.st.AddEvidence(ctx, p, in.RequestID, in.TaskID, in.EvidenceInput)
+		})
+	tool(s, "record_usage", "Record one model call or turn you made: provider_id, model, billing_kind api_key|subscription|router, "+
+		"tokens by kind (cache_read is part of input, reasoning part of output), source, and task_id plus fence when it was for a "+
+		"task. Give cost_micros with cost_basis provider_charged or client_estimate if your client reports cost; otherwise the hub "+
+		"prices it from its catalog. external_ref (turn or response id) makes a retry count once. The reply lists budgets in scope; "+
+		"a used-up budget stops new claims (budget_exceeded).",
+		func(ctx context.Context, p *store.Principal, in usageIn) (any, error) {
+			return d.st.RecordUsage(ctx, p, in.RequestID, in.UsageInput)
+		})
+	tool(s, "usage_summary", "Usage and cost totals (cost in micro-USD), grouped by task, principal, project, model, provider or day, "+
+		"plus every budget with its spend this period, so you can check headroom before a long task.",
+		func(ctx context.Context, p *store.Principal, in usageSumIn) (any, error) {
+			f := store.UsageFilter{GroupBy: in.GroupBy, TaskID: in.TaskID}
+			if in.Mine {
+				f.Principal = p.ID
+			}
+			totals, err := d.st.Usage(ctx, f)
+			if err != nil {
+				return nil, err
+			}
+			b, err := d.st.Budgets(ctx)
+			return map[string]any{"totals": totals, "budgets": b}, err
 		})
 	tool(s, "link_git", "Link a task to its git work: kind branch|commit|pr|check_run, repo owner/name, ref (branch name, "+
 		"commit sha, PR number or check name), optional url and head_sha. Link your branch right after you push it: the "+
