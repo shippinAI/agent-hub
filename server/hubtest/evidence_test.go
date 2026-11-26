@@ -132,3 +132,21 @@ func TestEvidenceGate(t *testing.T) {
 		t.Errorf("patch acceptance: %d %v", r.Status, r.Body)
 	}
 }
+
+// TestAgentsCannotReportCI: the gate takes ci.* evidence as the CI result for a head commit, so a worker must not
+// be able to write it for itself; only the GitHub webhook (and a human) can.
+func TestAgentsCannotReportCI(t *testing.T) {
+	e := setup(t)
+	id := e.newTask("jesse", "ci proof", nil)
+	p := "/tasks/" + itoa(id)
+	f := num(e.call("codex", "POST", p+"/claim", map[string]any{}).Body["fence"])
+	if r := e.call("codex", "POST", p+"/evidence", map[string]any{"fence": f, "kind": "ci.build", "status": "pass"}); r.code() != "policy_denied" {
+		t.Errorf("an agent reported its own CI: %d %v", r.Status, r.Body)
+	}
+	if r := e.call("codex", "POST", p+"/evidence", map[string]any{"fence": f, "kind": "test.unit", "status": "pass"}); r.Status != 200 {
+		t.Errorf("an agent's own checks are still fine: %d %v", r.Status, r.Body)
+	}
+	if r := e.call("jesse", "POST", p+"/evidence", map[string]any{"kind": "ci.build", "status": "pass", "summary": "ran it by hand"}); r.Status != 200 {
+		t.Errorf("a human may record a CI result: %d %v", r.Status, r.Body)
+	}
+}
