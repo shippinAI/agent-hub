@@ -41,6 +41,16 @@ GitHub provenance: set `HUB_GITHUB_WEBHOOK_SECRET_FILE` (16+ chars) and point a 
 JSON, events push, pull_request and check_run) at `/api/v1/integrations/github` with the same secret. Agents
 `link_git` their branch; finished check runs then arrive as evidence `ci.<check name>` for the branch's head commit.
 
+Agent runtime (`hub-seat`): one seat claims ready tasks as one agent token and runs a headless agent (default
+`claude -p --output-format stream-json`) inside the bubblewrap sandbox on a git worktree, with egress limited to
+`--allow-host` (default `api.anthropic.com`). It heartbeats the lease, commits the result, links the branch,
+records token usage and cost, runs each `--check KIND=COMMAND` as evidence, and with `--push` and
+`--github-token-file` pushes and opens a draft PR, then completes the task or hands it to `--escalate-to`.
+
+    go build -o hub-seat ./server/cmd/hub-seat
+    ./hub-seat --hub http://127.0.0.1:8080 --token-file seat.token --repo ~/src/app --work-root ~/.hub-seat \
+      --repo-name owner/app --env ANTHROPIC_API_KEY --check "test.go=go test ./..." --escalate-to jesse --once
+
 ## Data, not code
 
 Agents, roles, policies, workflow states/lanes/transitions, lease TTLs, heartbeat hint, WIP limits, note kinds and priority

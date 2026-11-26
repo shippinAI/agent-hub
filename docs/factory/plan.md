@@ -49,8 +49,16 @@ Keep what is already right and build the missing factory pillars around it.
    (`hub usage`, `hub budgets`), and task detail shows its spend. Not yet: the price catalog ships
    empty (prices are dated data with a source, not code), no monthly partitions or rollups, and
    `subscriptions.spend` is not written.
-5. **Seat runtime v1.** One adapter end to end: headless Claude Code in the sandbox on a worktree,
-   lease heartbeats, transcript capture, usage events from the stream, PR opened, evidence attached.
+5. **Seat runtime v1.** Done. `hub-seat` (`server/cmd/hub-seat`, `internal/seat`): claim_next, a git worktree
+   per task on branch `hub/<id>-<slug>`, headless Claude Code (`-p --output-format stream-json`) confined by
+   bubblewrap to the worktree with egress only to allowed hosts, heartbeats with progress, transcript to a
+   local JSONL file, usage per model from the stream, commit by the seat, branch and commit links, local
+   checks as evidence for the head commit, push and draft PR, then complete (waiting for CI evidence up to
+   `--ci-wait`) or hand off to a human. Tested end to end with a scripted agent, both unsandboxed and inside
+   bwrap. Found and fixed on the way: the sandbox's egress forwarder died when `sandbox-init` exec'd the
+   command, so allowlisted network never worked inside bwrap (bridge and seat now share `sandbox.Init`,
+   with a regression test). Not yet: no real model run in CI (no API key there), the transcript stays on
+   the seat's disk (increment 7 stores runs), budgets are checked at claim time, not mid-run.
 6. **Second adapter.** Codex exec, same contract.
 7. **Run records and traces.** `runs` table, transcript viewer in the UI, OTel export.
 8. **Outcome loop.** Run scores, routing weights from outcomes.

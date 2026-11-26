@@ -15,6 +15,12 @@ func Forward(listen, sock string) error {
 	if err != nil {
 		return err
 	}
+	return ForwardOn(ln, sock)
+}
+
+// ForwardOn serves Forward on a listener the caller already opened (so a bind failure is seen before the
+// confined command starts).
+func ForwardOn(ln net.Listener, sock string) error {
 	for {
 		c, err := ln.Accept()
 		if err != nil {
