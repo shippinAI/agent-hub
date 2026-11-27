@@ -87,6 +87,22 @@ func (s *Server) configRoutes(mux *http.ServeMux) {
 			v.ID = firstSet(r.PathValue("id"), v.ID)
 			return s.St.PutWorkflow(r.Context(), p, rid, v)
 		},
+		"budgets": func(r *http.Request, p *store.Principal, rid string, raw json.RawMessage) (any, error) {
+			var v store.Budget
+			if err := unmarshal(raw, &v); err != nil {
+				return nil, err
+			}
+			v.ID = firstSet(r.PathValue("id"), v.ID)
+			return s.St.PutBudget(r.Context(), p, rid, v)
+		},
+		"prices": func(r *http.Request, p *store.Principal, rid string, raw json.RawMessage) (any, error) {
+			var v store.Price
+			if err := unmarshal(raw, &v); err != nil {
+				return nil, err
+			}
+			v.ID = firstSet(r.PathValue("id"), v.ID)
+			return s.St.PutPrice(r.Context(), p, rid, v)
+		},
 		"projects": func(r *http.Request, p *store.Principal, rid string, raw json.RawMessage) (any, error) {
 			var v store.Project
 			if err := unmarshal(raw, &v); err != nil {

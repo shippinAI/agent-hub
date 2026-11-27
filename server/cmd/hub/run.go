@@ -55,6 +55,9 @@ func run(c *client, cmd string, pos []string, f map[string]string) error {
 		if p, err := strconv.Atoi(f["priority"]); err == nil {
 			body["priority"] = p
 		}
+		if f["accept"] != "" {
+			body["acceptance"] = strings.Split(f["accept"], ";")
+		}
 		return c.post("/tasks", body, nil)
 	case "claim":
 		ttl, _ := strconv.Atoi(f["ttl"])
@@ -102,6 +105,46 @@ func run(c *client, cmd string, pos []string, f map[string]string) error {
 		}
 		show(out)
 		return nil
+	case "evidence":
+		if err := need(pos, 3); err != nil {
+			return err
+		}
+		if pos[2] != "pass" && pos[2] != "fail" {
+			return fmt.Errorf("evidence status must be pass or fail\n%s", usage)
+		}
+		body := map[string]any{"kind": pos[1], "status": pos[2], "summary": strings.Join(pos[3:], " "), "ref": f["ref"]}
+		if fe := st.fence(pos[0]); fe > 0 {
+			body["fence"] = fe
+		}
+		if err := c.post("/tasks/"+pos[0]+"/evidence", body, &out); err != nil {
+			return err
+		}
+		show(out)
+		return nil
+	case "link":
+		if err := need(pos, 4); err != nil {
+			return err
+		}
+		body := map[string]any{"kind": pos[1], "repo": pos[2], "ref": pos[3], "url": f["url"], "head_sha": f["sha"]}
+		if fe := st.fence(pos[0]); fe > 0 {
+			body["fence"] = fe
+		}
+		if err := c.post("/tasks/"+pos[0]+"/links", body, &out); err != nil {
+			return err
+		}
+		show(out)
+		return nil
+	case "usage":
+		q := url.Values{"group_by": {or(f["by"], "task")}}
+		if f["task"] != "" {
+			q.Set("task", f["task"])
+		}
+		if f["mine"] == "true" {
+			q.Set("principal", "me")
+		}
+		return c.get("/usage?" + q.Encode())
+	case "budgets":
+		return c.get("/budgets")
 	case "events":
 		return c.get("/events?after_seq=" + or(f["after"], "0"))
 	case "verify":

@@ -37,6 +37,23 @@ Human login modes (`HUB_HUMAN_AUTH`): `none` (bearer token only, pasted into the
 `proxy-header` (behind an identity-aware proxy; needs `HUB_PROXY_SECRET_FILE`), `dev` (loopback only).
 Agents always use per-principal bearer tokens (stored as SHA-256 hashes).
 
+GitHub provenance: set `HUB_GITHUB_WEBHOOK_SECRET_FILE` (16+ chars) and point a repository webhook (content type
+JSON, events push, pull_request and check_run) at `/api/v1/integrations/github` with the same secret. Agents
+`link_git` their branch; finished check runs then arrive as evidence `ci.<check name>` for the branch's head commit.
+
+Agent runtime (`hub-seat`): one seat claims ready tasks as one agent token and runs a headless agent (default
+`claude -p --output-format stream-json`) inside the bubblewrap sandbox on a git worktree, with egress limited to
+`--allow-host` (default `api.anthropic.com`). It heartbeats the lease, commits the result, links the branch,
+records token usage and cost, runs each `--check KIND=COMMAND` as evidence, and with `--push` and
+`--github-token-file` pushes and opens a draft PR, then completes the task or hands it to `--escalate-to`.
+Each run and its full transcript are stored on the hub (`GET /api/v1/runs/{id}`).
+`--adapter codex` drives `codex exec --json` instead (egress `api.openai.com`, usage under `--model` and
+provider `openai-api`; pass `--env CODEX_API_KEY` or `--env OPENAI_API_KEY`).
+
+    go build -o hub-seat ./server/cmd/hub-seat
+    ./hub-seat --hub http://127.0.0.1:8080 --token-file seat.token --repo ~/src/app --work-root ~/.hub-seat \
+      --repo-name owner/app --env ANTHROPIC_API_KEY --check "test.go=go test ./..." --escalate-to jesse --once
+
 ## Data, not code
 
 Agents, roles, policies, workflow states/lanes/transitions, lease TTLs, heartbeat hint, WIP limits, note kinds and priority
@@ -57,6 +74,7 @@ Proof: `server/hubtest/policygate_test.go`, `test-evidence/policy-gate.txt`.
 
 ```sh
 tests/run-go-tests.sh    # protocol: race, lease expiry + fencing, idempotency, chain verify, policy, auth, MCP (Go SDK), SSE
+HUB_CONFORMANCE_URL=... HUB_CONFORMANCE_TOKENS=tokens.json go test ./server/conformance  # black-box protocol suite, any build (docs/conformance.md)
 tests/ui-test.sh         # headless Chrome 1280px + 390px, MCP via TypeScript SDK, HTTP safety checks, screenshots
 ```
 

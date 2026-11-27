@@ -63,7 +63,7 @@ func setup(t *testing.T) *env {
 	if _, err := presets.SeedAll(ctx, st, "jesse@test"); err != nil {
 		t.Fatal(err)
 	}
-	cfg := config.Config{Listen: "127.0.0.1:0", HumanAuth: "none", PublicURL: "http://hub.test"}
+	cfg := config.Config{Listen: "127.0.0.1:0", HumanAuth: "none", PublicURL: "http://hub.test", GitHubSecret: ghSecret}
 	res, _ := auth.New(cfg, st)
 	br := stream.New()
 	bctx, cancel := context.WithCancel(ctx)

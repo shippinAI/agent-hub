@@ -11,6 +11,8 @@
     {"key": "default_priority", "value": 2, "description": "Priority for new tasks (lower = sooner)"},
     {"key": "priority_labels", "value": ["P0 urgent", "P1 high", "P2 normal", "P3 low", "P4 someday"], "description": "Display names by priority number"},
     {"key": "note_kinds", "value": ["note", "handoff", "blocker", "decision", "summary"], "description": "Allowed note kinds"},
+    {"key": "route_min_runs", "value": 0, "description": "claim_next skips tasks in a project and lane where the caller has at least this many scored runs and a success rate below route_min_success_pct (0 = routing off)"},
+    {"key": "route_min_success_pct", "value": 50, "description": "Success rate (accepted runs out of scored runs, percent) below which claim_next routes a lane's work away from a principal"},
     {"key": "principal_kinds", "value": ["human", "claude-code", "codex", "cursor", "grok", "cli", "service"], "description": "Allowed principal kinds"}
   ],
   "roles": [
@@ -24,7 +26,8 @@
     {"id": "claude-code", "display_name": "Claude Code", "kind": "claude-code", "roles": ["worker"], "enabled": true},
     {"id": "codex", "display_name": "Codex CLI", "kind": "codex", "roles": ["worker", "reviewer"], "enabled": true},
     {"id": "cursor", "display_name": "Cursor", "kind": "cursor", "roles": ["worker"], "enabled": true},
-    {"id": "clyffy", "display_name": "Clyffy (Grok Bot)", "kind": "grok", "roles": ["worker", "reviewer"], "enabled": true}
+    {"id": "clyffy", "display_name": "Clyffy (Grok Bot)", "kind": "grok", "roles": ["worker", "reviewer"], "enabled": true},
+    {"id": "github", "display_name": "GitHub", "kind": "service", "roles": [], "enabled": true}
   ],
   "workflows": [
     {"id": "default", "name": "Default (ready, work, review, done)", "initial_state": "ready", "attention_state": "needs_attention",
@@ -61,6 +64,12 @@
     {"name": "humans edit held tasks", "subject": "human", "action": "task.edit_held", "effect": "allow", "priority": 10},
     {"name": "anyone adds notes", "subject": "*", "action": "note.add:*", "effect": "allow", "priority": 0},
     {"name": "holders complete", "subject": "*", "action": "task.complete:*", "effect": "allow", "priority": 0},
+    {"name": "anyone attaches evidence", "subject": "*", "action": "task.evidence:*", "effect": "allow", "priority": 0},
+    {"name": "agents do not report CI", "subject": "agent", "action": "task.evidence:ci.*", "effect": "deny", "priority": 100},
+    {"name": "the GitHub webhook reports CI", "subject": "principal:github", "action": "task.evidence:ci.*", "effect": "allow", "priority": 200},
+    {"name": "anyone links git work", "subject": "*", "action": "task.link", "effect": "allow", "priority": 0},
+    {"name": "anyone records own usage", "subject": "*", "action": "usage.record", "effect": "allow", "priority": 0},
+    {"name": "anyone records runs", "subject": "*", "action": "task.run", "effect": "allow", "priority": 0},
     {"name": "holders hand off", "subject": "*", "action": "task.handoff", "effect": "allow", "priority": 0},
     {"name": "workflow transitions", "subject": "*", "action": "task.transition:*", "effect": "allow", "priority": 0},
     {"name": "only humans approve review directly", "subject": "agent", "action": "task.transition:review->done", "effect": "deny", "priority": 50},

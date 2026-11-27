@@ -11,9 +11,12 @@ import (
 
 const usage = `usage: hub <command> [args] [--flag value]
   whoami | ready [--project P] | ls [--state S] [--mine] | show ID | search QUERY
-  new TITLE [--project P] [--desc D] [--labels a,b] [--priority N]
+  new TITLE [--project P] [--desc D] [--labels a,b] [--priority N] [--accept 'crit 1;crit 2']
   claim [ID] [--ttl SECONDS]        (no ID = claim_next)
   beat ID | note ID TEXT [--kind K] | done ID SUMMARY | handoff ID NOTE [--to AGENT] | release ID [REASON]
+  evidence ID KIND pass|fail [SUMMARY] [--ref URL]   (proof a lane may require before done)
+  link ID branch|commit|pr|check_run OWNER/REPO REF [--url U] [--sha HEAD]   (after you push a branch)
+  usage [--by task|principal|project|model|provider|day] [--task ID] [--mine] | budgets
   events [--after SEQ] | verify | protocol
 env: HUB_URL, HUB_TOKEN or HUB_TOKEN_FILE, HUB_STATE (claim cache). --request-id reuses an idempotency key.`
 

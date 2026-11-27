@@ -15,6 +15,7 @@ type NewTask struct {
 	Description string   `json:"description,omitempty"`
 	Priority    *int     `json:"priority,omitempty"`
 	Labels      []string `json:"labels,omitempty"`
+	Acceptance  []string `json:"acceptance,omitempty"`
 	Assignee    string   `json:"assignee,omitempty"`
 	DependsOn   []int64  `json:"depends_on,omitempty"`
 }
@@ -25,6 +26,10 @@ func (s *Store) CreateTask(ctx context.Context, p *Principal, reqID string, in N
 		in.Title, in.Labels = strings.TrimSpace(in.Title), cleanLabels(in.Labels)
 		if in.Title == "" || len(in.Title) > 300 {
 			return nil, errInvalid("title is required (max 300 chars)")
+		}
+		acc, err := cleanAcceptance(in.Acceptance)
+		if err != nil {
+			return nil, err
 		}
 		wf, err := loadWorkflowFor(ctx, w.tx, in.Project)
 		if err != nil {
@@ -43,9 +48,9 @@ func (s *Store) CreateTask(ctx context.Context, p *Principal, reqID string, in N
 			asg = &in.Assignee
 		}
 		var id int64
-		err = w.row(`INSERT INTO tasks(project,title,description,state,priority,labels,assignee,created_by)
-			VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`, in.Project, in.Title, in.Description, wf.InitialState,
-			prio, in.Labels, asg, p.ID).Scan(&id)
+		err = w.row(`INSERT INTO tasks(project,title,description,state,priority,labels,assignee,created_by,acceptance)
+			VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`, in.Project, in.Title, in.Description, wf.InitialState,
+			prio, in.Labels, asg, p.ID, acc).Scan(&id)
 		if err != nil {
 			return nil, err
 		}
@@ -70,6 +75,7 @@ type TaskPatch struct {
 	Description *string         `json:"description,omitempty"`
 	Priority    *int            `json:"priority,omitempty"`
 	Labels      *[]string       `json:"labels,omitempty"`
+	Acceptance  *[]string       `json:"acceptance,omitempty"`
 	Assignee    *string         `json:"assignee,omitempty"`
 	State       *string         `json:"state,omitempty"`
 	Progress    json.RawMessage `json:"progress,omitempty"`
@@ -118,6 +124,14 @@ func (s *Store) UpdateTask(ctx context.Context, p *Principal, reqID string, id i
 			labels = cleanLabels(*in.Labels)
 			changed["labels"] = labels
 		}
+		var acc any
+		if in.Acceptance != nil {
+			a, err := cleanAcceptance(*in.Acceptance)
+			if err != nil {
+				return nil, err
+			}
+			acc, changed["acceptance"] = a, a
+		}
 		for k, v := range map[string]any{"title": in.Title, "description": in.Description, "priority": in.Priority, "assignee": in.Assignee} {
 			if !isNilPtr(v) {
 				changed[k] = v
@@ -132,8 +146,8 @@ func (s *Store) UpdateTask(ctx context.Context, p *Principal, reqID string, id i
 		}
 		_, err = w.exec(`UPDATE tasks SET title=coalesce($2,title), description=coalesce($3,description), priority=coalesce($4,priority),
 			labels=coalesce($5,labels), state=coalesce($6,state), progress=coalesce($7,progress),
-			assignee=CASE WHEN $8 THEN $9 ELSE assignee END, version=version+1, updated_at=clock_timestamp() WHERE id=$1`,
-			id, in.Title, in.Description, in.Priority, labelsArg(in.Labels, labels), in.State, nullJSON(in.Progress), in.Assignee != nil, asg)
+			assignee=CASE WHEN $8 THEN $9 ELSE assignee END, acceptance=coalesce($10,acceptance), version=version+1, updated_at=clock_timestamp() WHERE id=$1`,
+			id, in.Title, in.Description, in.Priority, labelsArg(in.Labels, labels), in.State, nullJSON(in.Progress), in.Assignee != nil, asg, acc)
 		if err != nil {
 			return nil, err
 		}

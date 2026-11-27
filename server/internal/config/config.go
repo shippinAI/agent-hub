@@ -19,6 +19,7 @@ type Config struct {
 	TailscaleBin  string // HUB_TAILSCALE_BIN
 	DevLogin      string // HUB_DEV_LOGIN (dev, loopback only)
 	PublicURL     string // HUB_PUBLIC_URL, used in generated connect snippets
+	GitHubSecret  string // from HUB_GITHUB_WEBHOOK_SECRET_FILE; empty = the GitHub webhook is off
 }
 
 func env(k, def string) string {
@@ -58,6 +59,14 @@ func Load() (Config, error) {
 	}
 	if c.DatabaseURL == "" {
 		return c, fmt.Errorf("config: set HUB_DATABASE_URL_FILE (or HUB_DATABASE_URL)")
+	}
+	if f := env("HUB_GITHUB_WEBHOOK_SECRET_FILE", ""); f != "" {
+		if c.GitHubSecret, err = readSecret(f); err != nil {
+			return c, err
+		}
+		if len(c.GitHubSecret) < 16 {
+			return c, fmt.Errorf("config: GitHub webhook secret must be >= 16 chars")
+		}
 	}
 	if c.HumanAuth == "proxy-header" {
 		f := env("HUB_PROXY_SECRET_FILE", "")

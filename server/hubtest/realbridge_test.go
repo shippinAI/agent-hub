@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"devagotchi/bridge/sandbox/sandboxtest"
 	"time"
 )
 
@@ -56,9 +58,7 @@ func (e *env) startRealBridge(t *testing.T, bin, machine string) string {
 
 // TestRealBridgeExecRevoke runs the actual bridge: real sandboxed exec and a mid-run revoke that kills it.
 func TestRealBridgeExecRevoke(t *testing.T) {
-	if _, err := exec.LookPath("bwrap"); err != nil {
-		t.Skip("bwrap not installed")
-	}
+	sandboxtest.Require(t)
 	bin := buildBridge(t)
 	e := setup(t)
 	e.startRealBridge(t, bin, "realpc")

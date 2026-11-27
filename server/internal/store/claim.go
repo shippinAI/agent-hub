@@ -56,6 +56,9 @@ func (s *Store) Claim(ctx context.Context, p *Principal, reqID string, taskID in
 		if err := w.checkWIP(st); err != nil {
 			return nil, err
 		}
+		if err := w.budgetGate(&t); err != nil {
+			return nil, err
+		}
 		return w.takeLease(t, lane, st, ttl)
 	})
 }
@@ -76,6 +79,9 @@ func (s *Store) ClaimNext(ctx context.Context, p *Principal, reqID string, f Nex
 			return nil, err
 		}
 		if err := w.checkWIP(st); err != nil {
+			return nil, err
+		}
+		if err := w.budgetGate(nil); err != nil {
 			return nil, err
 		}
 		rows, err := w.tx.Query(ctx, `SELECT t.id FROM tasks t WHERE
@@ -101,6 +107,7 @@ func (s *Store) ClaimNext(ctx context.Context, p *Principal, reqID string, f Nex
 		if err != nil {
 			return nil, err
 		}
+		scores, routed := map[[2]string]*Score{}, []map[string]any{}
 		for _, id := range ids {
 			t, err := getTask(ctx, w.tx, id, false)
 			if err != nil {
@@ -125,9 +132,25 @@ func (s *Store) ClaimNext(ctx context.Context, p *Principal, reqID string, f Nex
 			if !policy.Decide(rules, subjectOf(p), "task.claim:"+lane.Queue, resOf(t)).Allowed {
 				continue
 			}
+			if w.budgetGate(&t) != nil {
+				continue
+			}
+			away, sc, err := w.routedAway(st, t, lane.Active, scores)
+			if err != nil {
+				return nil, err
+			}
+			if away {
+				routed = append(routed, map[string]any{"task_id": t.ID, "project": t.Project, "lane": lane.Active, "success_pct": sc.SuccessPct, "scored": sc.Scored})
+				continue
+			}
 			return w.takeLease(t, lane, st, f.TTLSeconds)
 		}
-		return map[string]any{"claimed": false, "message": "no ready task you are allowed to claim"}, nil
+		out := map[string]any{"claimed": false, "message": "no ready task you are allowed to claim"}
+		if len(routed) > 0 {
+			out["message"] = "no ready task for you: the rest are in lanes where your success rate is below route_min_success_pct"
+			out["routed_away"] = routed
+		}
+		return out, nil
 	})
 }
 

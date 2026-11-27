@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-const taskCols = `t.id,t.project,t.title,t.description,t.state,t.priority,t.labels,t.assignee,t.holder,t.lease_id::text,
+const taskCols = `t.id,t.project,t.title,t.description,t.state,t.priority,t.labels,t.acceptance,t.assignee,t.holder,t.lease_id::text,
 	t.lease_ttl_seconds,t.lease_expires_at,t.heartbeat_at,t.fence,t.version,t.expiry_count,t.last_worker,t.progress,
 	t.created_by,t.created_at,t.updated_at,hub_open_deps(t.id),(t.holder IS NULL AND hub_is_queue(t.project,t.state)),
 	coalesce(t.lease_expires_at < clock_timestamp(), false)`
@@ -15,7 +15,7 @@ const taskCols = `t.id,t.project,t.title,t.description,t.state,t.priority,t.labe
 func scanTask(r pgx.Row) (Task, error) {
 	var t Task
 	var queue bool
-	err := r.Scan(&t.ID, &t.Project, &t.Title, &t.Description, &t.State, &t.Priority, &t.Labels, &t.Assignee, &t.Holder,
+	err := r.Scan(&t.ID, &t.Project, &t.Title, &t.Description, &t.State, &t.Priority, &t.Labels, &t.Acceptance, &t.Assignee, &t.Holder,
 		&t.LeaseID, &t.LeaseTTL, &t.LeaseExpiresAt, &t.HeartbeatAt, &t.Fence, &t.Version, &t.ExpiryCount, &t.LastWorker,
 		&t.Progress, &t.CreatedBy, &t.CreatedAt, &t.UpdatedAt, &t.BlockedBy, &queue, &t.LeaseExpired)
 	t.Ready = queue && len(t.BlockedBy) == 0

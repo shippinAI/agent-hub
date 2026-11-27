@@ -60,7 +60,7 @@ func (d deps) readTools(s *mcp.Server) {
 			ts, err := d.st.Tasks(ctx, store.TaskFilter{Project: in.Project, State: in.State, Holder: in.Holder, Label: in.Label, Limit: limit(in.Limit)})
 			return map[string]any{"tasks": ts}, err
 		})
-	tool(s, "get_task", "One task with its notes (including handoffs), dependencies and recent events.",
+	tool(s, "get_task", "One task with its acceptance criteria, notes (including handoffs), evidence, git links, agent runs, dependencies and recent events.",
 		func(ctx context.Context, p *store.Principal, in idIn) (any, error) {
 			t, err := d.st.Task(ctx, in.TaskID)
 			if err != nil {
@@ -68,8 +68,11 @@ func (d deps) readTools(s *mcp.Server) {
 			}
 			notes, _ := d.st.Notes(ctx, in.TaskID)
 			deps, _ := d.st.Deps(ctx, in.TaskID)
+			evidence, _ := d.st.Evidence(ctx, in.TaskID)
+			links, _ := d.st.Links(ctx, in.TaskID)
+			runs, _ := d.st.Runs(ctx, in.TaskID)
 			ev, err := d.st.Events(ctx, store.EventFilter{TaskID: in.TaskID, Limit: 50, Desc: true})
-			return map[string]any{"task": t, "notes": notes, "depends_on": deps, "recent_events": ev}, err
+			return map[string]any{"task": t, "notes": notes, "evidence": evidence, "links": links, "runs": runs, "depends_on": deps, "recent_events": ev}, err
 		})
 	tool(s, "search", "Full-text search over task titles, descriptions and notes.",
 		func(ctx context.Context, p *store.Principal, in searchIn) (any, error) {

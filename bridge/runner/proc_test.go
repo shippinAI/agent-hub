@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 
+	"devagotchi/bridge/sandbox/sandboxtest"
+
 	"devagotchi/bridge/config"
 	"devagotchi/bridge/wire"
 )
@@ -31,6 +33,7 @@ func frame(op string, g *wire.Grant, args map[string]any) wire.Frame {
 }
 
 func TestProcLeaseOps(t *testing.T) {
+	sandboxtest.Require(t)
 	r := testRunner(t)
 	dir := t.TempDir()
 	g := &wire.Grant{Capability: "proc.interactive", Level: "workspace-write", Selector: map[string]any{"paths": []string{dir}}}
@@ -56,6 +59,7 @@ func TestProcLeaseOps(t *testing.T) {
 }
 
 func TestToolOpUsesGrantScope(t *testing.T) {
+	sandboxtest.Require(t)
 	r := testRunner(t)
 	dir := t.TempDir()
 	os.WriteFile(filepath.Join(dir, "a.txt"), []byte("hello\n"), 0o644)

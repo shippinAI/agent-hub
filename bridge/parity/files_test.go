@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"devagotchi/bridge/sandbox/sandboxtest"
 )
 
 // TestParityFiles covers matrix rows R01-R15 (config, filesystem, office/PDF, edits) over stdio.
@@ -22,7 +24,10 @@ func TestParityFiles(t *testing.T) {
 		fn func(t *testing.T)
 	}{
 		{"R01 get_config", func(t *testing.T) {
-			want(t, callTool(t, cs, "get_config", nil), "", root, "telemetry: false", "bubblewrap")
+			want(t, callTool(t, cs, "get_config", nil), "", root, "telemetry: false")
+			if sandboxtest.Available() {
+				want(t, callTool(t, cs, "get_config", nil), "", "bubblewrap")
+			}
 		}},
 		{"R02 set_config_value", func(t *testing.T) {
 			want(t, callTool(t, cs, "set_config_value", map[string]any{"key": "roots", "value": []string{"/"}}), "policy_denied", "devagotchi config set")

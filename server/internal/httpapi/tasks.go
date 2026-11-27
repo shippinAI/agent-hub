@@ -81,6 +81,30 @@ func (s *Server) taskOp(w http.ResponseWriter, r *http.Request, p *store.Princip
 		}
 		return s.St.AddNote(ctx, p, rid, id, in)
 	}
+	if r.PathValue("op") == "evidence" {
+		var in store.EvidenceInput
+		rid, err := decode(r, &in)
+		if err != nil {
+			return nil, err
+		}
+		return s.St.AddEvidence(ctx, p, rid, id, in)
+	}
+	if r.PathValue("op") == "runs" {
+		var in store.RunStart
+		rid, err := decode(r, &in)
+		if err != nil {
+			return nil, err
+		}
+		return s.St.StartRun(ctx, p, rid, id, in)
+	}
+	if r.PathValue("op") == "links" {
+		var in store.LinkInput
+		rid, err := decode(r, &in)
+		if err != nil {
+			return nil, err
+		}
+		return s.St.LinkGit(ctx, p, rid, id, in)
+	}
 	var b leaseBody
 	rid, err := decode(r, &b)
 	if err != nil {
@@ -122,6 +146,22 @@ func (s *Server) taskDetail(w http.ResponseWriter, r *http.Request, p *store.Pri
 	if err != nil {
 		return nil, err
 	}
+	evidence, err := s.St.Evidence(r.Context(), id)
+	if err != nil {
+		return nil, err
+	}
+	links, err := s.St.Links(r.Context(), id)
+	if err != nil {
+		return nil, err
+	}
+	usage, err := s.St.TaskUsage(r.Context(), id)
+	if err != nil {
+		return nil, err
+	}
+	runs, err := s.St.Runs(r.Context(), id)
+	if err != nil {
+		return nil, err
+	}
 	ev, err := s.St.Events(r.Context(), store.EventFilter{TaskID: id, Limit: 200})
-	return map[string]any{"task": t, "notes": notes, "depends_on": deps, "events": ev, "server_now": nowUTC()}, err
+	return map[string]any{"task": t, "notes": notes, "evidence": evidence, "links": links, "usage": usage, "runs": runs, "depends_on": deps, "events": ev, "server_now": nowUTC()}, err
 }

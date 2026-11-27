@@ -53,9 +53,16 @@ func TestPTYPromptAndKill(t *testing.T) {
 	}
 	seq := s.Output().Seq()
 	_ = s.Write("print(6*7)", false)
-	snap = s.Wait(context.Background(), seq, 5*time.Second, prompts, true, false)
-	if !strings.Contains(snap.Output, "42") {
-		t.Fatalf("%q", snap.Output)
+	// A PTY may emit terminal control sequences before the echo and the answer, and Wait returns on the first
+	// new output, so keep reading until "42" arrives or the deadline passes.
+	var got strings.Builder
+	for deadline := time.Now().Add(5 * time.Second); time.Now().Before(deadline) && !strings.Contains(got.String(), "42"); {
+		snap = s.Wait(context.Background(), seq, time.Until(deadline), prompts, true, false)
+		got.WriteString(snap.Output)
+		seq = snap.Seq
+	}
+	if !strings.Contains(got.String(), "42") {
+		t.Fatalf("%q", got.String())
 	}
 	if err := m.Terminate(s.PID); err != nil || s.ExitCode() == nil {
 		t.Fatal("terminate", err)

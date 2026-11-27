@@ -5,6 +5,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"devagotchi/bridge/sandbox/sandboxtest"
 )
 
 // TestParitySearchProcs covers rows R16-R29 (search, terminal sessions, processes, local stats) over stdio.
@@ -28,6 +30,7 @@ func TestParitySearchProcs(t *testing.T) {
 		{"R18 list_searches", func(t *testing.T) { want(t, callTool(t, cs, "list_searches", nil), "", sid) }},
 		{"R19 stop_search", func(t *testing.T) { want(t, callTool(t, cs, "stop_search", map[string]any{"sessionId": sid}), "") }},
 		{"R20 start_process (REPL, prompt detection)", func(t *testing.T) {
+			sandboxtest.Require(t)
 			r := want(t, callTool(t, cs, "start_process", map[string]any{"command": "python3 -i -q", "shell": "bash-pty", "timeout_ms": 10000, "cwd": root}), "", "PID")
 			if r.data["state"] != "waiting_for_input" {
 				t.Fatalf("state %v: %s", r.data["state"], r.text)
@@ -35,13 +38,19 @@ func TestParitySearchProcs(t *testing.T) {
 			pid = int(r.data["pid"].(float64))
 		}},
 		{"R21 interact_with_process", func(t *testing.T) {
+			sandboxtest.Require(t)
 			want(t, callTool(t, cs, "interact_with_process", map[string]any{"pid": pid, "input": "import os; print(len(os.listdir('.')), 6*7)"}), "", "42")
 		}},
 		{"R22 read_process_output", func(t *testing.T) {
+			sandboxtest.Require(t)
 			want(t, callTool(t, cs, "read_process_output", map[string]any{"pid": pid, "offset": -3, "timeout_ms": 500}), "", "42")
 		}},
-		{"R23 list_sessions", func(t *testing.T) { want(t, callTool(t, cs, "list_sessions", nil), "", "python3") }},
+		{"R23 list_sessions", func(t *testing.T) {
+			sandboxtest.Require(t)
+			want(t, callTool(t, cs, "list_sessions", nil), "", "python3")
+		}},
 		{"R24 force_terminate", func(t *testing.T) {
+			sandboxtest.Require(t)
 			want(t, callTool(t, cs, "force_terminate", map[string]any{"pid": pid}), "")
 			want(t, callTool(t, cs, "interact_with_process", map[string]any{"pid": pid, "input": "1"}), "not_running")
 		}},
@@ -55,16 +64,20 @@ func TestParitySearchProcs(t *testing.T) {
 		}},
 		{"R27 get_usage_stats", func(t *testing.T) { want(t, callTool(t, cs, "get_usage_stats", nil), "", "start_search") }},
 		{"R28 get_recent_tool_calls", func(t *testing.T) {
+			// Self-contained: R23 may have been skipped where no sandbox works.
+			want(t, callTool(t, cs, "list_sessions", nil), "")
 			want(t, callTool(t, cs, "get_recent_tool_calls", map[string]any{"maxResults": 5, "toolName": "list_sessions"}), "", "list_sessions")
 		}},
 		{"R29 give_feedback_to_desktop_commander", func(t *testing.T) {
 			want(t, callTool(t, cs, "give_feedback_to_desktop_commander", nil), "", "example.invalid", "nothing was opened or sent")
 		}},
 		{"X02 honest timeout (timeout_ms above the cap)", func(t *testing.T) {
+			sandboxtest.Require(t)
 			want(t, callTool(t, cs, "start_process", map[string]any{"argv": []string{"sleep", "1"}, "timeout_ms": 999999}), "", "above this policy's max_timeout_ms")
 			want(t, callTool(t, cs, "run_command", map[string]any{"argv": []string{"sleep", "5"}, "timeout_ms": 300}), "timeout", "killed")
 		}},
 		{"X03 sandbox confines processes", func(t *testing.T) {
+			sandboxtest.Require(t)
 			out := filepath.Join(filepath.Dir(root), "outside.txt")
 			want(t, callTool(t, cs, "run_command", map[string]any{"command": "echo x > " + out + "; echo in > inside.txt", "cwd": root}), "")
 			if _, err := os.Stat(out); err == nil {
@@ -75,6 +88,7 @@ func TestParitySearchProcs(t *testing.T) {
 			}
 		}},
 		{"X04 run_code (in-memory)", func(t *testing.T) {
+			sandboxtest.Require(t)
 			want(t, callTool(t, cs, "run_code", map[string]any{"language": "python", "code": "print(sum(range(10)))"}), "", "45")
 		}},
 	}
